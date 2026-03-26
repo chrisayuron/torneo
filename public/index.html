@@ -45,7 +45,7 @@
     <!-- Pantalla de Carga -->
     <div id="loading-screen">
         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mb-4"></div>
-        <p class="text-gray-600 font-medium text-center px-4">Conectando con el servidor del torneo...</p>
+        <p id="loading-text" class="text-gray-600 font-medium text-center px-4">Conectando con el servidor del torneo...</p>
     </div>
 
     <!-- Navegación Principal -->
@@ -67,7 +67,7 @@
         <!-- SECCIÓN: POSICIONES -->
         <section id="view-standings" class="view">
             <div class="card p-6 overflow-x-auto">
-                <h2 class="text-xl font-bold mb-6 text-gray-800 border-b pb-2">Tabla de Clasificación</h2>
+                <h2 class="text-xl font-bold mb-6 text-gray-800 border-b pb-2 text-center md:text-left">Tabla de Clasificación</h2>
                 <table class="w-full text-sm md:text-base">
                     <thead>
                         <tr class="text-left bg-gray-50 text-gray-600 uppercase text-xs font-bold">
@@ -166,6 +166,7 @@
 
             this.init = async function() {
                 try {
+                    console.log("Iniciando aplicación...");
                     const response = await fetch('/api/get-config');
                     const config = await response.json();
                     
@@ -177,40 +178,49 @@
                     this.db = getFirestore(firebaseApp);
 
                     onAuthStateChanged(this.auth, (user) => {
+                        console.log("Estado de autenticación cambiado:", user ? "Conectado" : "Desconectado");
                         if (user && !user.isAnonymous) {
                             this.setAdminMode(true);
                         } else {
-                            if (!user) signInAnonymously(this.auth);
+                            if (!user) {
+                                console.log("Iniciando sesión anónima para lectura...");
+                                signInAnonymously(this.auth);
+                            }
                         }
                         this.setupFirestoreListener();
                     });
 
                 } catch (error) {
-                    console.error("Error:", error);
-                    document.getElementById('loading-screen').innerHTML = `
-                        <div class="text-center p-6">
-                            <p class="text-red-500 font-bold mb-2">Error de conexión</p>
-                            <p class="text-xs text-gray-500">${error.message}</p>
-                            <button onclick="location.reload()" class="mt-4 bg-gray-200 px-4 py-2 rounded text-sm">Reintentar</button>
-                        </div>
-                    `;
+                    console.error("Error crítico en init:", error);
+                    document.getElementById('loading-text').innerText = "Error: " + error.message;
                 }
             };
 
             this.setupFirestoreListener = function() {
-                onSnapshot(doc(this.db, "torneo", "actual"), (docSnap) => {
+                console.log("Configurando listener de Firestore...");
+                // Escuchar el documento "actual" en la colección "torneo"
+                const docRef = doc(this.db, "torneo", "actual");
+                
+                onSnapshot(docRef, (docSnap) => {
+                    console.log("Datos recibidos de Firestore:", docSnap.exists());
                     document.getElementById('loading-screen').classList.add('hidden');
+                    
                     if (docSnap.exists()) {
                         const data = docSnap.data();
+                        console.log("Contenido del documento:", data);
                         this.teams = data.teams || [];
                         this.rounds = data.rounds || [];
                         this.calculateStandings();
+                    } else {
+                        console.warn("El documento 'torneo/actual' no existe en la base de datos.");
                     }
                     this.renderAll();
                 }, (err) => {
-                    console.error("Error Firestore:", err);
+                    console.error("Error en el stream de datos (Firestore):", err);
                     document.getElementById('loading-screen').classList.add('hidden');
-                    this.renderAll(); // Renderizar aunque falle para mostrar interfaz vacía
+                    // Mostrar mensaje de error en la UI si falla
+                    const standingsBody = document.getElementById('standings-body');
+                    standingsBody.innerHTML = `<tr><td colspan="10" class="p-8 text-center text-red-500">Error al cargar datos: ${err.message}. Verifica los permisos de Firebase.</td></tr>`;
                 });
             };
 
@@ -257,7 +267,11 @@
                         rounds: this.rounds,
                         updatedAt: new Date().toISOString()
                     });
-                } catch (e) { console.error("Error guardando:", e); }
+                    console.log("Estado guardado con éxito.");
+                } catch (e) { 
+                    console.error("Error guardando en Firestore:", e); 
+                    alert("Error al guardar: " + e.message);
+                }
             };
 
             this.addTeam = function() {
@@ -356,7 +370,7 @@
             this.renderStandings = function() {
                 const body = document.getElementById('standings-body');
                 if (this.teams.length === 0) {
-                    body.innerHTML = '<tr><td colspan="10" class="p-8 text-center text-gray-400 italic">No hay datos disponibles.</td></tr>';
+                    body.innerHTML = '<tr><td colspan="10" class="p-8 text-center text-gray-400 italic">No hay equipos registrados todavía.</td></tr>';
                     return;
                 }
                 body.innerHTML = this.teams.map((t, i) => `
@@ -401,7 +415,7 @@
                                         <div class="bg-white p-2 rounded-lg border text-[11px]">
                                             <p class="uppercase font-bold text-gray-400 mb-1">⚽ Goleadores</p>
                                             <ul class="space-y-1 mb-2">
-                                                ${m.scorers.map((s, si) => `
+                                                ${(m.scorers || []).map((s, si) => `
                                                     <li class="flex justify-between items-center bg-gray-50 px-2 py-1 rounded">
                                                         <span>${s.name} <small class="text-gray-400">(${s.team})</small></span>
                                                         <button onclick="app.removeScorer(${r}, ${mi}, ${si})" class="admin-only text-red-500 font-bold ml-2">×</button>
