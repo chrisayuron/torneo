@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interclases - Portal de Torneo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            background-image: radial-gradient(#e2e8f0 0.5px, transparent 0.5px);
+            background-size: 20px 20px;
+        }
+        /* Control de visibilidad para Admin */
+        .admin-only { display: none; }
+        .is-admin .admin-only { display: block; }
+        .is-admin .admin-inline { display: inline-block; }
+        .is-admin .admin-flex { display: flex; }
+        
+        .tab-btn.active {
+            border-bottom: 3px solid #10b981;
+            color: #10b981;
+        }
+        .card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+        #loading-screen {
+            position: fixed;
+            inset: 0;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body class="min-h-screen pb-20">
+
+    <!-- Pantalla de Carga Inicial -->
+    <div id="loading-screen">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mb-4"></div>
+        <p class="text-gray-600 font-medium">Cargando torneo...</p>
+    </div>
+
+    <!-- Encabezado con Navegación -->
+    <header class="bg-green-700 text-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            <h1 class="text-2xl font-bold flex items-center gap-2">
+                🏆 <span id="tournament-title-display">Interclases</span>
+            </h1>
+            <nav class="flex gap-1 bg-green-800 rounded-lg p-1">
+                <button onclick="app.switchTab('standings')" id="btn-standings" class="tab-btn px-4 py-2 rounded-md font-medium active">Posiciones</button>
+                <button onclick="app.switchTab('matches')" id="btn-matches" class="tab-btn px-4 py-2 rounded-md font-medium">Calendario</button>
+                <button onclick="app.switchTab('teams')" id="btn-teams" class="tab-btn px-4 py-2 rounded-md font-medium">Equipos</button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8 max-w-5xl" id="app">
+        
+        <!-- SECCIÓN: POSICIONES (Vista Pública) -->
+        <section id="view-standings" class="view">
+            <div class="card p-6 overflow-x-auto">
+                <h2 class="text-xl font-bold mb-6 text-gray-800 border-b pb-2">Tabla de Clasificación</h2>
+                <table class="w-full text-sm md:text-base">
+                    <thead>
+                        <tr class="text-left bg-gray-50 text-gray-600 uppercase text-xs">
+                            <th class="p-3 text-center">Pos</th>
+                            <th class="p-3">Equipo</th>
+                            <th class="p-3 text-center">PJ</th>
+                            <th class="p-3 text-center">G</th>
+                            <th class="p-3 text-center">E</th>
+                            <th class="p-3 text-center">P</th>
+                            <th class="p-3 text-center">GF</th>
+                            <th class="p-3 text-center">GC</th>
+                            <th class="p-3 text-center font-bold text-green-700">PTS</th>
+                        </tr>
+                    </thead>
+                    <tbody id="standings-body">
+                        <!-- Renderizado dinámico -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- SECCIÓN: CALENDARIO -->
+        <section id="view-matches" class="view hidden">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                <h2 class="text-xl font-bold text-gray-800">Calendario de Encuentros</h2>
+                <div class="admin-only">
+                    <button onclick="app.generateRounds()" class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-bold transition-all shadow-md">
+                        🔄 Re-generar Calendario
+                    </button>
+                </div>
+            </div>
+            <div id="rounds-container" class="space-y-8">
+                <!-- Renderizado dinámico -->
+            </div>
+        </section>
+
+        <!-- SECCIÓN: EQUIPOS -->
+        <section id="view-teams" class="view hidden">
+            <!-- Panel de gestión solo visible para el profesor -->
+            <div class="admin-only card p-6 mb-8 border-2 border-green-100">
+                <h3 class="font-bold text-lg mb-4 text-green-800">Añadir Nuevo Equipo</h3>
+                <div class="flex flex-col md:flex-row gap-3">
+                    <input type="text" id="new-team-name" placeholder="Ej: Informática 11-A" class="flex-grow p-3 border rounded-lg focus:ring-2 focus:ring-green-500 outline-none">
+                    <button onclick="app.addTeam()" class="bg-green-600 text-white px-8 py-3 rounded-lg font-bold hover:bg-green-700 transition-all">Añadir</button>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6" id="teams-list">
+                <!-- Renderizado dinámico -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal de Acceso (Solo se abre con el botón del footer) -->
+    <div id="login-modal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-[60] px-4">
+        <div class="bg-white rounded-2xl p-8 max-w-sm w-full shadow-2xl">
+            <div class="text-center mb-6">
+                <div class="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">🔑</div>
+                <h2 class="text-2xl font-bold text-gray-800">Acceso Profesor</h2>
+                <p class="text-gray-500 text-sm">Ingresa la clave maestra para realizar cambios.</p>
+            </div>
+            <input type="password" id="master-password-input" placeholder="Contraseña..." class="w-full p-3 border rounded-xl mb-4 text-center text-lg outline-none focus:ring-2 focus:ring-green-500">
+            <div class="flex gap-3">
+                <button onclick="document.getElementById('login-modal').classList.add('hidden')" class="flex-1 bg-gray-100 text-gray-700 py-3 rounded-xl font-bold">Cancelar</button>
+                <button onclick="app.login()" class="flex-1 bg-green-600 text-white py-3 rounded-xl font-bold hover:bg-green-700">Entrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer de Control -->
+    <footer class="fixed bottom-0 left-0 w-full bg-white border-t py-3 px-4 flex justify-between items-center shadow-inner z-40">
+        <p class="text-xs text-gray-500 font-medium">Organizador Interclases v2.0</p>
+        <div id="admin-status">
+            <button onclick="app.showLogin()" id="btn-show-login" class="text-xs font-bold text-green-700 hover:text-green-800 bg-green-50 px-3 py-1 rounded-full">
+                Acceso Administrador
+            </button>
+            <button onclick="app.logout()" id="btn-logout" class="hidden text-xs font-bold text-red-600 hover:underline">
+                Cerrar Sesión Admin
+            </button>
+        </div>
+    </footer>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signInAnonymously, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+        function App() {
+            this.db = null;
+            this.auth = null;
+            this.masterPassword = ""; // Se cargará desde la API
+            this.teams = [];
+            this.rounds = [];
+            this.isAuthenticated = false;
+
+            this.init = async function() {
+                try {
+                    // Cargamos configuración de Firebase y la Clave Maestra desde tu API actual
+                    const response = await fetch('/api/get-config');
+                    const config = await response.json();
+                    
+                    this.masterPassword = config.masterPassword;
+                    const appFirebase = initializeApp(config);
+                    this.auth = getAuth(appFirebase);
+                    this.db = getFirestore(appFirebase);
+
+                    // Escuchamos el estado de autenticación
+                    onAuthStateChanged(this.auth, (user) => {
+                        // Si el usuario está logueado y NO es anónimo, es Admin
+                        if (user && !user.isAnonymous) {
+                            this.setAdminMode(true);
+                        } else {
+                            this.setAdminMode(false);
+                            // Los alumnos entran de forma anónima para leer de Firestore
+                            if (!user) signInAnonymously(this.auth);
+                        }
+                        this.setupFirestoreListener();
+                        document.getElementById('loading-screen').classList.add('hidden');
+                    });
+
+                } catch (error) {
+                    console.error("Error en inicialización:", error);
+                    document.getElementById('loading-screen').innerHTML = "<p class='text-red-500 px-4 text-center'>Error de conexión. Verifica las variables de entorno en Vercel.</p>";
+                }
+            };
+
+            this.setAdminMode = function(isAdmin) {
+                this.isAuthenticated = isAdmin;
+                if (isAdmin) {
+                    document.body.classList.add('is-admin');
+                    document.getElementById('btn-show-login').classList.add('hidden');
+                    document.getElementById('btn-logout').classList.remove('hidden');
+                } else {
+                    document.body.classList.remove('is-admin');
+                    document.getElementById('btn-show-login').classList.remove('hidden');
+                    document.getElementById('btn-logout').classList.add('hidden');
+                }
+                this.renderAll();
+            };
+
+            this.showLogin = function() {
+                document.getElementById('login-modal').classList.remove('hidden');
+                document.getElementById('master-password-input').focus();
+            };
+
+            this.login = function() {
+                const passInput = document.getElementById('master-password-input').value;
+                if (passInput === this.masterPassword) {
+                    // Activamos modo admin localmente
+                    this.setAdminMode(true);
+                    document.getElementById('login-modal').classList.add('hidden');
+                    document.getElementById('master-password-input').value = "";
+                } else {
+                    alert("Contraseña Maestra incorrecta.");
+                }
+            };
+
+            this.logout = function() {
+                this.setAdminMode(false);
+                signOut(this.auth);
+                location.reload(); // Recargamos para limpiar estado
+            };
+
+            this.setupFirestoreListener = function() {
+                // Mantenemos la misma ruta de colección que ya tenías: torneo/actual
+                onSnapshot(doc(this.db, "torneo", "actual"), (docSnap) => {
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        this.teams = data.teams || [];
+                        this.rounds = data.rounds || [];
+                        this.calculateStandings();
+                        this.renderAll();
+                    }
+                }, (error) => {
+                    console.error("Error leyendo de Firestore:", error);
+                });
+            };
+
+            this.saveState = async function() {
+                if (!this.isAuthenticated) {
+                    alert("Acción no permitida en modo lectura.");
+                    return;
+                }
+                try {
+                    await setDoc(doc(this.db, "torneo", "actual"), {
+                        teams: this.teams,
+                        rounds: this.rounds,
+                        lastUpdate: new Date().toISOString()
+                    });
+                } catch (error) {
+                    console.error("Error guardando datos:", error);
+                    alert("No tienes permisos para escribir en la base de datos.");
+                }
+            };
+
+            // LÓGICA DE GESTIÓN (Solo se ejecuta si es Admin)
+            this.addTeam = function() {
+                const input = document.getElementById('new-team-name');
+                const name = input.value.trim();
+                if (name) {
+                    this.teams.push({ name, pj: 0, g: 0, e: 0, p: 0, gf: 0, gc: 0, dg: 0, pts: 0 });
+                    input.value = "";
+                    this.saveState();
+                }
+            };
+
+            this.removeTeam = function(index) {
+                if (confirm(`¿Estás seguro de eliminar a ${this.teams[index].name}?`)) {
+                    this.teams.splice(index, 1);
+                    this.saveState();
+                }
+            };
+
+            this.generateRounds = function() {
+                if (this.teams.length < 2) return alert("Se necesitan al menos 2 equipos.");
+                if (!confirm("¿Generar nuevo calendario? Se borrarán los resultados guardados.")) return;
+
+                const teamsCopy = [...this.teams];
+                if (teamsCopy.length % 2 !== 0) teamsCopy.push({ name: "DESCANSO", isBye: true });
+
+                const numTeams = teamsCopy.length;
+                const numRounds = numTeams - 1;
+                const matchesPerRound = numTeams / 2;
+
+                this.rounds = [];
+                for (let r = 0; r < numRounds; r++) {
+                    const roundMatches = [];
+                    for (let m = 0; m < matchesPerRound; m++) {
+                        const home = (r + m) % (numTeams - 1);
+                        let away = (numTeams - 1 - m + r) % (numTeams - 1);
+                        if (m === 0) away = numTeams - 1;
+                        
+                        if (!teamsCopy[home].isBye && !teamsCopy[away].isBye) {
+                            roundMatches.push({
+                                home: teamsCopy[home].name,
+                                away: teamsCopy[away].name,
+                                homeScore: 0,
+                                awayScore: 0,
+                                played: false,
+                                scorers: []
+                            });
+                        }
+                    }
+                    this.rounds.push(roundMatches);
+                }
+                this.saveState();
+            };
+
+            this.updateScore = function(rIdx, mIdx) {
+                const m = this.rounds[rIdx][mIdx];
+                m.homeScore = parseInt(document.getElementById(`h-${rIdx}-${mIdx}`).value) || 0;
+                m.awayScore = parseInt(document.getElementById(`a-${rIdx}-${mIdx}`).value) || 0;
+                m.played = true;
+                this.saveState();
+            };
+
+            this.addScorer = function(rIdx, mIdx) {
+                const name = document.getElementById(`sc-name-${rIdx}-${mIdx}`).value.trim();
+                const team = document.getElementById(`sc-team-${rIdx}-${mIdx}`).value;
+                if (name) {
+                    this.rounds[rIdx][mIdx].scorers.push({ player: name, team: team });
+                    document.getElementById(`sc-name-${rIdx}-${mIdx}`).value = "";
+                    this.saveState();
+                }
+            };
+
+            this.removeScorer = function(rIdx, mIdx, sIdx) {
+                this.rounds[rIdx][mIdx].scorers.splice(sIdx, 1);
+                this.saveState();
+            };
+
+            this.calculateStandings = function() {
+                this.teams.forEach(t => {
+                    t.pj = t.g = t.e = t.p = t.gf = t.gc = t.dg = t.pts = 0;
+                });
+
+                this.rounds.flat().forEach(m => {
+                    if (m.played) {
+                        const h = this.teams.find(t => t.name === m.home);
+                        const a = this.teams.find(t => t.name === m.away);
+                        if (h && a) {
+                            h.pj++; a.pj++;
+                            h.gf += m.homeScore; h.gc += m.awayScore;
+                            a.gf += m.awayScore; a.gc += m.homeScore;
+                            if (m.homeScore > m.awayScore) { h.g++; h.pts += 3; a.p++; }
+                            else if (m.homeScore < m.awayScore) { a.g++; a.pts += 3; h.p++; }
+                            else { h.e++; a.e++; h.pts += 1; a.pts += 1; }
+                            h.dg = h.gf - h.gc; a.dg = a.gf - a.gc;
+                        }
+                    }
+                });
+                this.teams.sort((a, b) => b.pts - a.pts || b.dg - a.dg || b.gf - a.gf);
+            };
+
+            // RENDERIZADO
+            this.renderAll = function() {
+                this.renderStandings();
+                this.renderMatches();
+                this.renderTeams();
+            };
+
+            this.renderStandings = function() {
+                const body = document.getElementById('standings-body');
+                body.innerHTML = this.teams.map((t, i) => `
+                    <tr class="border-b hover:bg-gray-50 transition-colors">
+                        <td class="p-3 text-center font-bold ${i < 4 ? 'text-green-600 bg-green-50' : 'text-gray-400'}">${i + 1}</td>
+                        <td class="p-3 font-semibold text-gray-800">${t.name}</td>
+                        <td class="p-3 text-center">${t.pj}</td>
+                        <td class="p-3 text-center">${t.g}</td>
+                        <td class="p-3 text-center">${t.e}</td>
+                        <td class="p-3 text-center">${t.p}</td>
+                        <td class="p-3 text-center text-gray-500">${t.gf}</td>
+                        <td class="p-3 text-center text-gray-500">${t.gc}</td>
+                        <td class="p-3 text-center font-bold text-green-700 bg-green-50">${t.pts}</td>
+                    </tr>
+                `).join('');
+            };
+
+            this.renderMatches = function() {
+                const cont = document.getElementById('rounds-container');
+                if (this.rounds.length === 0) {
+                    cont.innerHTML = `<div class="text-center py-20 text-gray-400">Esperando la generación del calendario...</div>`;
+                    return;
+                }
+
+                cont.innerHTML = this.rounds.map((round, rIdx) => `
+                    <div class="card p-6 border-l-4 border-green-500">
+                        <h3 class="font-bold text-lg mb-6 text-green-800">Jornada ${rIdx + 1}</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            ${round.map((m, mIdx) => {
+                                const id = `${rIdx}-${mIdx}`;
+                                const readonly = !this.isAuthenticated ? 'disabled' : '';
+                                return `
+                                <div class="border rounded-2xl p-4 bg-gray-50 relative">
+                                    <div class="flex items-center justify-between gap-3 mb-4">
+                                        <div class="flex-1 text-right font-bold text-gray-700 truncate">${m.home}</div>
+                                        <div class="flex items-center gap-2">
+                                            <input type="number" id="h-${id}" value="${m.homeScore}" ${readonly} class="w-12 text-center p-2 border rounded-lg font-bold bg-white focus:ring-2 focus:ring-green-400 outline-none">
+                                            <span class="text-gray-400 font-bold">VS</span>
+                                            <input type="number" id="a-${id}" value="${m.awayScore}" ${readonly} class="w-12 text-center p-2 border rounded-lg font-bold bg-white focus:ring-2 focus:ring-green-400 outline-none">
+                                        </div>
+                                        <div class="flex-1 text-left font-bold text-gray-700 truncate">${m.away}</div>
+                                    </div>
+                                    
+                                    <div class="admin-only mt-2 mb-4">
+                                        <button onclick="app.updateScore(${rIdx}, ${mIdx})" class="w-full bg-green-600 text-white py-2 rounded-lg text-sm font-bold hover:bg-green-700 transition-colors shadow-sm">
+                                            Actualizar Resultado
+                                        </button>
+                                    </div>
+
+                                    <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+                                        <div class="flex justify-between items-center mb-2">
+                                            <p class="text-[10px] uppercase font-black text-gray-400 tracking-wider">⚽ Registro de Goles</p>
+                                        </div>
+                                        <ul class="text-sm space-y-2 mb-4 max-h-32 overflow-y-auto">
+                                            ${(m.scorers || []).length === 0 ? '<li class="text-gray-300 italic text-xs">Sin goles registrados</li>' : ''}
+                                            ${(m.scorers || []).map((s, sIdx) => `
+                                                <li class="flex justify-between items-center bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100">
+                                                    <span class="font-medium text-gray-700">${s.player} <span class="text-[10px] text-gray-400 px-1 border rounded ml-1 uppercase">${s.team}</span></span>
+                                                    <button onclick="app.removeScorer(${rIdx}, ${mIdx}, ${sIdx})" class="admin-only text-red-400 hover:text-red-600 font-bold ml-2">×</button>
+                                                </li>
+                                            `).join('')}
+                                        </ul>
+                                        <!-- Control añadir gol -->
+                                        <div class="admin-flex hidden flex-col gap-2 pt-2 border-t border-dashed">
+                                            <input type="text" id="sc-name-${id}" placeholder="Nombre del goleador..." class="text-xs p-2 border rounded-lg outline-none">
+                                            <div class="flex gap-2">
+                                                <select id="sc-team-${id}" class="text-xs p-2 border rounded-lg bg-gray-50 flex-grow">
+                                                    <option value="${m.home}">${m.home}</option>
+                                                    <option value="${m.away}">${m.away}</option>
+                                                </select>
+                                                <button onclick="app.addScorer(${rIdx}, ${mIdx})" class="bg-green-100 text-green-700 px-4 py-2 rounded-lg text-xs font-bold hover:bg-green-200">Añadir</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `}).join('')}
+                        </div>
+                    </div>
+                `).join('');
+            };
+
+            this.renderTeams = function() {
+                const list = document.getElementById('teams-list');
+                if (this.teams.length === 0) {
+                    list.innerHTML = `<div class="col-span-full text-center py-10 text-gray-400 italic">No hay equipos registrados.</div>`;
+                    return;
+                }
+                list.innerHTML = this.teams.map((t, i) => `
+                    <div class="card p-5 flex justify-between items-center border-t-4 border-green-500 hover:scale-[1.02] transition-transform">
+                        <div>
+                            <p class="font-bold text-lg text-gray-800">${t.name}</p>
+                            <p class="text-xs text-gray-400 uppercase tracking-widest font-bold mt-1">Participante</p>
+                        </div>
+                        <button onclick="app.removeTeam(${i})" class="admin-only bg-red-50 text-red-500 p-2.5 rounded-xl hover:bg-red-100 transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </button>
+                    </div>
+                `).join('');
+            };
+
+            this.switchTab = function(tab) {
+                document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
+                document.getElementById(`view-${tab}`).classList.remove('hidden');
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.getElementById(`btn-${tab}`).classList.add('active');
+            };
+        }
+
+        // Instanciamos y arrancamos
+        window.app = new App();
+        document.addEventListener('DOMContentLoaded', () => app.init());
+    </script>
+</body>
+</html>
