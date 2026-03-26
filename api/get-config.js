@@ -1,24 +1,43 @@
-// api/get-config.js
-// Endpoint serverless para entregar SOLO la configuración pública de Firebase
-// ⚠️ NO incluir secretos (contraseñas, claves privadas, Admin SDK, etc.)
+/**
+ * Este archivo actúa como un puente seguro.
+ * Vercel ejecuta esto en el servidor, lee las variables de entorno
+ * y le entrega al navegador la configuración necesaria.
+ */
+export default function handler(request, response) {
+  try {
+    // 1. Verificación y limpieza extrema de variables de entorno
+    // .trim() quita espacios. .replace quita comillas accidentales si las hubiera.
+    const rawApiKey = process.env.FIREBASE_API_KEY || "";
+    const rawMasterPassword = process.env.MASTER_PASSWORD || "";
 
-export default function handler(req, res) {
-  // Validación básica: asegúrate de que las variables existen en Vercel
-  if (!process.env.FIREBASE_API_KEY || !process.env.FIREBASE_PROJECT_ID) {
-    return res.status(500).json({
-      error: "Faltan variables de entorno en el servidor (Vercel)."
-    });
+    const apiKey = rawApiKey.trim().replace(/['"]+/g, '');
+    const masterPassword = rawMasterPassword.trim().replace(/['"]+/g, '');
+
+    if (!apiKey || !masterPassword) {
+      return response.status(500).json({ 
+        error: 'Variables de entorno faltantes.',
+        details: 'Configura FIREBASE_API_KEY y MASTER_PASSWORD en el panel de Vercel.' 
+      });
+    }
+
+    // 2. Objeto de configuración que se enviará al frontend
+    const config = {
+      apiKey: apiKey, 
+      authDomain: "torneo-interclases.firebaseapp.com",
+      projectId: "torneo-interclases",
+      storageBucket: "torneo-interclases.firebasestorage.app",
+      messagingSenderId: "676891636137",
+      appId: "1:676891636137:web:06562e91b7680ad7ad54b8",
+      masterPassword: masterPassword
+    };
+
+    // 3. Respuesta forzada como JSON
+    response.setHeader('Content-Type', 'application/json');
+    response.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    
+    return response.status(200).json(config);
+
+  } catch (error) {
+    return response.status(500).json({ error: 'Error interno', message: error.message });
   }
-
-  // Configuración pública de Firebase (segura de exponer)
-  const config = {
-    apiKey: process.env.FIREBASE_API_KEY,
-    authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-    projectId: process.env.FIREBASE_PROJECT_ID,
-    storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
-    appId: process.env.FIREBASE_APP_ID
-  };
-
-  return res.status(200).json(config);
 }
