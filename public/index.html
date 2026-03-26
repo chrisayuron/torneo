@@ -13,10 +13,8 @@
             background-image: radial-gradient(#e2e8f0 0.5px, transparent 0.5px);
             background-size: 20px 20px;
         }
-        /* Clases para control de visibilidad Admin */
         .admin-only { display: none !important; }
         .is-admin .admin-only { display: block !important; }
-        .is-admin .admin-inline { display: inline-block !important; }
         .is-admin .admin-flex { display: flex !important; }
         
         .tab-btn.active {
@@ -38,14 +36,18 @@
             justify-content: center;
             z-index: 100;
         }
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; margin: 0; 
+        }
     </style>
 </head>
-<body class="min-h-screen pb-20">
+<body class="min-h-screen pb-24">
 
     <!-- Pantalla de Carga -->
     <div id="loading-screen">
         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mb-4"></div>
-        <p id="loading-text" class="text-gray-600 font-medium text-center px-4">Conectando con el servidor del torneo...</p>
+        <p id="loading-text" class="text-gray-600 font-medium text-center px-4">Conectando con la base de datos...</p>
     </div>
 
     <!-- Navegación Principal -->
@@ -55,28 +57,41 @@
                 🏆 <span>Beth Shalom</span>
             </h1>
             <nav class="flex gap-1 bg-green-800 rounded-lg p-1">
-                <button onclick="app.switchTab('standings')" id="btn-standings" class="tab-btn px-4 py-2 rounded-md font-medium active">Posiciones</button>
-                <button onclick="app.switchTab('matches')" id="btn-matches" class="tab-btn px-4 py-2 rounded-md font-medium">Calendario</button>
-                <button onclick="app.switchTab('teams')" id="btn-teams" class="tab-btn px-4 py-2 rounded-md font-medium">Equipos</button>
+                <button onclick="app.switchTab('standings')" id="btn-standings" class="tab-btn px-4 py-2 rounded-md font-medium active text-sm md:text-base">Posiciones</button>
+                <button onclick="app.switchTab('matches')" id="btn-matches" class="tab-btn px-4 py-2 rounded-md font-medium text-sm md:text-base">Calendario</button>
+                <button onclick="app.switchTab('teams')" id="btn-teams" class="tab-btn px-4 py-2 rounded-md font-medium text-sm md:text-base">Equipos</button>
             </nav>
         </div>
     </header>
 
-    <main class="container mx-auto px-4 py-8 max-w-5xl" id="app-container">
+    <main class="container mx-auto px-4 py-8 max-w-5xl">
         
+        <!-- Alerta Crítica (Solo Admin) -->
+        <div id="db-alert" class="admin-only bg-red-50 border-l-4 border-red-500 p-4 mb-6 hidden">
+            <div class="flex items-center justify-between flex-wrap gap-4">
+                <div>
+                    <p class="text-sm text-red-700 font-bold">⚠️ Error de sincronización con Firebase.</p>
+                    <p class="text-xs text-red-600">El documento 'torneo/actual' no existe o la ruta es incorrecta.</p>
+                </div>
+                <button onclick="app.initializeDatabase()" class="bg-red-600 text-white px-4 py-2 rounded-lg text-xs font-bold hover:bg-red-700 transition-colors">VINCULAR / REPARAR BASE DE DATOS</button>
+            </div>
+        </div>
+
         <!-- SECCIÓN: POSICIONES -->
         <section id="view-standings" class="view">
-            <div class="card p-6 overflow-x-auto">
-                <h2 class="text-xl font-bold mb-6 text-gray-800 border-b pb-2 text-center md:text-left">Tabla de Clasificación</h2>
-                <table class="w-full text-sm md:text-base">
+            <div class="card p-4 md:p-6 overflow-x-auto">
+                <h2 class="text-xl font-bold mb-6 text-gray-800 border-b pb-2 flex items-center gap-2">
+                    📊 Tabla General
+                </h2>
+                <table class="w-full text-xs md:text-sm">
                     <thead>
-                        <tr class="text-left bg-gray-50 text-gray-600 uppercase text-xs font-bold">
+                        <tr class="text-left bg-gray-50 text-gray-500 uppercase font-bold border-b">
                             <th class="p-3">Pos</th>
-                            <th class="p-3">Equipo</th>
+                            <th class="p-3 text-left">Equipo</th>
                             <th class="p-3 text-center">PJ</th>
-                            <th class="p-3 text-center text-green-700">G</th>
+                            <th class="p-3 text-center">G</th>
                             <th class="p-3 text-center">E</th>
-                            <th class="p-3 text-center text-red-700">P</th>
+                            <th class="p-3 text-center">P</th>
                             <th class="p-3 text-center">GF</th>
                             <th class="p-3 text-center">GC</th>
                             <th class="p-3 text-center">DG</th>
@@ -84,7 +99,7 @@
                         </tr>
                     </thead>
                     <tbody id="standings-body">
-                        <!-- Renderizado dinámico -->
+                        <!-- Render dinámico -->
                     </tbody>
                 </table>
             </div>
@@ -92,61 +107,64 @@
 
         <!-- SECCIÓN: CALENDARIO -->
         <section id="view-matches" class="view hidden">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-                <h2 class="text-xl font-bold text-gray-800">Calendario de Encuentros</h2>
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">📅 Jornadas y Resultados</h2>
                 <div class="admin-only">
-                    <button onclick="app.generateRounds()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-bold transition-all shadow-md">
+                    <button onclick="app.generateRounds()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-bold text-sm shadow-md transition-all">
                         🔄 Generar Calendario
                     </button>
                 </div>
             </div>
             <div id="rounds-container" class="space-y-8">
-                <!-- Renderizado dinámico -->
+                <!-- Render dinámico de jornadas -->
             </div>
         </section>
 
         <!-- SECCIÓN: EQUIPOS -->
         <section id="view-teams" class="view hidden">
             <div class="admin-only card p-6 mb-8 border-2 border-green-100">
-                <h3 class="font-bold text-lg mb-4 text-green-800">Panel de Gestión de Equipos</h3>
-                <div class="flex flex-col md:flex-row gap-3">
-                    <input type="text" id="new-team-name" placeholder="Nombre del nuevo equipo..." class="flex-grow p-3 border rounded-lg outline-none focus:ring-2 focus:ring-green-500">
-                    <button onclick="app.addTeam()" class="bg-green-600 text-white px-8 py-3 rounded-lg font-bold hover:bg-green-700 transition-all">Añadir Equipo</button>
+                <h3 class="font-bold text-lg mb-4 text-green-800">Panel de Equipos</h3>
+                <div class="flex flex-col md:flex-row gap-2">
+                    <input type="text" id="new-team-name" placeholder="Ej: Once Caldas..." class="flex-grow p-3 border rounded-xl outline-none focus:ring-2 focus:ring-green-500">
+                    <button onclick="app.addTeam()" class="bg-green-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-green-700 transition-all">Añadir Equipo</button>
                 </div>
             </div>
             
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6" id="teams-list">
-                <!-- Renderizado dinámico -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4" id="teams-list">
+                <!-- Render dinámico -->
             </div>
         </section>
 
     </main>
 
-    <!-- Modal de Login -->
+    <!-- Modal Login -->
     <div id="login-modal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-[60] px-4">
         <div class="bg-white rounded-2xl p-8 max-w-sm w-full shadow-2xl">
             <div class="text-center mb-6">
-                <div class="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">🔑</div>
-                <h2 class="text-2xl font-bold text-gray-800">Acceso Admin</h2>
-                <p class="text-gray-500 text-sm">Introduce la clave maestra para gestionar el torneo.</p>
+                <div class="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">🔐</div>
+                <h2 class="text-2xl font-bold text-gray-800">Administrador</h2>
+                <p class="text-gray-500 text-sm">Acceso restringido para gestión.</p>
             </div>
-            <input type="password" id="master-password-input" placeholder="Contraseña..." class="w-full p-3 border rounded-xl mb-4 text-center text-lg outline-none focus:ring-2 focus:ring-green-500">
+            <input type="password" id="master-password-input" placeholder="Contraseña Maestra" class="w-full p-4 border rounded-xl mb-4 text-center text-lg outline-none focus:ring-2 focus:ring-green-500">
             <div class="flex gap-3">
                 <button onclick="document.getElementById('login-modal').classList.add('hidden')" class="flex-1 bg-gray-100 text-gray-700 py-3 rounded-xl font-bold">Cancelar</button>
-                <button onclick="app.login()" class="flex-1 bg-green-600 text-white py-3 rounded-xl font-bold hover:bg-green-700">Entrar</button>
+                <button onclick="app.login()" class="flex-1 bg-green-600 text-white py-3 rounded-xl font-bold hover:bg-green-700">Ingresar</button>
             </div>
         </div>
     </div>
 
-    <!-- Footer de Gestión -->
-    <footer class="fixed bottom-0 left-0 w-full bg-white border-t py-3 px-4 flex justify-between items-center shadow-inner">
-        <p class="text-xs text-gray-500 font-medium">Beth Shalom Prom 2026</p>
-        <div id="admin-status">
-            <button onclick="app.showLogin()" id="btn-show-login" class="text-xs font-bold text-green-700 bg-green-50 px-3 py-1 rounded-full border border-green-200 hover:bg-green-100">
-                🔐 Acceso Administrador
+    <!-- Footer Permanente -->
+    <footer class="fixed bottom-0 left-0 w-full bg-white border-t p-4 flex justify-between items-center z-40">
+        <div class="flex items-center gap-2">
+            <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+            <span class="text-xs font-medium text-gray-500">Sincronizado con Firebase</span>
+        </div>
+        <div id="admin-controls">
+            <button onclick="app.showLogin()" id="btn-login" class="text-xs font-bold text-green-700 bg-green-50 px-4 py-2 rounded-full border border-green-200 hover:bg-green-100 transition-colors">
+                🔐 Gestión Admin
             </button>
-            <button onclick="app.logout()" id="btn-logout" class="hidden text-xs font-bold text-red-600 bg-red-50 px-3 py-1 rounded-full border border-red-200 hover:bg-red-100">
-                🚪 Cerrar Sesión Admin
+            <button onclick="app.logout()" id="btn-logout" class="hidden text-xs font-bold text-red-600 bg-red-50 px-4 py-2 rounded-full border border-red-200 hover:bg-red-100 transition-colors">
+                🚪 Salir del Panel
             </button>
         </div>
     </footer>
@@ -157,19 +175,13 @@
         import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
         function App() {
-            this.db = null;
-            this.auth = null;
-            this.masterPass = "";
-            this.teams = [];
-            this.rounds = [];
-            this.isAuthenticated = false;
+            this.db = null; this.auth = null; this.masterPass = "";
+            this.teams = []; this.rounds = []; this.isAdmin = false;
 
             this.init = async function() {
                 try {
-                    console.log("Iniciando aplicación...");
-                    const response = await fetch('/api/get-config');
-                    const config = await response.json();
-                    
+                    const res = await fetch('/api/get-config');
+                    const config = await res.json();
                     if (config.error) throw new Error(config.error);
 
                     this.masterPass = config.masterPassword;
@@ -178,122 +190,92 @@
                     this.db = getFirestore(firebaseApp);
 
                     onAuthStateChanged(this.auth, (user) => {
-                        console.log("Estado de autenticación cambiado:", user ? "Conectado" : "Desconectado");
                         if (user && !user.isAnonymous) {
-                            this.setAdminMode(true);
-                        } else {
-                            if (!user) {
-                                console.log("Iniciando sesión anónima para lectura...");
-                                signInAnonymously(this.auth);
-                            }
+                            this.setAdminUI(true);
+                        } else if (!user) {
+                            signInAnonymously(this.auth);
                         }
-                        this.setupFirestoreListener();
+                        this.startRealtimeSync();
                     });
-
-                } catch (error) {
-                    console.error("Error crítico en init:", error);
-                    document.getElementById('loading-text').innerText = "Error: " + error.message;
+                } catch (e) {
+                    document.getElementById('loading-text').innerText = "Error: Configuración no encontrada.";
                 }
             };
 
-            this.setupFirestoreListener = function() {
-                console.log("Configurando listener de Firestore...");
-                // Escuchar el documento "actual" en la colección "torneo"
+            this.startRealtimeSync = function() {
                 const docRef = doc(this.db, "torneo", "actual");
-                
-                onSnapshot(docRef, (docSnap) => {
-                    console.log("Datos recibidos de Firestore:", docSnap.exists());
+                onSnapshot(docRef, (snap) => {
                     document.getElementById('loading-screen').classList.add('hidden');
-                    
-                    if (docSnap.exists()) {
-                        const data = docSnap.data();
-                        console.log("Contenido del documento:", data);
+                    if (snap.exists()) {
+                        const data = snap.data();
                         this.teams = data.teams || [];
                         this.rounds = data.rounds || [];
+                        document.getElementById('db-alert').classList.add('hidden');
                         this.calculateStandings();
                     } else {
-                        console.warn("El documento 'torneo/actual' no existe en la base de datos.");
+                        document.getElementById('db-alert').classList.remove('hidden');
                     }
-                    this.renderAll();
+                    this.render();
                 }, (err) => {
-                    console.error("Error en el stream de datos (Firestore):", err);
-                    document.getElementById('loading-screen').classList.add('hidden');
-                    // Mostrar mensaje de error en la UI si falla
-                    const standingsBody = document.getElementById('standings-body');
-                    standingsBody.innerHTML = `<tr><td colspan="10" class="p-8 text-center text-red-500">Error al cargar datos: ${err.message}. Verifica los permisos de Firebase.</td></tr>`;
+                    console.error(err);
+                    document.getElementById('loading-text').innerText = "Error de conexión con Firestore.";
                 });
             };
 
-            this.setAdminMode = function(isAdmin) {
-                this.isAuthenticated = isAdmin;
-                if (isAdmin) {
+            this.initializeDatabase = async function() {
+                if (!this.isAdmin) return alert("Debes ser Admin para inicializar.");
+                try {
+                    await setDoc(doc(this.db, "torneo", "actual"), {
+                        teams: [], rounds: [], updatedAt: new Date().toISOString()
+                    });
+                    alert("¡Base de datos vinculada con éxito!");
+                } catch (e) { alert("Error: " + e.message); }
+            };
+
+            this.setAdminUI = function(val) {
+                this.isAdmin = val;
+                if (val) {
                     document.body.classList.add('is-admin');
-                    document.getElementById('btn-show-login').classList.add('hidden');
+                    document.getElementById('btn-login').classList.add('hidden');
                     document.getElementById('btn-logout').classList.remove('hidden');
                 } else {
                     document.body.classList.remove('is-admin');
-                    document.getElementById('btn-show-login').classList.remove('hidden');
+                    document.getElementById('btn-login').classList.remove('hidden');
                     document.getElementById('btn-logout').classList.add('hidden');
                 }
-                this.renderAll();
+                this.render();
             };
 
-            this.showLogin = function() {
-                document.getElementById('login-modal').classList.remove('hidden');
-                document.getElementById('master-password-input').focus();
-            };
-
+            this.showLogin = () => document.getElementById('login-modal').classList.remove('hidden');
             this.login = function() {
-                const inputPass = document.getElementById('master-password-input').value;
-                if (inputPass === this.masterPass) {
-                    this.setAdminMode(true);
+                if (document.getElementById('master-password-input').value === this.masterPass) {
+                    this.setAdminUI(true);
                     document.getElementById('login-modal').classList.add('hidden');
                     document.getElementById('master-password-input').value = "";
-                } else {
-                    alert("Contraseña Maestra incorrecta");
-                }
+                } else { alert("Contraseña Incorrecta"); }
             };
+            this.logout = () => { this.setAdminUI(false); signOut(this.auth); };
 
-            this.logout = function() {
-                this.setAdminMode(false);
-                signOut(this.auth);
-            };
-
-            this.saveState = async function() {
-                if (!this.isAuthenticated) return;
-                try {
-                    await setDoc(doc(this.db, "torneo", "actual"), {
-                        teams: this.teams,
-                        rounds: this.rounds,
-                        updatedAt: new Date().toISOString()
-                    });
-                    console.log("Estado guardado con éxito.");
-                } catch (e) { 
-                    console.error("Error guardando en Firestore:", e); 
-                    alert("Error al guardar: " + e.message);
-                }
+            this.save = async function() {
+                if (!this.isAdmin) return;
+                await setDoc(doc(this.db, "torneo", "actual"), {
+                    teams: this.teams, rounds: this.rounds, updatedAt: new Date().toISOString()
+                });
             };
 
             this.addTeam = function() {
-                const nameInput = document.getElementById('new-team-name');
-                const name = nameInput.value.trim();
-                if (name) {
-                    this.teams.push({ name, pj: 0, g: 0, e: 0, p: 0, gf: 0, gc: 0, dg: 0, pts: 0 });
-                    nameInput.value = "";
-                    this.saveState();
+                const input = document.getElementById('new-team-name');
+                if (input.value.trim()) {
+                    this.teams.push({ name: input.value.trim(), pj:0, g:0, e:0, p:0, gf:0, gc:0, dg:0, pts:0 });
+                    input.value = ""; this.save();
                 }
             };
 
-            this.removeTeam = function(idx) {
-                if (confirm(`¿Eliminar equipo ${this.teams[idx].name}?`)) {
-                    this.teams.splice(idx, 1);
-                    this.saveState();
-                }
-            };
+            this.removeTeam = (i) => { if(confirm(`¿Eliminar al equipo ${this.teams[i].name}?`)) { this.teams.splice(i, 1); this.save(); }};
 
             this.generateRounds = function() {
                 if (this.teams.length < 2) return alert("Añade al menos 2 equipos.");
-                if (!confirm("¿Generar nuevo calendario? Se borrarán los resultados actuales.")) return;
+                if (!confirm("¿Generar calendario? Se borrarán los resultados previos.")) return;
 
                 let t = [...this.teams];
                 if (t.length % 2 !== 0) t.push({ name: "DESCANSA", isBye: true });
@@ -302,46 +284,42 @@
                 this.rounds = [];
 
                 for (let r = 0; r < n - 1; r++) {
-                    let m = [];
+                    let matches = [];
                     for (let i = 0; i < n / 2; i++) {
-                        let homeIdx = (r + i) % (n - 1);
-                        let awayIdx = (n - 1 - i + r) % (n - 1);
-                        if (i === 0) awayIdx = n - 1;
+                        let hIdx = (r + i) % (n - 1);
+                        let aIdx = (n - 1 - i + r) % (n - 1);
+                        if (i === 0) aIdx = n - 1;
                         
-                        if (!t[homeIdx].isBye && !t[awayIdx].isBye) {
-                            m.push({ home: t[homeIdx].name, away: t[awayIdx].name, hScore: 0, aScore: 0, played: false, scorers: [] });
+                        if (!t[hIdx].isBye && !t[aIdx].isBye) {
+                            matches.push({ home: t[hIdx].name, away: t[aIdx].name, hScore: 0, aScore: 0, played: false, scorers: [] });
                         }
                     }
-                    this.rounds.push(m);
+                    this.rounds.push(matches);
                 }
-                this.saveState();
+                this.save();
             };
 
-            this.updateScore = function(r, mi) {
-                const hScore = parseInt(document.getElementById(`h-${r}-${mi}`).value) || 0;
-                const aScore = parseInt(document.getElementById(`a-${r}-${mi}`).value) || 0;
-                this.rounds[r][mi].hScore = hScore;
-                this.rounds[r][mi].aScore = aScore;
+            this.updateMatch = function(r, mi) {
+                const hVal = parseInt(document.getElementById(`h-${r}-${mi}`).value) || 0;
+                const aVal = parseInt(document.getElementById(`a-${r}-${mi}`).value) || 0;
+                this.rounds[r][mi].hScore = hVal;
+                this.rounds[r][mi].aScore = aVal;
                 this.rounds[r][mi].played = true;
-                this.saveState();
+                this.save();
             };
 
             this.addScorer = function(r, mi) {
-                const nameInput = document.getElementById(`sc-n-${r}-${mi}`);
-                const teamSelect = document.getElementById(`sc-t-${r}-${mi}`);
-                const name = nameInput.value.trim();
-                const team = teamSelect.value;
+                const name = document.getElementById(`sn-${r}-${mi}`).value.trim();
+                const team = document.getElementById(`st-${r}-${mi}`).value;
                 if (name) {
+                    if(!this.rounds[r][mi].scorers) this.rounds[r][mi].scorers = [];
                     this.rounds[r][mi].scorers.push({ name, team });
-                    nameInput.value = "";
-                    this.saveState();
+                    document.getElementById(`sn-${r}-${mi}`).value = "";
+                    this.save();
                 }
             };
 
-            this.removeScorer = function(r, mi, si) {
-                this.rounds[r][mi].scorers.splice(si, 1);
-                this.saveState();
-            };
+            this.removeScorer = (r, mi, si) => { this.rounds[r][mi].scorers.splice(si, 1); this.save(); };
 
             this.calculateStandings = function() {
                 this.teams.forEach(t => { t.pj=t.g=t.e=t.p=t.gf=t.gc=t.dg=t.pts=0; });
@@ -350,85 +328,83 @@
                     const h = this.teams.find(x => x.name === m.home);
                     const a = this.teams.find(x => x.name === m.away);
                     if (!h || !a) return;
-                    h.pj++; a.pj++;
-                    h.gf += m.hScore; h.gc += m.aScore;
-                    a.gf += m.aScore; a.gc += m.hScore;
+                    h.pj++; a.pj++; h.gf += m.hScore; h.gc += m.aScore; a.gf += m.aScore; a.gc += m.hScore;
                     if (m.hScore > m.aScore) { h.g++; h.pts += 3; a.p++; }
                     else if (m.aScore > m.hScore) { a.g++; a.pts += 3; h.p++; }
                     else { h.e++; a.e++; h.pts += 1; a.pts += 1; }
                     h.dg = h.gf - h.gc; a.dg = a.gf - a.gc;
                 });
-                this.teams.sort((a, b) => b.pts - a.pts || b.dg - a.dg || b.gf - a.gf);
+                this.teams.sort((a, b) => b.pts - a.pts || b.dg - a.dg);
             };
 
-            this.renderAll = function() {
-                this.renderStandings();
-                this.renderMatches();
-                this.renderTeams();
-            };
-
-            this.renderStandings = function() {
-                const body = document.getElementById('standings-body');
-                if (this.teams.length === 0) {
-                    body.innerHTML = '<tr><td colspan="10" class="p-8 text-center text-gray-400 italic">No hay equipos registrados todavía.</td></tr>';
-                    return;
-                }
-                body.innerHTML = this.teams.map((t, i) => `
-                    <tr class="border-b hover:bg-gray-50 transition-colors">
-                        <td class="p-3 font-bold text-gray-400">${i + 1}</td>
+            this.render = function() {
+                // Render Posiciones
+                const sBody = document.getElementById('standings-body');
+                sBody.innerHTML = this.teams.length ? this.teams.map((t, i) => `
+                    <tr class="border-b hover:bg-gray-50">
+                        <td class="p-3 font-bold text-gray-400">${i+1}</td>
                         <td class="p-3 font-semibold text-gray-800">${t.name}</td>
                         <td class="p-3 text-center">${t.pj}</td>
                         <td class="p-3 text-center text-green-600 font-medium">${t.g}</td>
-                        <td class="p-3 text-center text-gray-500">${t.e}</td>
+                        <td class="p-3 text-center">${t.e}</td>
                         <td class="p-3 text-center text-red-500">${t.p}</td>
                         <td class="p-3 text-center">${t.gf}</td>
                         <td class="p-3 text-center text-gray-400">${t.gc}</td>
-                        <td class="p-3 text-center font-medium ${t.dg >= 0 ? 'text-blue-600' : 'text-orange-600'}">${t.dg}</td>
+                        <td class="p-3 text-center font-bold ${t.dg >= 0 ? 'text-blue-600' : 'text-orange-500'}">${t.dg}</td>
                         <td class="p-3 text-center font-bold text-green-700 bg-green-50">${t.pts}</td>
                     </tr>
-                `).join('');
-            };
+                `).join('') : '<tr><td colspan="10" class="p-10 text-center text-gray-400 italic">No hay equipos registrados.</td></tr>';
 
-            this.renderMatches = function() {
-                const cont = document.getElementById('rounds-container');
-                if (this.rounds.length === 0) {
-                    cont.innerHTML = '<div class="text-center py-12 text-gray-400 italic">No hay encuentros programados.</div>';
-                    return;
-                }
-                cont.innerHTML = this.rounds.map((round, r) => `
-                    <div class="card p-6 border-l-4 border-green-500">
-                        <h3 class="font-bold text-lg mb-4 text-green-800">Jornada ${r + 1}</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            ${round.map((m, mi) => {
-                                const id = `${r}-${mi}`;
-                                const dis = !this.isAuthenticated ? 'disabled' : '';
+                // Render Equipos
+                const tList = document.getElementById('teams-list');
+                tList.innerHTML = this.teams.map((t, i) => `
+                    <div class="card p-4 flex justify-between items-center border-l-4 border-green-500">
+                        <span class="font-bold text-gray-700">${t.name}</span>
+                        <button onclick="app.removeTeam(${i})" class="admin-only text-red-400 hover:text-red-600 p-2">🗑️</button>
+                    </div>
+                `).join('');
+
+                // Render Calendario
+                const rCont = document.getElementById('rounds-container');
+                rCont.innerHTML = this.rounds.map((round, rIdx) => `
+                    <div class="card p-4 md:p-6 border-t-4 border-green-600">
+                        <h3 class="font-bold text-lg mb-4 text-green-800 border-b pb-2 flex items-center justify-between">
+                            Jornada ${rIdx + 1}
+                            <span class="text-xs font-normal text-gray-400">${round.length} encuentros</span>
+                        </h3>
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                            ${round.map((m, mIdx) => {
+                                const id = `${rIdx}-${mIdx}`;
+                                const dis = !this.isAdmin ? 'disabled' : '';
                                 return `
-                                    <div class="border rounded-xl p-4 bg-gray-50">
-                                        <div class="flex items-center justify-between gap-2 mb-4">
-                                            <span class="flex-1 text-right font-bold truncate text-xs md:text-sm">${m.home}</span>
-                                            <input type="number" id="h-${id}" value="${m.hScore}" ${dis} class="w-10 text-center p-1 border rounded font-bold text-sm">
-                                            <span class="text-gray-400">-</span>
-                                            <input type="number" id="a-${id}" value="${m.aScore}" ${dis} class="w-10 text-center p-1 border rounded font-bold text-sm">
-                                            <span class="flex-1 text-left font-bold truncate text-xs md:text-sm">${m.away}</span>
+                                    <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                                        <div class="flex items-center justify-between mb-4 gap-2">
+                                            <div class="flex-1 text-right font-bold text-sm truncate">${m.home}</div>
+                                            <input type="number" id="h-${id}" value="${m.hScore}" ${dis} class="w-10 h-10 text-center border rounded-lg font-bold bg-white focus:ring-2 focus:ring-green-400 outline-none">
+                                            <span class="text-gray-300">-</span>
+                                            <input type="number" id="a-${id}" value="${m.aScore}" ${dis} class="w-10 h-10 text-center border rounded-lg font-bold bg-white focus:ring-2 focus:ring-green-400 outline-none">
+                                            <div class="flex-1 text-left font-bold text-sm truncate">${m.away}</div>
                                         </div>
-                                        <button onclick="app.updateScore(${r}, ${mi})" class="admin-only w-full bg-green-600 text-white py-1 rounded mb-4 font-bold text-xs">Guardar Resultado</button>
-                                        <div class="bg-white p-2 rounded-lg border text-[11px]">
-                                            <p class="uppercase font-bold text-gray-400 mb-1">⚽ Goleadores</p>
-                                            <ul class="space-y-1 mb-2">
+                                        <button onclick="app.updateMatch(${rIdx}, ${mIdx})" class="admin-only w-full bg-green-600 text-white py-1 rounded-lg text-xs font-bold mb-4">Guardar Score</button>
+                                        
+                                        <!-- Goleadores -->
+                                        <div class="bg-white p-3 rounded-lg border border-gray-100 text-[11px]">
+                                            <p class="uppercase font-bold text-gray-400 mb-2 flex items-center gap-1">⚽ Goleadores</p>
+                                            <ul class="space-y-1 mb-3">
                                                 ${(m.scorers || []).map((s, si) => `
                                                     <li class="flex justify-between items-center bg-gray-50 px-2 py-1 rounded">
-                                                        <span>${s.name} <small class="text-gray-400">(${s.team})</small></span>
-                                                        <button onclick="app.removeScorer(${r}, ${mi}, ${si})" class="admin-only text-red-500 font-bold ml-2">×</button>
+                                                        <span><span class="font-bold">${s.name}</span> <small class="text-gray-400 uppercase tracking-tighter">(${s.team})</small></span>
+                                                        <button onclick="app.removeScorer(${rIdx}, ${mIdx}, ${si})" class="admin-only text-red-500 font-bold ml-2">×</button>
                                                     </li>
                                                 `).join('')}
                                             </ul>
                                             <div class="admin-flex hidden gap-1">
-                                                <input type="text" id="sc-n-${id}" placeholder="Nombre" class="flex-grow p-1 border rounded text-[10px]">
-                                                <select id="sc-t-${id}" class="p-1 border rounded text-[10px]">
-                                                    <option value="${m.home}">${m.home}</option>
-                                                    <option value="${m.away}">${m.away}</option>
+                                                <input type="text" id="sn-${id}" placeholder="Nombre" class="flex-grow p-1 border rounded text-[10px]">
+                                                <select id="st-${id}" class="p-1 border rounded text-[10px]">
+                                                    <option value="${m.home}">${m.home.substring(0,6)}</option>
+                                                    <option value="${m.away}">${m.away.substring(0,6)}</option>
                                                 </select>
-                                                <button onclick="app.addScorer(${r}, ${mi})" class="bg-blue-500 text-white px-2 py-1 rounded">Add</button>
+                                                <button onclick="app.addScorer(${rIdx}, ${mIdx})" class="bg-blue-500 text-white px-2 py-1 rounded">Ok</button>
                                             </div>
                                         </div>
                                     </div>
@@ -439,21 +415,7 @@
                 `).join('');
             };
 
-            this.renderTeams = function() {
-                const list = document.getElementById('teams-list');
-                if (this.teams.length === 0) {
-                    list.innerHTML = '<div class="col-span-full text-center text-gray-400 py-6">No hay equipos registrados.</div>';
-                    return;
-                }
-                list.innerHTML = this.teams.map((t, i) => `
-                    <div class="card p-5 flex justify-between items-center border-t-4 border-green-500">
-                        <span class="font-bold text-gray-800">${t.name}</span>
-                        <button onclick="app.removeTeam(${i})" class="admin-only text-red-500 hover:bg-red-50 p-2 rounded-full">🗑️</button>
-                    </div>
-                `).join('');
-            };
-
-            this.switchTab = function(tab) {
+            this.switchTab = (tab) => {
                 document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
                 document.getElementById(`view-${tab}`).classList.remove('hidden');
                 document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
