@@ -3,282 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mundialito Beth Shalom</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
-        .admin-only { display: none !important; }
-        .is-admin .admin-only { display: block !important; }
-        #loading-overlay {
-            position: fixed; inset: 0; background: white;
-            display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100;
-        }
-    </style>
+    <title>Mundialito - Torneo Intercolegial</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
-<body class="min-h-screen pb-20">
+<body>
 
-    <!-- Pantalla de Carga -->
-    <div id="loading-overlay">
-        <div id="spinner" class="animate-spin rounded-full h-10 w-10 border-b-2 border-green-600 mb-4"></div>
-        <p id="status-text" class="text-gray-500 text-sm font-medium px-4 text-center">Iniciando sistema...</p>
-        <button id="btn-emergency" onclick="app.closeLoading()" class="hidden mt-8 text-[10px] bg-gray-100 px-3 py-1 rounded text-gray-400">Forzar entrada (Debug)</button>
-    </div>
-
-    <!-- Encabezado -->
-    <header class="bg-green-800 text-white p-4 shadow-md sticky top-0 z-50">
-        <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-xl font-bold italic">🏆 MUNDIALITO</h1>
-            <nav class="flex gap-4 text-xs font-bold uppercase tracking-wider">
-                <button onclick="app.setTab('posiciones')" class="hover:text-green-300">Posiciones</button>
-                <button onclick="app.setTab('equipos')" class="hover:text-green-300">Equipos</button>
-            </nav>
-        </div>
+    <header>
+        <h1>⚽ Mundialito</h1>
+        <nav>
+            <button id="btn-nav-posiciones">Posiciones</button>
+            <button id="btn-nav-goleadores">Goleadores</button>
+            <button id="btn-nav-partidos">Partidos</button>
+            <button id="btn-nav-admin" class="admin-btn">Panel Admin</button>
+        </nav>
     </header>
 
-    <main class="container mx-auto p-4 max-w-4xl">
-        <!-- Alerta de base de datos vacía (Solo Admin) -->
-        <div id="db-empty-alert" class="hidden admin-only bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 rounded-r-xl">
-            <div class="flex items-center">
-                <div class="flex-1 text-sm text-yellow-700 font-medium">
-                    La base de datos no ha sido inicializada. ¿Quieres crear la estructura inicial?
-                </div>
-                <button onclick="app.initDB()" class="bg-yellow-500 text-white px-4 py-2 rounded-lg text-xs font-bold shadow-sm">Inicializar Ahora</button>
-            </div>
-        </div>
-
-        <!-- Vista Posiciones -->
-        <section id="view-posiciones" class="view-content">
-            <div class="bg-white rounded-2xl shadow-sm border p-6">
-                <table class="w-full text-left text-sm">
+    <main>
+        <section id="vista-posiciones" class="vista-activa">
+            <h2>Tabla de Posiciones</h2>
+            <div class="table-container">
+                <table id="tabla-posiciones">
                     <thead>
-                        <tr class="text-gray-400 border-b uppercase text-[10px]">
-                            <th class="py-3 px-2">#</th>
-                            <th class="py-3">Equipo</th>
-                            <th class="py-3 text-center">PJ</th>
-                            <th class="py-3 text-center text-green-700 font-bold">PTS</th>
+                        <tr>
+                            <th>Pos</th>
+                            <th>Equipo</th>
+                            <th>PJ</th>
+                            <th>PG</th>
+                            <th>PE</th>
+                            <th>PP</th>
+                            <th>GF</th>
+                            <th>GC</th>
+                            <th>DG</th>
+                            <th>Pts</th>
                         </tr>
                     </thead>
-                    <tbody id="table-body">
-                        <tr><td colspan="4" class="py-10 text-center text-gray-400 italic">Cargando datos del torneo...</td></tr>
-                    </tbody>
+                    <tbody id="body-posiciones">
+                        </tbody>
                 </table>
             </div>
         </section>
 
-        <!-- Vista Equipos (Gestión) -->
-        <section id="view-equipos" class="view-content hidden">
-            <div class="admin-only bg-white rounded-2xl shadow-sm border p-6 mb-6">
-                <h3 class="text-sm font-bold mb-4 text-gray-500 uppercase">Nuevo Equipo</h3>
-                <div class="flex gap-2">
-                    <input type="text" id="input-team" placeholder="Nombre del equipo..." class="flex-1 p-3 border rounded-xl outline-none focus:ring-2 focus:ring-green-500">
-                    <button onclick="app.addNewTeam()" class="bg-green-600 text-white px-6 rounded-xl font-bold hover:bg-green-700 transition-colors">Añadir</button>
+        <section id="vista-goleadores" class="vista-oculta">
+            <h2>Tabla de Goleadores</h2>
+            <div class="table-container">
+                <table id="tabla-goleadores">
+                    <thead>
+                        <tr>
+                            <th>Jugador</th>
+                            <th>Equipo</th>
+                            <th>Goles</th>
+                        </tr>
+                    </thead>
+                    <tbody id="body-goleadores">
+                        </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="vista-partidos" class="vista-oculta">
+            <h2>Calendario de Partidos</h2>
+            <div id="contenedor-partidos" class="grid-partidos">
+                </div>
+        </section>
+
+        <section id="vista-admin" class="vista-oculta">
+            <h2>Panel de Administración</h2>
+            
+            <div id="admin-login">
+                <h3>Acceso Restringido</h3>
+                <input type="email" id="admin-email" placeholder="Correo electrónico">
+                <input type="password" id="admin-pass" placeholder="Contraseña">
+                <button id="btn-login">Ingresar</button>
+            </div>
+
+            <div id="admin-controles" class="vista-oculta">
+                <div class="admin-card">
+                    <h3>Registrar Equipo</h3>
+                    <input type="text" id="nuevo-equipo-nombre" placeholder="Nombre del equipo (Ej: Grado 10A)">
+                    <button id="btn-guardar-equipo">Guardar Equipo</button>
+                </div>
+
+                <div class="admin-card">
+                    <h3>Registrar Jugador</h3>
+                    <input type="text" id="nuevo-jugador-nombre" placeholder="Nombre del jugador">
+                    <select id="select-equipo-jugador">
+                        <option value="">Selecciona un equipo...</option>
+                        </select>
+                    <button id="btn-guardar-jugador">Guardar Jugador</button>
+                </div>
+
+                <div class="admin-card">
+                    <h3>Programar Partido</h3>
+                    <select id="select-local">
+                        <option value="">Equipo Local</option>
+                    </select>
+                    <span> VS </span>
+                    <select id="select-visitante">
+                        <option value="">Equipo Visitante</option>
+                    </select>
+                    <input type="datetime-local" id="fecha-partido">
+                    <button id="btn-programar-partido">Programar</button>
                 </div>
             </div>
-            <div id="teams-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
         </section>
     </main>
 
-    <!-- Barra Inferior -->
-    <footer class="fixed bottom-0 left-0 w-full bg-white/95 border-t p-3 flex justify-between items-center px-6">
-        <p class="text-[10px] text-gray-400 font-mono uppercase" id="db-status">v3.0 - Offline</p>
-        <button onclick="app.openLogin()" id="login-trigger" class="text-xs font-bold text-green-700 hover:underline">Acceso Admin</button>
-        <button onclick="app.logout()" id="logout-trigger" class="hidden text-xs font-bold text-red-600 hover:underline">Cerrar Sesión</button>
-    </footer>
-
-    <!-- Modal Login -->
-    <div id="modal-login" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-[110] backdrop-blur-sm">
-        <div class="bg-white p-8 rounded-3xl w-full max-w-xs shadow-2xl">
-            <h2 class="text-lg font-bold mb-4 text-center text-gray-800">Panel de Control</h2>
-            <input type="password" id="field-pass" placeholder="Contraseña Maestra" class="w-full p-4 border rounded-2xl mb-4 text-center text-lg focus:ring-2 focus:ring-green-500 outline-none">
-            <button onclick="app.handleLogin()" class="w-full bg-green-700 text-white py-4 rounded-2xl font-bold shadow-lg active:scale-95 transition-transform">Ingresar</button>
-            <button onclick="document.getElementById('modal-login').classList.add('hidden')" class="w-full mt-2 text-gray-400 text-[10px] uppercase font-bold tracking-widest">Cancelar</button>
-        </div>
-    </div>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-        import { getFirestore, doc, onSnapshot, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
-
-        // CONFIGURACIÓN DIRECTA: Elimina el 100% de los errores causados por Vercel API
-        const firebaseConfig = {
-            apiKey: "AIzaSyDr1W6YktGX9lV-9qVpSP-PJC2Js0cMwgo",
-            authDomain: "mundialito-7ed91.firebaseapp.com",
-            projectId: "mundialito-7ed91",
-            storageBucket: "mundialito-7ed91.firebasestorage.app",
-            messagingSenderId: "104814323684",
-            appId: "1:104814323684:web:9d00ea4cf5a513cb73c9f1"
-        };
-
-        const app = {
-            db: null, auth: null, pass: "", data: { teams: [] }, isAdmin: false,
-            
-            init: async function() {
-                setTimeout(() => {
-                    const btn = document.getElementById('btn-emergency');
-                    if(btn) btn.classList.remove('hidden');
-                }, 8000);
-
-                this.updateStatus("Inicializando base de datos...");
-                
-                try {
-                    // 1. Inicialización instantánea con la configuración dura
-                    const fApp = initializeApp(firebaseConfig);
-                    this.auth = getAuth(fApp);
-                    this.db = getFirestore(fApp);
-
-                    // 2. Conectar usuario
-                    onAuthStateChanged(this.auth, (user) => {
-                        if (user) {
-                            if (!user.isAnonymous) this.setAdminState(true);
-                            this.startSync();
-                        } else {
-                            signInAnonymously(this.auth).catch(e => this.showCriticalError("Activa Auth Anónima en Firebase Console"));
-                        }
-                    });
-
-                    // 3. Buscar contraseña maestra en segundo plano
-                    fetch('/api/get-config')
-                        .then(res => res.ok ? res.json() : {})
-                        .then(config => {
-                            if (config.masterPassword) this.pass = config.masterPassword;
-                        })
-                        .catch(e => console.warn("API Offline. Funciones de administrador pueden no estar disponibles."));
-
-                } catch (e) {
-                    this.showCriticalError(e.message);
-                }
-            },
-
-            startSync: function() {
-                this.updateStatus("Sincronizando con la nube...");
-                const docRef = doc(this.db, "torneo", "data");
-
-                onSnapshot(docRef, (snap) => {
-                    this.closeLoading();
-                    const dbStatus = document.getElementById('db-status');
-                    if (dbStatus) dbStatus.innerText = "Sincronizado: OK";
-                    
-                    const emptyAlert = document.getElementById('db-empty-alert');
-                    
-                    if (snap.exists()) {
-                        this.data = snap.data();
-                        if (emptyAlert) emptyAlert.classList.add('hidden');
-                    } else {
-                        this.data = { teams: [] };
-                        if (emptyAlert) emptyAlert.classList.remove('hidden');
-                    }
-                    this.render();
-                }, (error) => {
-                    console.error("Firebase Sync Error:", error);
-                    this.updateStatus("Error de Permisos en Firestore Rules.");
-                });
-            },
-
-            render: function() {
-                const sorted = [...(this.data.teams || [])].sort((a,b) => (b.pts||0) - (a.pts||0));
-                const tbody = document.getElementById('table-body');
-                if (tbody) {
-                    tbody.innerHTML = sorted.length > 0 ? sorted.map((t, i) => `
-                        <tr class="border-b hover:bg-green-50/30 transition-colors">
-                            <td class="py-4 px-2 font-bold text-gray-300">${i+1}</td>
-                            <td class="py-4 font-bold text-xs uppercase text-gray-700">${t.name}</td>
-                            <td class="py-4 text-center font-medium">${t.pj||0}</td>
-                            <td class="py-4 text-center font-bold text-green-600">${t.pts||0}</td>
-                        </tr>
-                    `).join('') : '<tr><td colspan="4" class="py-10 text-center text-gray-400 italic">No hay equipos registrados.</td></tr>';
-                }
-                
-                const grid = document.getElementById('teams-grid');
-                if (grid) {
-                    grid.innerHTML = (this.data.teams || []).length > 0 ? (this.data.teams || []).map(t => `
-                        <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex justify-between items-center group">
-                            <span class="font-bold text-xs uppercase text-gray-500 group-hover:text-green-700 transition-colors">${t.name}</span>
-                            <div class="w-1.5 h-1.5 rounded-full bg-green-400"></div>
-                        </div>
-                    `).join('') : '<p class="col-span-full text-center text-gray-400 py-10 text-sm italic">Sin equipos.</p>';
-                }
-            },
-
-            initDB: async function() {
-                this.updateStatus("Inicializando...");
-                try {
-                    await setDoc(doc(this.db, "torneo", "data"), {
-                        teams: [],
-                        lastUpdate: Date.now(),
-                        initialized: true
-                    });
-                    document.getElementById('db-empty-alert')?.classList.add('hidden');
-                } catch (e) {
-                    alert("Error al inicializar. Revisa las 'Rules' de Firestore.");
-                }
-            },
-
-            addNewTeam: async function() {
-                const nameInput = document.getElementById('input-team');
-                const name = nameInput ? nameInput.value.trim() : "";
-                if (!name || !this.isAdmin) return;
-                
-                this.data.teams = this.data.teams || [];
-                this.data.teams.push({ name, pj:0, g:0, e:0, p:0, pts:0 });
-                
-                try {
-                    await setDoc(doc(this.db, "torneo", "data"), {
-                        teams: this.data.teams,
-                        lastUpdate: Date.now()
-                    });
-                    if (nameInput) nameInput.value = "";
-                } catch (e) {
-                    alert("Error al guardar en Firestore.");
-                }
-            },
-
-            setAdminState: function(s) {
-                this.isAdmin = s;
-                document.body.classList.toggle('is-admin', s);
-                const loginTrig = document.getElementById('login-trigger');
-                const logoutTrig = document.getElementById('logout-trigger');
-                if (loginTrig) loginTrig.classList.toggle('hidden', s);
-                if (logoutTrig) logoutTrig.classList.toggle('hidden', !s);
-            },
-
-            handleLogin: function() {
-                const passInput = document.getElementById('field-pass');
-                if (passInput && passInput.value === this.pass) {
-                    this.setAdminState(true);
-                    const modal = document.getElementById('modal-login');
-                    if (modal) modal.classList.add('hidden');
-                    passInput.value = "";
-                } else alert("Contraseña incorrecta");
-            },
-
-            updateStatus: (m) => {
-                const el = document.getElementById('status-text');
-                if (el) el.innerText = m;
-            },
-
-            showCriticalError: function(m) {
-                const el = document.getElementById('status-text');
-                if (el) el.innerHTML = `<div class="bg-red-50 text-red-700 p-4 rounded-xl border border-red-200 text-xs font-bold shadow-sm">Error de Inicio:<br>${m}</div>`;
-                const spinner = document.getElementById('spinner');
-                if (spinner) spinner.classList.add('hidden');
-            },
-
-            closeLoading: () => document.getElementById('loading-overlay')?.classList.add('hidden'),
-            openLogin: () => {
-                document.getElementById('modal-login')?.classList.remove('hidden');
-                document.getElementById('field-pass')?.focus();
-            },
-            logout: () => { signOut(app.auth); location.reload(); },
-            setTab: (t) => {
-                document.querySelectorAll('.view-content').forEach(v => v.classList.add('hidden'));
-                document.getElementById(`view-${t}`)?.classList.remove('hidden');
-            }
-        };
-
-        window.app = app;
-        app.init();
-    </script>
+    <script type="module" src="js/app.js"></script>
 </body>
 </html>
