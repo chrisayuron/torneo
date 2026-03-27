@@ -1,0 +1,254 @@
+/* ==========================================================================
+   Variables de Color y Estilos Globales (UI/UX)
+   ========================================================================== */
+:root {
+    /* Paleta Institucional y Mundialista */
+    --azul-primario: #0B3954; /* Azul profundo, transmite profesionalismo y estabilidad */
+    --azul-accion: #1A5F7A; /* Azul ligeramente más claro para botones e interacciones */
+    --amarillo-oro: #FFD166; /* Amarillo vibrante, da el toque deportivo de 'campeonato' */
+    --amarillo-hover: #FFC233;
+    --gris-fondo: #F4F6F8; /* Fondo general para que las tarjetas blancas resalten */
+    --gris-texto: #4A5568; /* Gris oscuro para mejor lectura sin el contraste extremo del negro */
+    --gris-claro: #E2E8F0; /* Para bordes y divisiones sutiles */
+    --blanco: #FFFFFF;
+    
+    /* Variables de diseño */
+    --sombra-tarjeta: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --sombra-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --radio-borde: 8px;
+    --transicion: all 0.3s ease;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+    background-color: var(--gris-fondo);
+    color: var(--gris-texto);
+    line-height: 1.6;
+}
+
+/* ==========================================================================
+   Navegación y Encabezado
+   ========================================================================== */
+header {
+    background-color: var(--azul-primario);
+    color: var(--blanco);
+    padding: 1rem 0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+header h1 {
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: var(--amarillo-oro);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+nav {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0 1rem;
+}
+
+nav button {
+    background: transparent;
+    color: var(--blanco);
+    border: 2px solid transparent;
+    padding: 0.6rem 1.2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: var(--transicion);
+}
+
+nav button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Estado activo para el menú */
+nav button.activo {
+    background-color: var(--amarillo-oro);
+    color: var(--azul-primario);
+    border-color: var(--amarillo-oro);
+}
+
+.admin-btn {
+    border: 2px solid var(--gris-claro);
+    opacity: 0.8;
+}
+
+/* ==========================================================================
+   Contenedor Principal y Vistas (SPA Logic)
+   ========================================================================== */
+main {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+section h2 {
+    color: var(--azul-primario);
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 3px solid var(--amarillo-oro);
+    display: inline-block;
+    padding-bottom: 0.3rem;
+}
+
+.vista-oculta {
+    display: none !important;
+}
+
+.vista-activa {
+    display: block;
+    animation: fadeIn 0.4s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================================================
+   Tablas de Posiciones y Goleadores (Diseño UX)
+   ========================================================================== */
+.table-container {
+    background: var(--blanco);
+    border-radius: var(--radio-borde);
+    box-shadow: var(--sombra-tarjeta);
+    overflow-x: auto; /* Permite scroll horizontal en móviles */
+    margin-bottom: 2rem;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+}
+
+thead {
+    background-color: var(--azul-primario);
+    color: var(--blanco);
+}
+
+th, td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--gris-claro);
+}
+
+th {
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+}
+
+/* Resaltar la fila al pasar el mouse */
+tbody tr:hover {
+    background-color: #F8FAFC;
+    transform: scale(1.01);
+    transition: var(--transicion);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* Resaltar el primer lugar (Estilo Campeón) */
+tbody tr:first-child td {
+    font-weight: bold;
+    color: var(--azul-primario);
+    background-color: rgba(255, 209, 102, 0.15); /* Fondo amarillento suave */
+}
+
+/* Resaltar la columna de puntos */
+td:last-child {
+    font-weight: bold;
+    color: var(--azul-primario);
+    font-size: 1.1rem;
+}
+
+/* ==========================================================================
+   Tarjetas (Partidos y Panel Admin)
+   ========================================================================== */
+.grid-partidos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.admin-card, .partido-card {
+    background: var(--blanco);
+    padding: 1.5rem;
+    border-radius: var(--radio-borde);
+    box-shadow: var(--sombra-tarjeta);
+    border-top: 4px solid var(--azul-primario);
+    transition: var(--transicion);
+}
+
+.admin-card:hover, .partido-card:hover {
+    box-shadow: var(--sombra-hover);
+}
+
+.admin-card h3 {
+    margin-bottom: 1rem;
+    color: var(--azul-primario);
+}
+
+/* ==========================================================================
+   Formularios, Inputs y Botones
+   ========================================================================== */
+input, select {
+    width: 100%;
+    padding: 0.8rem;
+    margin-bottom: 1rem;
+    border: 1px solid var(--gris-claro);
+    border-radius: 6px;
+    font-size: 1rem;
+    color: var(--gris-texto);
+    transition: var(--transicion);
+}
+
+input:focus, select:focus {
+    outline: none;
+    border-color: var(--azul-accion);
+    box-shadow: 0 0 0 3px rgba(26, 95, 122, 0.2);
+}
+
+button {
+    width: 100%;
+    background-color: var(--azul-accion);
+    color: var(--blanco);
+    border: none;
+    padding: 0.8rem;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: var(--transicion);
+}
+
+button:hover {
+    background-color: var(--azul-primario);
+}
+
+/* Botones especiales (Guardar, Ingresar) */
+#btn-guardar-equipo, #btn-guardar-jugador, #btn-programar-partido, #btn-login {
+    background-color: var(--amarillo-oro);
+    color: var(--azul-primario);
+}
+
+#btn-guardar-equipo:hover, #btn-guardar-jugador:hover, #btn-programar-partido:hover, #btn-login:hover {
+    background-color: var(--amarillo-hover);
+    transform: translateY(-2px);
+}
