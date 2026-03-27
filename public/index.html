@@ -81,7 +81,7 @@
 
     <!-- Barra Inferior -->
     <footer class="fixed bottom-0 left-0 w-full bg-white/95 border-t p-3 flex justify-between items-center px-6">
-        <p class="text-[10px] text-gray-400 font-mono uppercase" id="db-status">v2.3 - Offline</p>
+        <p class="text-[10px] text-gray-400 font-mono uppercase" id="db-status">v3.0 - Offline</p>
         <button onclick="app.openLogin()" id="login-trigger" class="text-xs font-bold text-green-700 hover:underline">Acceso Admin</button>
         <button onclick="app.logout()" id="logout-trigger" class="hidden text-xs font-bold text-red-600 hover:underline">Cerrar Sesión</button>
     </footer>
@@ -101,6 +101,16 @@
         import { getAuth, signInAnonymously, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
         import { getFirestore, doc, onSnapshot, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
+        // CONFIGURACIÓN DIRECTA: Elimina el 100% de los errores causados por Vercel API
+        const firebaseConfig = {
+            apiKey: "AIzaSyDr1W6YktGX9lV-9qVpSP-PJC2Js0cMwgo",
+            authDomain: "mundialito-7ed91.firebaseapp.com",
+            projectId: "mundialito-7ed91",
+            storageBucket: "mundialito-7ed91.firebasestorage.app",
+            messagingSenderId: "104814323684",
+            appId: "1:104814323684:web:9d00ea4cf5a513cb73c9f1"
+        };
+
         const app = {
             db: null, auth: null, pass: "", data: { teams: [] }, isAdmin: false,
             
@@ -110,19 +120,15 @@
                     if(btn) btn.classList.remove('hidden');
                 }, 8000);
 
-                this.updateStatus("Obteniendo credenciales...");
+                this.updateStatus("Inicializando base de datos...");
+                
                 try {
-                    const res = await fetch('/api/get-config');
-                    if (!res.ok) throw new Error("Servidor no responde (API Offline)");
-                    
-                    const config = await res.json();
-                    if (config.error) throw new Error(config.details || "Error de Config");
-
-                    this.pass = config.masterPassword;
-                    const fApp = initializeApp(config);
+                    // 1. Inicialización instantánea con la configuración dura
+                    const fApp = initializeApp(firebaseConfig);
                     this.auth = getAuth(fApp);
                     this.db = getFirestore(fApp);
 
+                    // 2. Conectar usuario
                     onAuthStateChanged(this.auth, (user) => {
                         if (user) {
                             if (!user.isAnonymous) this.setAdminState(true);
@@ -131,6 +137,14 @@
                             signInAnonymously(this.auth).catch(e => this.showCriticalError("Activa Auth Anónima en Firebase Console"));
                         }
                     });
+
+                    // 3. Buscar contraseña maestra en segundo plano
+                    fetch('/api/get-config')
+                        .then(res => res.ok ? res.json() : {})
+                        .then(config => {
+                            if (config.masterPassword) this.pass = config.masterPassword;
+                        })
+                        .catch(e => console.warn("API Offline. Funciones de administrador pueden no estar disponibles."));
 
                 } catch (e) {
                     this.showCriticalError(e.message);
