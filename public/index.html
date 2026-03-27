@@ -62,7 +62,7 @@
     </main>
 
     <footer class="fixed bottom-0 left-0 w-full bg-white/95 border-t p-3 flex justify-between items-center px-6">
-        <p class="text-[10px] text-gray-400 font-mono" id="db-status text-uppercase">v2.0 - Desconectado</p>
+        <p class="text-[10px] text-gray-400 font-mono uppercase" id="db-status">v2.0 - Desconectado</p>
         <button onclick="app.openLogin()" id="login-trigger" class="text-xs font-bold text-green-700">Admin</button>
         <button onclick="app.logout()" id="logout-trigger" class="hidden text-xs font-bold text-red-600">Salir</button>
     </footer>
@@ -84,7 +84,6 @@
 
             init: async function() {
                 try {
-                    // Llamada directa a la API en la raíz
                     const res = await fetch('/api/get-config');
                     if (!res.ok) throw new Error("API no encontrada. Verifica carpeta /api.");
                     
@@ -105,15 +104,21 @@
                         }
                     });
                 } catch (e) {
-                    document.getElementById('status-text').innerHTML = `<b class="text-red-500">${e.message}</b>`;
-                    document.getElementById('spinner').classList.add('hidden');
+                    const statusEl = document.getElementById('status-text');
+                    if (statusEl) statusEl.innerHTML = `<b class="text-red-500">${e.message}</b>`;
+                    const spinnerEl = document.getElementById('spinner');
+                    if (spinnerEl) spinnerEl.classList.add('hidden');
                 }
             },
 
             startSync: function() {
                 onSnapshot(doc(this.db, "torneo", "data"), (snap) => {
-                    document.getElementById('loading-overlay').classList.add('hidden');
-                    document.getElementById('db-status').innerText = "ONLINE: MUNDIALITO-7ED91";
+                    const loader = document.getElementById('loading-overlay');
+                    if (loader) loader.classList.add('hidden');
+                    
+                    const dbStatus = document.getElementById('db-status');
+                    if (dbStatus) dbStatus.innerText = "ONLINE: MUNDIALITO-7ED91";
+                    
                     this.data = snap.exists() ? snap.data() : { teams: [] };
                     this.render();
                 });
@@ -121,48 +126,63 @@
 
             render: function() {
                 const sorted = [...(this.data.teams || [])].sort((a,b) => (b.pts||0) - (a.pts||0));
-                document.getElementById('table-body').innerHTML = sorted.map((t, i) => `
-                    <tr class="border-b"><td class="py-4 px-2 font-bold text-gray-300">${i+1}</td>
-                    <td class="py-4 font-bold text-xs uppercase">${t.name}</td>
-                    <td class="py-4 text-center">${t.pj||0}</td>
-                    <td class="py-4 text-center font-bold text-green-600">${t.pts||0}</td></tr>
-                `).join('');
+                const tbody = document.getElementById('table-body');
+                if (tbody) {
+                    tbody.innerHTML = sorted.map((t, i) => `
+                        <tr class="border-b"><td class="py-4 px-2 font-bold text-gray-300">${i+1}</td>
+                        <td class="py-4 font-bold text-xs uppercase">${t.name}</td>
+                        <td class="py-4 text-center">${t.pj||0}</td>
+                        <td class="py-4 text-center font-bold text-green-600">${t.pts||0}</td></tr>
+                    `).join('');
+                }
                 
-                document.getElementById('teams-grid').innerHTML = (this.data.teams || []).map(t => `
-                    <div class="bg-white p-4 rounded-xl border flex justify-between items-center">
-                        <span class="font-bold text-xs uppercase">${t.name}</span>
-                    </div>
-                `).join('');
+                const grid = document.getElementById('teams-grid');
+                if (grid) {
+                    grid.innerHTML = (this.data.teams || []).map(t => `
+                        <div class="bg-white p-4 rounded-xl border flex justify-between items-center">
+                            <span class="font-bold text-xs uppercase">${t.name}</span>
+                        </div>
+                    `).join('');
+                }
             },
 
             addNewTeam: async function() {
-                const name = document.getElementById('input-team').value.trim();
+                const nameInput = document.getElementById('input-team');
+                const name = nameInput ? nameInput.value.trim() : "";
                 if (!name || !this.isAdmin) return;
                 this.data.teams = this.data.teams || [];
                 this.data.teams.push({ name, pj:0, g:0, e:0, p:0, pts:0 });
                 await setDoc(doc(this.db, "torneo", "data"), this.data);
-                document.getElementById('input-team').value = "";
+                if (nameInput) nameInput.value = "";
             },
 
             setAdminState: function(s) {
                 this.isAdmin = s;
                 document.body.classList.toggle('is-admin', s);
-                document.getElementById('login-trigger').classList.toggle('hidden', s);
-                document.getElementById('logout-trigger').classList.toggle('hidden', !s);
+                const loginTrig = document.getElementById('login-trigger');
+                const logoutTrig = document.getElementById('logout-trigger');
+                if (loginTrig) loginTrig.classList.toggle('hidden', s);
+                if (logoutTrig) logoutTrig.classList.toggle('hidden', !s);
             },
 
             handleLogin: function() {
-                if (document.getElementById('field-pass').value === this.pass) {
+                const passInput = document.getElementById('field-pass');
+                if (passInput && passInput.value === this.pass) {
                     this.setAdminState(true);
-                    document.getElementById('modal-login').classList.add('hidden');
+                    const modal = document.getElementById('modal-login');
+                    if (modal) modal.classList.add('hidden');
                 } else alert("Error");
             },
 
-            openLogin: () => document.getElementById('modal-login').classList.remove('hidden'),
+            openLogin: () => {
+                const modal = document.getElementById('modal-login');
+                if (modal) modal.classList.remove('hidden');
+            },
             logout: () => { signOut(app.auth); location.reload(); },
             setTab: (t) => {
                 document.querySelectorAll('.view-content').forEach(v => v.classList.add('hidden'));
-                document.getElementById(`view-${t}`).classList.remove('hidden');
+                const view = document.getElementById(`view-${t}`);
+                if (view) view.classList.remove('hidden');
             }
         };
 
