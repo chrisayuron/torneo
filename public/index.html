@@ -105,42 +105,25 @@
             isAdmin: false,
 
             init: async function() {
-                // Si algo falla catastróficamente, a los 6 segundos cerramos el bloqueo sí o sí.
-                setTimeout(() => { this.closeLoading(); }, 6000);
+                // Forzar cierre si tarda demasiado
+                setTimeout(() => { this.closeLoading(); }, 8000);
 
                 try {
+                    // Si el archivo está en /public/index.html, la API está en /api/get-config
+                    // Usamos una ruta absoluta para asegurar que Vercel la encuentre
                     const res = await fetch('/api/get-config');
-                    // Verifica si la respuesta es JSON válido
-                    const textRes = await res.text();
-                    let config;
                     
-                    try {
-                        config = JSON.parse(textRes);
-                    } catch (err) {
-                        throw new Error("La API no respondió correctamente. ¿Está Vercel configurado?");
-                    }
-                    
-                    if (config.error) {
-                        this.logError(config.message);
-                        return;
-                    }
-
-                    this.pass = config.masterPassword;
-                    const fApp = initializeApp(config);
-                    this.auth = getAuth(fApp);
-                    this.db = getFirestore(fApp);
-
-                    onAuthStateChanged(this.auth, (user) => {
-                        if (user) {
-                            if (!user.isAnonymous) this.setAdminState(true);
-                            this.startSync();
-                        } else {
-                            signInAnonymously(this.auth).catch(e => {
-                                console.error(e);
-                                this.logError("Autenticación Anónima desactivada en Firebase.");
-                            });
+                    if (!res.ok) {
+                        // Si falla la ruta raíz, intentamos una relativa por si el servidor tiene una estructura distinta
+                        const retryRes = await fetch('../api/get-config');
+                        if (!retryRes.ok) {
+                            throw new Error(`No se pudo encontrar la API en /api/get-config (Error ${res.status})`);
                         }
-                    });
+                        return this.processConfig(await retryRes.json());
+                    }
+
+                    const config = await res.json();
+                    this.processConfig(config);
 
                 } catch (e) {
                     console.error(e);
@@ -148,22 +131,45 @@
                 }
             },
 
+            processConfig: function(config) {
+                if (config.error) {
+                    this.logError(config.message);
+                    return;
+                }
+
+                this.pass = config.masterPassword;
+                const fApp = initializeApp(config);
+                this.auth = getAuth(fApp);
+                this.db = getFirestore(fApp);
+
+                onAuthStateChanged(this.auth, (user) => {
+                    if (user) {
+                        if (!user.isAnonymous) this.setAdminState(true);
+                        this.startSync();
+                    } else {
+                        signInAnonymously(this.auth).catch(e => {
+                            console.error(e);
+                            this.logError("Error: Habilita 'Anonymous Auth' en Firebase Console.");
+                        });
+                    }
+                });
+            },
+
             startSync: function() {
                 onSnapshot(doc(this.db, "torneo", "data"), (snap) => {
                     this.closeLoading();
-                    document.getElementById('db-status').innerText = "DB: Mundialito-7ed91 Online";
+                    document.getElementById('db-status').innerText = "Conectado: Mundialito-7ed91";
                     
                     if (snap.exists()) {
                         this.data = snap.data();
                     } else {
-                        // Base de datos vacía, mostramos el render limpio
                         this.data = { teams: [] };
                     }
                     this.render();
                 }, (err) => {
                     console.error(err);
                     this.logError("Error de lectura: Revisa las Reglas de Firestore.");
-                    this.closeLoading(); // Forzamos apertura para que vea el error abajo
+                    this.closeLoading();
                 });
             },
 
@@ -180,7 +186,7 @@
                         </tr>
                     `).join('');
                 } else {
-                    tbody.innerHTML = '<tr><td colspan="4" class="py-10 text-center text-gray-500 italic font-medium">No hay equipos registrados. Usa el botón Admin abajo.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="4" class="py-10 text-center text-gray-500 italic font-medium">No hay equipos registrados. Accede como Admin para empezar.</td></tr>';
                 }
 
                 const grid = document.getElementById('teams-grid');
@@ -189,7 +195,7 @@
                         <span class="font-bold text-xs uppercase text-gray-500 group-hover:text-green-700 transition-colors">${t.name}</span>
                         <div class="w-2 h-2 rounded-full bg-green-500 shadow-sm shadow-green-200"></div>
                     </div>
-                `).join('') : '<p class="col-span-full text-center text-gray-400 italic py-10">Agrega el primer equipo desde el panel.</p>';
+                `).join('') : '<p class="col-span-full text-center text-gray-400 italic py-10">Sin equipos.</p>';
             },
 
             addNewTeam: async function() {
@@ -211,7 +217,7 @@
                         lastUpdate: Date.now()
                     });
                 } catch (e) { 
-                    alert("Error al guardar: " + e.message); 
+                    alert("Error: " + e.message); 
                 }
             },
 
@@ -257,8 +263,8 @@
                 const footerStatus = document.getElementById('db-status');
                 
                 if (txt) txt.innerHTML = `<span class="text-red-500 font-bold">${m}</span>`;
-                if (spinner) spinner.classList.add('hidden'); // Ocultar el spinner si hay error
-                if (footerStatus) footerStatus.innerText = "Error: " + m;
+                if (spinner) spinner.classList.add('hidden');
+                if (footerStatus) footerStatus.innerText = "Error";
             }
         };
 
