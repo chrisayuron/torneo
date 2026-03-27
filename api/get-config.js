@@ -3,27 +3,27 @@
  * Versión ultra-simplificada para evitar Error 500.
  */
 export default function handler(req, res) {
-  // Cabeceras obligatorias para evitar caché y 304/302
+  // Cabeceras obligatorias para evitar caché y errores 304/302
   res.setHeader('Content-Type', 'application/json');
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
   res.setHeader('Access-Control-Allow-Origin', '*');
 
   try {
-    // 1. Obtener variables directamente
+    // 1. Obtener variables directamente del entorno de Vercel
     const apiKey = process.env.FIREBASE_API_KEY || "";
     const masterPass = process.env.MASTER_PASSWORD || "";
 
-    // 2. Si faltan variables, no lanzamos error 500, enviamos un 200 con el aviso
+    // 2. Si faltan variables, enviamos un 200 con el aviso detallado para el frontend
     if (!apiKey || !masterPass) {
       return res.status(200).json({
         error: true,
-        message: "Faltan variables de entorno en el panel de Vercel.",
+        message: "Configuración incompleta en Vercel.",
         missingKey: !apiKey,
         missingPass: !masterPass
       });
     }
 
-    // 3. Respuesta exitosa con los datos limpios
+    // 3. Respuesta exitosa con los datos necesarios para inicializar Firebase
     return res.status(200).json({
       apiKey: apiKey.trim().replace(/['"]+/g, ''),
       authDomain: "torneo-interclases.firebaseapp.com",
@@ -36,7 +36,7 @@ export default function handler(req, res) {
     });
 
   } catch (error) {
-    // En caso de un error catastrófico, enviamos JSON en lugar de HTML de error
+    // Manejo de excepciones catastróficas enviando JSON limpio
     return res.status(200).json({
       error: true,
       message: error.message
