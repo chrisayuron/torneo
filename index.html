@@ -276,19 +276,71 @@
         });
 
         // Lógica de Modales y Login
+       // ==========================================
+        // Lógica de Modales y Login (Actualizada)
+        // ==========================================
         const loginScreen = document.getElementById('login-screen');
         const btnAbrirLogin = document.getElementById('btn-abrir-login');
         const btnCerrarLogin = document.getElementById('btn-cerrar-login');
         const btnIngresar = document.getElementById('btn-ingresar');
+        
+        let isAdminLogged = false; 
 
         btnAbrirLogin.addEventListener('click', () => {
-            loginScreen.classList.remove('vista-oculta');
+            if (!isAdminLogged) {
+                loginScreen.classList.remove('vista-oculta');
+            } else {
+                isAdminLogged = false;
+                
+                btnAbrirLogin.textContent = "Panel Admin";
+                btnAbrirLogin.classList.remove('bg-institucional-azul', 'text-white');
+                btnAbrirLogin.classList.add('bg-transparent', 'text-institucional-azul');
+                
+                vistas.forEach(id => {
+                    document.getElementById(id).classList.add('vista-oculta');
+                    document.getElementById(id).classList.remove('vista-activa');
+                });
+                document.getElementById('vista-posiciones').classList.remove('vista-oculta');
+                document.getElementById('vista-posiciones').classList.add('vista-activa');
+                
+                navButtons.forEach(b => {
+                    b.classList.remove('btn-secondary');
+                    b.classList.add('bg-gray-200', 'text-institucional-azul');
+                });
+                const btnPosiciones = document.querySelector('[data-target="vista-posiciones"]');
+                btnPosiciones.classList.remove('bg-gray-200', 'text-institucional-azul');
+                btnPosiciones.classList.add('btn-secondary');
+            }
         });
 
         btnCerrarLogin.addEventListener('click', () => {
             loginScreen.classList.add('vista-oculta');
         });
 
+        btnIngresar.addEventListener('click', () => {
+            isAdminLogged = true; 
+            
+            loginScreen.classList.add('vista-oculta');
+            document.getElementById('password-input').value = ''; 
+            
+            vistas.forEach(id => {
+                document.getElementById(id).classList.add('vista-oculta');
+                document.getElementById(id).classList.remove('vista-activa');
+            });
+            document.getElementById('vista-admin').classList.remove('vista-oculta');
+            document.getElementById('vista-admin').classList.add('vista-activa');
+            
+            navButtons.forEach(b => {
+                b.classList.remove('btn-secondary');
+                b.classList.add('bg-gray-200', 'text-institucional-azul');
+            });
+            
+            btnAbrirLogin.textContent = "Cerrar Sesión";
+            btnAbrirLogin.classList.remove('bg-transparent', 'text-institucional-azul');
+            btnAbrirLogin.classList.add('bg-institucional-azul', 'text-white');
+        });
+        
+        // ... aquí continúa lo del "Toggle Contraseña" (el botón del ojito) ...
         // Simulación de ingreso al Admin
         btnIngresar.addEventListener('click', () => {
             loginScreen.classList.add('vista-oculta');
