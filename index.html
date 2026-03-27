@@ -3,111 +3,324 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mundialito - Torneo Intercolegial</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Mundialito Interclases</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        institucional: {
+                            azul: '#0B3954',
+                            azulHover: '#135075',
+                            amarillo: '#FFD166',
+                            amarilloHover: '#FFC233',
+                            grisFondo: '#F4F6F8',
+                            grisTexto: '#4A5568'
+                        }
+                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: theme('colors.institucional.grisFondo');
+            color: theme('colors.institucional.grisTexto');
+        }
+        
+        /* Clases de Tarjetas y Botones adaptadas de tu código */
+        .card {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            border-top: 4px solid theme('colors.institucional.azul');
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        .btn:disabled { background-color: #9ca3af; cursor: not-allowed; }
+        
+        /* Botón Primario (Azul) */
+        .btn-primary { background-color: theme('colors.institucional.azul'); color: white; }
+        .btn-primary:hover:not(:disabled) { background-color: theme('colors.institucional.azulHover'); }
+        
+        /* Botón Secundario (Amarillo) */
+        .btn-secondary { background-color: theme('colors.institucional.amarillo'); color: theme('colors.institucional.azul'); }
+        .btn-secondary:hover:not(:disabled) { background-color: theme('colors.institucional.amarilloHover'); }
+        
+        .btn-danger { background-color: #dc2626; color: white; }
+        .btn-danger:hover { background-color: #b91c1c; }
+
+        /* Inputs de tu diseño */
+        .input-field {
+            width: 100%;
+            padding: 0.6rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            outline: none;
+        }
+        .input-field:focus {
+            border-color: theme('colors.institucional.azul');
+            box-shadow: 0 0 0 2px rgba(11, 57, 84, 0.2);
+        }
+
+        /* Lógica de pestañas */
+        .vista-oculta { display: none !important; }
+        .vista-activa { display: block; animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Spinner de carga */
+        .spinner {
+            border: 4px solid #e5e7eb;
+            border-top: 4px solid theme('colors.institucional.amarillo');
+            border-radius: 50%;
+            width: 40px; height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
 </head>
-<body>
+<body class="p-4 sm:p-6 md:p-8">
 
-    <header>
-        <h1>⚽ Mundialito</h1>
-        <nav>
-            <button id="btn-nav-posiciones">Posiciones</button>
-            <button id="btn-nav-goleadores">Goleadores</button>
-            <button id="btn-nav-partidos">Partidos</button>
-            <button id="btn-nav-admin" class="admin-btn">Panel Admin</button>
-        </nav>
-    </header>
-
-    <main>
-        <section id="vista-posiciones" class="vista-activa">
-            <h2>Tabla de Posiciones</h2>
-            <div class="table-container">
-                <table id="tabla-posiciones">
-                    <thead>
-                        <tr>
-                            <th>Pos</th>
-                            <th>Equipo</th>
-                            <th>PJ</th>
-                            <th>PG</th>
-                            <th>PE</th>
-                            <th>PP</th>
-                            <th>GF</th>
-                            <th>GC</th>
-                            <th>DG</th>
-                            <th>Pts</th>
-                        </tr>
-                    </thead>
-                    <tbody id="body-posiciones">
-                        </tbody>
-                </table>
-            </div>
-        </section>
-
-        <section id="vista-goleadores" class="vista-oculta">
-            <h2>Tabla de Goleadores</h2>
-            <div class="table-container">
-                <table id="tabla-goleadores">
-                    <thead>
-                        <tr>
-                            <th>Jugador</th>
-                            <th>Equipo</th>
-                            <th>Goles</th>
-                        </tr>
-                    </thead>
-                    <tbody id="body-goleadores">
-                        </tbody>
-                </table>
-            </div>
-        </section>
-
-        <section id="vista-partidos" class="vista-oculta">
-            <h2>Calendario de Partidos</h2>
-            <div id="contenedor-partidos" class="grid-partidos">
+    <div id="login-screen" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4 vista-oculta">
+        <div class="w-full max-w-sm">
+            <div class="card text-center !border-t-institucional-amarillo">
+                <h2 class="text-2xl font-bold mb-4 text-institucional-azul">Acceso Admin</h2>
+                <p class="text-gray-600 mb-6">Clave maestra para gestionar el torneo.</p>
+                <div class="relative mb-4">
+                    <input type="password" id="password-input" class="input-field pr-10" placeholder="••••••••">
+                    <button id="toggle-password-btn" class="absolute inset-y-0 right-0 px-3 flex items-center text-gray-500 hover:text-institucional-azul">
+                        <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                        <svg id="eye-slash-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7 1.274-4.057-5.064 7-9.542 7 .847 0 1.67 .111 2.457 .311M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2 2l20 20" /></svg>
+                    </button>
                 </div>
-        </section>
+                <button id="btn-ingresar" class="btn btn-secondary w-full mb-3">Ingresar</button>
+                <button id="btn-cerrar-login" class="text-sm text-gray-500 hover:underline">Volver al torneo</button>
+            </div>
+        </div>
+    </div>
 
-        <section id="vista-admin" class="vista-oculta">
-            <h2>Panel de Administración</h2>
+    <div id="app" class="max-w-6xl mx-auto">
+        
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-extrabold text-institucional-azul flex items-center justify-center uppercase tracking-wide">
+                 <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mr-4 text-institucional-amarillo" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.783-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                </svg>
+                Mundialito Interclases
+            </h1>
+            <p class="text-lg text-gray-600 mt-2 font-medium">Torneo Oficial - Tabla en vivo</p>
             
-            <div id="admin-login">
-                <h3>Acceso Restringido</h3>
-                <input type="email" id="admin-email" placeholder="Correo electrónico">
-                <input type="password" id="admin-pass" placeholder="Contraseña">
-                <button id="btn-login">Ingresar</button>
-            </div>
+            <nav class="flex justify-center flex-wrap gap-3 mt-6">
+                <button class="nav-btn btn btn-secondary px-6 rounded-full" data-target="vista-posiciones">Posiciones</button>
+                <button class="nav-btn btn bg-gray-200 text-institucional-azul px-6 rounded-full hover:bg-gray-300" data-target="vista-goleadores">Goleadores</button>
+                <button class="nav-btn btn bg-gray-200 text-institucional-azul px-6 rounded-full hover:bg-gray-300" data-target="vista-partidos">Partidos</button>
+                <button id="btn-abrir-login" class="btn border-2 border-institucional-azul text-institucional-azul px-6 rounded-full hover:bg-institucional-azul hover:text-white bg-transparent ml-2">Panel Admin</button>
+            </nav>
+        </header>
 
-            <div id="admin-controles" class="vista-oculta">
-                <div class="admin-card">
-                    <h3>Registrar Equipo</h3>
-                    <input type="text" id="nuevo-equipo-nombre" placeholder="Nombre del equipo (Ej: Grado 10A)">
-                    <button id="btn-guardar-equipo">Guardar Equipo</button>
+        <main id="main-content">
+            
+            <section id="vista-posiciones" class="vista-activa">
+                <div class="card">
+                    <h2 class="text-2xl font-bold mb-4 flex items-center text-institucional-azul">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 mr-3 text-institucional-amarillo" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+                        Tabla de Posiciones
+                    </h2>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full text-sm text-left">
+                            <thead class="bg-gray-100 font-semibold border-b-2 border-institucional-azul">
+                                <tr>
+                                    <th class="p-3">Pos</th><th class="p-3">Equipo</th>
+                                    <th class="p-3 text-center">PJ</th><th class="p-3 text-center">G</th><th class="p-3 text-center">E</th><th class="p-3 text-center">P</th><th class="p-3 text-center">GF</th><th class="p-3 text-center">GC</th><th class="p-3 text-center">DG</th><th class="p-3 text-center">Pts</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                <tr class="bg-yellow-50 font-semibold">
+                                    <td class="p-3">1</td><td class="p-3">Grado 11-A</td>
+                                    <td class="p-3 text-center">3</td><td class="p-3 text-center">3</td><td class="p-3 text-center">0</td><td class="p-3 text-center">0</td><td class="p-3 text-center">9</td><td class="p-3 text-center">2</td><td class="p-3 text-center">7</td><td class="p-3 text-center font-bold text-institucional-azul">9</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3">2</td><td class="p-3">Grado 10-B</td>
+                                    <td class="p-3 text-center">3</td><td class="p-3 text-center">2</td><td class="p-3 text-center">0</td><td class="p-3 text-center">1</td><td class="p-3 text-center">5</td><td class="p-3 text-center">4</td><td class="p-3 text-center">1</td><td class="p-3 text-center font-bold text-institucional-azul">6</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
+            </section>
 
-                <div class="admin-card">
-                    <h3>Registrar Jugador</h3>
-                    <input type="text" id="nuevo-jugador-nombre" placeholder="Nombre del jugador">
-                    <select id="select-equipo-jugador">
-                        <option value="">Selecciona un equipo...</option>
-                        </select>
-                    <button id="btn-guardar-jugador">Guardar Jugador</button>
+            <section id="vista-goleadores" class="vista-oculta">
+                <div class="card">
+                    <h2 class="text-2xl font-bold mb-4 flex items-center text-institucional-azul">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 mr-3 text-institucional-amarillo" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 14l9-5-9-5-9 5 9 5z" /><path stroke-linecap="round" stroke-linejoin="round" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-9.998 12.078 12.078 0 01.665-6.479L12 14z" /></svg>
+                        Goleadores del Torneo
+                    </h2>
+                    <table class="min-w-full text-sm text-left">
+                        <thead class="bg-gray-100 font-semibold border-b-2 border-institucional-azul">
+                            <tr><th class="p-3">Pos</th><th class="p-3">Jugador</th><th class="p-3">Equipo</th><th class="p-3 text-center">Goles</th></tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                            <tr><td class="p-3 font-bold text-institucional-azul">1</td><td class="p-3">Carlos Ramírez</td><td class="p-3 text-gray-500">Grado 11-A</td><td class="p-3 text-center font-bold">5</td></tr>
+                        </tbody>
+                    </table>
                 </div>
+            </section>
 
-                <div class="admin-card">
-                    <h3>Programar Partido</h3>
-                    <select id="select-local">
-                        <option value="">Equipo Local</option>
-                    </select>
-                    <span> VS </span>
-                    <select id="select-visitante">
-                        <option value="">Equipo Visitante</option>
-                    </select>
-                    <input type="datetime-local" id="fecha-partido">
-                    <button id="btn-programar-partido">Programar</button>
+            <section id="vista-partidos" class="vista-oculta">
+                <div class="card !bg-gray-50 mb-6">
+                    <h3 class="text-xl font-bold mb-4 text-center text-institucional-azul">Jornada 1</h3>
+                    
+                    <div class="bg-white border p-4 rounded-lg shadow-sm">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                            <div class="sm:w-1/3 text-center sm:text-right font-semibold text-lg">Grado 11-A</div>
+                            <div class="flex items-center justify-center gap-2">
+                                <input type="number" class="input-field text-center w-16 text-xl font-bold" value="3" readonly>
+                                <span class="font-bold text-gray-400">vs</span>
+                                <input type="number" class="input-field text-center w-16 text-xl font-bold" value="1" readonly>
+                            </div>
+                            <div class="sm:w-1/3 text-center sm:text-left font-semibold text-lg">Grado 10-B</div>
+                        </div>
+
+                        <div class="mt-4 flex flex-col sm:flex-row items-center justify-center gap-2">
+                            <label class="text-sm font-semibold">🏅 Mejor Jugador:</label>
+                            <input type="text" class="input-field max-w-xs" value="Carlos Ramírez" readonly>
+                        </div>
+                        
+                        <hr class="my-4 border-gray-200">
+                        <div class="text-sm">
+                            <h4 class="font-semibold mb-2 text-center text-institucional-azul">Goles del Partido</h4>
+                            <ul class="space-y-1 text-xs max-w-md mx-auto">
+                                <li class="flex justify-between items-center bg-gray-100 p-2 rounded border border-gray-200">
+                                    <span>⚽ Carlos Ramírez (Grado 11-A)</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </section>
-    </main>
+            </section>
 
-    <script type="module" src="js/app.js"></script>
+            <section id="vista-admin" class="vista-oculta">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="card">
+                        <h2 class="text-xl font-bold mb-4 flex items-center text-institucional-azul">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-institucional-amarillo" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.653-.124-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.653.124-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                            1. Registrar Equipos
+                        </h2>
+                        <div class="flex gap-2">
+                            <input type="text" class="input-field" placeholder="Nombre del curso (Ej: 11-A)">
+                            <button class="btn btn-primary">+</button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h2 class="text-xl font-bold mb-4 flex items-center text-institucional-azul">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-institucional-amarillo" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                            2. Generar Partidos
+                        </h2>
+                        <p class="text-sm text-gray-600 mb-4">Genera un calendario justo automáticamente.</p>
+                        <button class="btn btn-secondary w-full">Generar Calendario</button>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        // Lógica de Pestañas (SPA)
+        const navButtons = document.querySelectorAll('.nav-btn');
+        const vistas = ['vista-posiciones', 'vista-goleadores', 'vista-partidos', 'vista-admin'];
+
+        navButtons.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                // Reset estilos de botones
+                navButtons.forEach(b => {
+                    b.classList.remove('btn-secondary');
+                    b.classList.add('bg-gray-200', 'text-institucional-azul');
+                });
+                
+                // Activar botón clickeado
+                e.target.classList.remove('bg-gray-200', 'text-institucional-azul');
+                e.target.classList.add('btn-secondary');
+
+                // Cambiar vista
+                const targetId = e.target.getAttribute('data-target');
+                vistas.forEach(id => {
+                    const vista = document.getElementById(id);
+                    if(id === targetId) {
+                        vista.classList.remove('vista-oculta');
+                        vista.classList.add('vista-activa');
+                    } else {
+                        vista.classList.add('vista-oculta');
+                        vista.classList.remove('vista-activa');
+                    }
+                });
+            });
+        });
+
+        // Lógica de Modales y Login
+        const loginScreen = document.getElementById('login-screen');
+        const btnAbrirLogin = document.getElementById('btn-abrir-login');
+        const btnCerrarLogin = document.getElementById('btn-cerrar-login');
+        const btnIngresar = document.getElementById('btn-ingresar');
+
+        btnAbrirLogin.addEventListener('click', () => {
+            loginScreen.classList.remove('vista-oculta');
+        });
+
+        btnCerrarLogin.addEventListener('click', () => {
+            loginScreen.classList.add('vista-oculta');
+        });
+
+        // Simulación de ingreso al Admin
+        btnIngresar.addEventListener('click', () => {
+            loginScreen.classList.add('vista-oculta');
+            
+            // Forzar vista Admin
+            vistas.forEach(id => document.getElementById(id).classList.add('vista-oculta'));
+            document.getElementById('vista-admin').classList.remove('vista-oculta');
+            document.getElementById('vista-admin').classList.add('vista-activa');
+            
+            // Cambiar estilo del botón admin en el header
+            btnAbrirLogin.textContent = "Cerrar Sesión";
+            btnAbrirLogin.classList.remove('bg-transparent', 'text-institucional-azul');
+            btnAbrirLogin.classList.add('bg-institucional-azul', 'text-white');
+        });
+
+        // Toggle Contraseña (Extraído de tu código)
+        const togglePasswordBtn = document.getElementById('toggle-password-btn');
+        const passwordInput = document.getElementById('password-input');
+        const eyeIcon = document.getElementById('eye-icon');
+        const eyeSlashIcon = document.getElementById('eye-slash-icon');
+
+        togglePasswordBtn.addEventListener('click', () => {
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.classList.add('hidden');
+                eyeSlashIcon.classList.remove('hidden');
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.classList.remove('hidden');
+                eyeSlashIcon.classList.add('hidden');
+            }
+        });
+    </script>
 </body>
 </html>
