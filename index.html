@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Torneo Beth Shalom - Mundialito</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        .admin-only { display: none !important; }
+        .is-admin .admin-only { display: block !important; }
+        .tab-btn { border-bottom: 3px solid transparent; transition: all 0.3s; }
+        .tab-btn.active { border-bottom: 3px solid #10b981; color: #10b981; }
+        #loading-overlay {
+            position: fixed; inset: 0; background: white;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100;
+        }
+    </style>
+</head>
+<body class="min-h-screen pb-20">
+
+    <!-- Cargando -->
+    <div id="loading-overlay">
+        <div id="spinner-icon" class="animate-spin rounded-full h-10 w-10 border-b-2 border-green-600 mb-4"></div>
+        <p id="status-text" class="text-gray-500 text-sm font-medium px-6 text-center">Conectando a Mundialito-7ed91...</p>
+        <button id="btn-skip" onclick="app.closeLoading()" class="mt-6 text-xs bg-gray-100 text-gray-600 px-4 py-2 rounded-lg font-bold shadow-sm hover:bg-gray-200">Forzar Entrada al Sitio</button>
+    </div>
+
+    <!-- Header -->
+    <header class="bg-green-800 text-white p-4 shadow-md sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-bold flex items-center gap-2">🏆 Mundialito Beth Shalom</h1>
+            <nav class="flex gap-4 text-sm">
+                <button onclick="app.setTab('posiciones')" id="tab-posiciones" class="tab-btn px-2 py-1 font-medium active">Posiciones</button>
+                <button onclick="app.setTab('equipos')" id="tab-equipos" class="tab-btn px-2 py-1 font-medium">Equipos</button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-4 mt-4 max-w-4xl">
+        <!-- VISTA: POSICIONES -->
+        <section id="view-posiciones" class="view-content">
+            <div class="bg-white rounded-2xl shadow-sm border p-6">
+                <h2 class="text-lg font-bold mb-4 text-gray-700">Tabla de Clasificación</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm">
+                        <thead>
+                            <tr class="text-gray-400 border-b uppercase text-[10px] tracking-widest">
+                                <th class="py-3 px-2">#</th>
+                                <th class="py-3">Equipo</th>
+                                <th class="py-3 text-center">PJ</th>
+                                <th class="py-3 text-center text-green-700 font-bold">PTS</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-body">
+                            <tr><td colspan="4" class="py-10 text-center text-gray-400 italic font-medium">Cargando datos... o base de datos vacía.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- VISTA: EQUIPOS (ADMIN) -->
+        <section id="view-equipos" class="view-content hidden">
+            <div class="admin-only bg-white rounded-2xl shadow-sm border p-6 mb-6">
+                <h3 class="font-bold mb-4 text-green-800">Panel de Administración</h3>
+                <div class="flex gap-2">
+                    <input type="text" id="input-team" placeholder="Nombre del equipo..." class="flex-1 p-3 border rounded-xl outline-none focus:ring-2 focus:ring-green-500">
+                    <button onclick="app.addNewTeam()" class="bg-green-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-green-700 transition-colors">Añadir</button>
+                </div>
+            </div>
+            
+            <div id="teams-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
+        </section>
+    </main>
+
+    <!-- Footer / Admin Access -->
+    <footer class="fixed bottom-0 left-0 w-full bg-white/95 backdrop-blur-md border-t p-3 flex justify-between items-center px-6">
+        <p class="text-[10px] text-gray-400 font-mono" id="db-status">Estado: Iniciando...</p>
+        <div>
+            <button onclick="app.openLogin()" id="login-trigger" class="text-xs font-bold text-green-700 bg-green-50 px-4 py-1.5 rounded-full border border-green-200">Acceso Admin</button>
+            <button onclick="app.logout()" id="logout-trigger" class="hidden text-xs font-bold text-red-600 bg-red-50 px-4 py-1.5 rounded-full border border-red-200">Salir</button>
+        </div>
+    </footer>
+
+    <!-- Login Modal -->
+    <div id="modal-login" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-[110] backdrop-blur-sm">
+        <div class="bg-white p-8 rounded-3xl w-full max-w-xs shadow-2xl">
+            <h2 class="text-xl font-bold mb-6 text-center text-gray-800">Mundialito Admin</h2>
+            <input type="password" id="field-pass" placeholder="Contraseña Maestra" class="w-full p-4 border rounded-2xl mb-4 text-center text-lg focus:ring-2 focus:ring-green-500 outline-none">
+            <button onclick="app.handleLogin()" class="w-full bg-green-700 text-white py-4 rounded-2xl font-bold shadow-lg">Entrar</button>
+            <button onclick="document.getElementById('modal-login').classList.add('hidden')" class="w-full mt-4 text-gray-400 text-xs hover:text-gray-800">Cerrar</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+        import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+        const app = {
+            db: null, auth: null, pass: "", 
+            data: { teams: [] }, 
+            isAdmin: false,
+
+            init: async function() {
+                // Forzar cierre si tarda demasiado
+                setTimeout(() => { this.closeLoading(); }, 8000);
+
+                try {
+                    // Si el archivo está en /public/index.html, la API está en /api/get-config
+                    // Usamos una ruta absoluta para asegurar que Vercel la encuentre
+                    const res = await fetch('/api/get-config');
+                    
+                    if (!res.ok) {
+                        // Si falla la ruta raíz, intentamos una relativa por si el servidor tiene una estructura distinta
+                        const retryRes = await fetch('../api/get-config');
+                        if (!retryRes.ok) {
+                            throw new Error(`No se pudo encontrar la API en /api/get-config (Error ${res.status})`);
+                        }
+                        return this.processConfig(await retryRes.json());
+                    }
+
+                    const config = await res.json();
+                    this.processConfig(config);
+
+                } catch (e) {
+                    console.error(e);
+                    this.logError(e.message || "Error al conectar con el servidor.");
+                }
+            },
+
+            processConfig: function(config) {
+                if (config.error) {
+                    this.logError(config.message);
+                    return;
+                }
+
+                this.pass = config.masterPassword;
+                const fApp = initializeApp(config);
+                this.auth = getAuth(fApp);
+                this.db = getFirestore(fApp);
+
+                onAuthStateChanged(this.auth, (user) => {
+                    if (user) {
+                        if (!user.isAnonymous) this.setAdminState(true);
+                        this.startSync();
+                    } else {
+                        signInAnonymously(this.auth).catch(e => {
+                            console.error(e);
+                            this.logError("Error: Habilita 'Anonymous Auth' en Firebase Console.");
+                        });
+                    }
+                });
+            },
+
+            startSync: function() {
+                onSnapshot(doc(this.db, "torneo", "data"), (snap) => {
+                    this.closeLoading();
+                    document.getElementById('db-status').innerText = "Conectado: Mundialito-7ed91";
+                    
+                    if (snap.exists()) {
+                        this.data = snap.data();
+                    } else {
+                        this.data = { teams: [] };
+                    }
+                    this.render();
+                }, (err) => {
+                    console.error(err);
+                    this.logError("Error de lectura: Revisa las Reglas de Firestore.");
+                    this.closeLoading();
+                });
+            },
+
+            render: function() {
+                const tbody = document.getElementById('table-body');
+                if (this.data.teams && this.data.teams.length > 0) {
+                    const sorted = [...this.data.teams].sort((a,b) => (b.pts||0) - (a.pts||0));
+                    tbody.innerHTML = sorted.map((t, i) => `
+                        <tr class="border-b hover:bg-gray-50 transition-colors">
+                            <td class="py-4 px-2 font-bold text-gray-300">${i+1}</td>
+                            <td class="py-4 font-bold text-gray-800 uppercase text-xs tracking-wide">${t.name}</td>
+                            <td class="py-4 text-center font-medium">${t.pj||0}</td>
+                            <td class="py-4 text-center font-bold text-green-600">${t.pts||0}</td>
+                        </tr>
+                    `).join('');
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="4" class="py-10 text-center text-gray-500 italic font-medium">No hay equipos registrados. Accede como Admin para empezar.</td></tr>';
+                }
+
+                const grid = document.getElementById('teams-grid');
+                grid.innerHTML = (this.data.teams && this.data.teams.length) ? this.data.teams.map(t => `
+                    <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex justify-between items-center group">
+                        <span class="font-bold text-xs uppercase text-gray-500 group-hover:text-green-700 transition-colors">${t.name}</span>
+                        <div class="w-2 h-2 rounded-full bg-green-500 shadow-sm shadow-green-200"></div>
+                    </div>
+                `).join('') : '<p class="col-span-full text-center text-gray-400 italic py-10">Sin equipos.</p>';
+            },
+
+            addNewTeam: async function() {
+                const name = document.getElementById('input-team').value.trim();
+                if (!name) return;
+                
+                if (!this.data.teams) this.data.teams = [];
+                this.data.teams.push({ name, pj:0, g:0, e:0, p:0, pts:0 });
+                
+                document.getElementById('input-team').value = "";
+                await this.save();
+            },
+
+            save: async function() {
+                if (!this.isAdmin) return;
+                try {
+                    await setDoc(doc(this.db, "torneo", "data"), {
+                        teams: this.data.teams,
+                        lastUpdate: Date.now()
+                    });
+                } catch (e) { 
+                    alert("Error: " + e.message); 
+                }
+            },
+
+            setAdminState: function(s) {
+                this.isAdmin = s;
+                document.body.classList.toggle('is-admin', s);
+                document.getElementById('login-trigger').classList.toggle('hidden', s);
+                document.getElementById('logout-trigger').classList.toggle('hidden', !s);
+            },
+
+            openLogin: () => {
+                document.getElementById('modal-login').classList.remove('hidden');
+                document.getElementById('field-pass').focus();
+            },
+            
+            handleLogin: function() {
+                if (document.getElementById('field-pass').value === this.pass) {
+                    this.setAdminState(true);
+                    document.getElementById('modal-login').classList.add('hidden');
+                    document.getElementById('field-pass').value = "";
+                } else {
+                    alert("Clave Maestra Incorrecta");
+                }
+            },
+
+            logout: () => { signOut(app.auth); location.reload(); },
+
+            setTab: (t) => {
+                document.querySelectorAll('.view-content').forEach(v => v.classList.add('hidden'));
+                document.getElementById(`view-${t}`).classList.remove('hidden');
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.getElementById(`tab-${t}`).classList.add('active');
+            },
+
+            closeLoading: () => {
+                const overlay = document.getElementById('loading-overlay');
+                if(overlay) overlay.classList.add('hidden');
+            },
+            
+            logError: function(m) {
+                const txt = document.getElementById('status-text');
+                const spinner = document.getElementById('spinner-icon');
+                const footerStatus = document.getElementById('db-status');
+                
+                if (txt) txt.innerHTML = `<span class="text-red-500 font-bold">${m}</span>`;
+                if (spinner) spinner.classList.add('hidden');
+                if (footerStatus) footerStatus.innerText = "Error";
+            }
+        };
+
+        window.app = app;
+        app.init();
+    </script>
+</body>
+</html>
