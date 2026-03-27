@@ -20,7 +20,8 @@
 
     <div id="loading-overlay">
         <div id="spinner" class="animate-spin rounded-full h-10 w-10 border-b-2 border-green-600 mb-4"></div>
-        <p id="status-text" class="text-gray-500 text-sm font-medium">Conectando...</p>
+        <p id="status-text" class="text-gray-500 text-sm font-medium px-4 text-center">Iniciando sistema...</p>
+        <div id="debug-info" class="mt-4 text-[10px] text-gray-300 font-mono hidden"></div>
     </div>
 
     <header class="bg-green-800 text-white p-4 shadow-md sticky top-0 z-50">
@@ -45,7 +46,9 @@
                             <th class="py-3 text-center text-green-700 font-bold">PTS</th>
                         </tr>
                     </thead>
-                    <tbody id="table-body"></tbody>
+                    <tbody id="table-body">
+                        <tr><td colspan="4" class="py-10 text-center text-gray-400">Cargando datos...</td></tr>
+                    </tbody>
                 </table>
             </div>
         </section>
@@ -62,15 +65,17 @@
     </main>
 
     <footer class="fixed bottom-0 left-0 w-full bg-white/95 border-t p-3 flex justify-between items-center px-6">
-        <p class="text-[10px] text-gray-400 font-mono uppercase" id="db-status">v2.0 - Desconectado</p>
+        <p class="text-[10px] text-gray-400 font-mono uppercase" id="db-status">v2.1 - Desconectado</p>
         <button onclick="app.openLogin()" id="login-trigger" class="text-xs font-bold text-green-700">Admin</button>
         <button onclick="app.logout()" id="logout-trigger" class="hidden text-xs font-bold text-red-600">Salir</button>
     </footer>
 
     <div id="modal-login" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-[110]">
-        <div class="bg-white p-8 rounded-3xl w-full max-w-xs">
+        <div class="bg-white p-8 rounded-3xl w-full max-w-xs shadow-2xl">
+            <h2 class="text-lg font-bold mb-4 text-center">Acceso Admin</h2>
             <input type="password" id="field-pass" placeholder="Clave Maestra" class="w-full p-4 border rounded-2xl mb-4 text-center">
             <button onclick="app.handleLogin()" class="w-full bg-green-700 text-white py-4 rounded-2xl font-bold">Entrar</button>
+            <button onclick="document.getElementById('modal-login').classList.add('hidden')" class="w-full mt-2 text-gray-400 text-xs">Cancelar</button>
         </div>
     </div>
 
@@ -83,50 +88,60 @@
             db: null, auth: null, pass: "", data: { teams: [] }, isAdmin: false,
 
             init: async function() {
+                this.updateStatus("Obteniendo configuración...");
                 try {
+                    // Intentamos obtener la config de la API
                     const res = await fetch('/api/get-config');
-                    if (!res.ok) throw new Error("API no encontrada. Verifica carpeta /api.");
+                    
+                    if (!res.ok) {
+                        const errorData = await res.json().catch(() => ({}));
+                        throw new Error(errorData.details || `Error del servidor (${res.status})`);
+                    }
                     
                     const config = await res.json();
-                    if (config.error) throw new Error(config.message);
+                    
+                    if (config.error) {
+                        throw new Error(config.details || "Error en la configuración recibida");
+                    }
 
                     this.pass = config.masterPassword;
                     const fApp = initializeApp(config);
                     this.auth = getAuth(fApp);
                     this.db = getFirestore(fApp);
 
+                    this.updateStatus("Autenticando...");
                     onAuthStateChanged(this.auth, (user) => {
                         if (user) {
                             if (!user.isAnonymous) this.setAdminState(true);
                             this.startSync();
                         } else {
-                            signInAnonymously(this.auth);
+                            signInAnonymously(this.auth).catch(err => {
+                                this.showCriticalError("Error Auth: Habilita 'Anonymous' en Firebase Console.");
+                            });
                         }
                     });
+
                 } catch (e) {
-                    const statusEl = document.getElementById('status-text');
-                    if (statusEl) statusEl.innerHTML = `<b class="text-red-500">${e.message}</b>`;
-                    const spinnerEl = document.getElementById('spinner');
-                    if (spinnerEl) spinnerEl.classList.add('hidden');
+                    this.showCriticalError(e.message);
                 }
             },
 
             startSync: function() {
+                this.updateStatus("Sincronizando base de datos...");
                 onSnapshot(doc(this.db, "torneo", "data"), (snap) => {
                     const loader = document.getElementById('loading-overlay');
                     if (loader) loader.classList.add('hidden');
                     
                     const dbStatus = document.getElementById('db-status');
-                    if (dbStatus) {
-                        dbStatus.innerText = "ONLINE: MUNDIALITO-7ED91";
-                    }
+                    if (dbStatus) dbStatus.innerText = "ONLINE: MUNDIALITO-7ED91";
                     
                     this.data = snap.exists() ? snap.data() : { teams: [] };
                     this.render();
                 }, (error) => {
-                    console.error("Error en Snapshot:", error);
+                    console.error("Firebase Error:", error);
+                    this.updateStatus("Error de Permisos: Revisa las reglas de Firestore.");
                     const dbStatus = document.getElementById('db-status');
-                    if (dbStatus) dbStatus.innerText = "ERROR DE CONEXIÓN";
+                    if (dbStatus) dbStatus.innerText = "ERROR DE REGLAS";
                 });
             },
 
@@ -135,20 +150,23 @@
                 const tbody = document.getElementById('table-body');
                 if (tbody) {
                     tbody.innerHTML = sorted.length > 0 ? sorted.map((t, i) => `
-                        <tr class="border-b"><td class="py-4 px-2 font-bold text-gray-300">${i+1}</td>
-                        <td class="py-4 font-bold text-xs uppercase">${t.name}</td>
-                        <td class="py-4 text-center">${t.pj||0}</td>
-                        <td class="py-4 text-center font-bold text-green-600">${t.pts||0}</td></tr>
-                    `).join('') : '<tr><td colspan="4" class="py-10 text-center text-gray-400">No hay datos disponibles.</td></tr>';
+                        <tr class="border-b hover:bg-gray-50 transition-colors">
+                            <td class="py-4 px-2 font-bold text-gray-300">${i+1}</td>
+                            <td class="py-4 font-bold text-xs uppercase text-gray-700">${t.name}</td>
+                            <td class="py-4 text-center font-medium">${t.pj||0}</td>
+                            <td class="py-4 text-center font-bold text-green-600">${t.pts||0}</td>
+                        </tr>
+                    `).join('') : '<tr><td colspan="4" class="py-10 text-center text-gray-400 italic">No hay equipos registrados.</td></tr>';
                 }
                 
                 const grid = document.getElementById('teams-grid');
                 if (grid) {
                     grid.innerHTML = (this.data.teams || []).length > 0 ? (this.data.teams || []).map(t => `
-                        <div class="bg-white p-4 rounded-xl border flex justify-between items-center">
-                            <span class="font-bold text-xs uppercase">${t.name}</span>
+                        <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex justify-between items-center">
+                            <span class="font-bold text-xs uppercase text-gray-600">${t.name}</span>
+                            <div class="w-2 h-2 rounded-full bg-green-400"></div>
                         </div>
-                    `).join('') : '<p class="col-span-full text-center text-gray-400 py-4">Agrega equipos en modo Admin.</p>';
+                    `).join('') : '<p class="col-span-full text-center text-gray-400 py-10 italic">Usa el modo Admin para gestionar equipos.</p>';
                 }
             },
 
@@ -156,13 +174,18 @@
                 const nameInput = document.getElementById('input-team');
                 const name = nameInput ? nameInput.value.trim() : "";
                 if (!name || !this.isAdmin) return;
+                
                 this.data.teams = this.data.teams || [];
                 this.data.teams.push({ name, pj:0, g:0, e:0, p:0, pts:0 });
+                
                 try {
-                    await setDoc(doc(this.db, "torneo", "data"), this.data);
+                    await setDoc(doc(this.db, "torneo", "data"), {
+                        teams: this.data.teams,
+                        lastUpdate: Date.now()
+                    });
                     if (nameInput) nameInput.value = "";
                 } catch (e) {
-                    alert("Error al guardar: " + e.message);
+                    alert("Error al guardar: Revisa las Reglas de Firestore.");
                 }
             },
 
@@ -181,12 +204,29 @@
                     this.setAdminState(true);
                     const modal = document.getElementById('modal-login');
                     if (modal) modal.classList.add('hidden');
-                } else alert("Error: Clave incorrecta");
+                    passInput.value = "";
+                } else alert("Clave Incorrecta");
+            },
+
+            updateStatus: (m) => {
+                const el = document.getElementById('status-text');
+                if (el) el.innerText = m;
+            },
+
+            showCriticalError: function(m) {
+                this.updateStatus("");
+                const el = document.getElementById('status-text');
+                if (el) el.innerHTML = `<div class="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 font-bold">Error Crítico:<br><span class="text-xs font-normal">${m}</span></div>`;
+                const spinner = document.getElementById('spinner');
+                if (spinner) spinner.classList.add('hidden');
             },
 
             openLogin: () => {
                 const modal = document.getElementById('modal-login');
-                if (modal) modal.classList.remove('hidden');
+                if (modal) {
+                    modal.classList.remove('hidden');
+                    document.getElementById('field-pass').focus();
+                }
             },
             logout: () => { signOut(app.auth); location.reload(); },
             setTab: (t) => {
