@@ -22,8 +22,9 @@
 
     <!-- Cargando -->
     <div id="loading-overlay">
-        <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-green-600 mb-4"></div>
-        <p id="status-text" class="text-gray-500 text-sm">Conectando a Mundialito-7ed91...</p>
+        <div id="spinner-icon" class="animate-spin rounded-full h-10 w-10 border-b-2 border-green-600 mb-4"></div>
+        <p id="status-text" class="text-gray-500 text-sm font-medium px-6 text-center">Conectando a Mundialito-7ed91...</p>
+        <button id="btn-skip" onclick="app.closeLoading()" class="mt-6 text-xs bg-gray-100 text-gray-600 px-4 py-2 rounded-lg font-bold shadow-sm hover:bg-gray-200">Forzar Entrada al Sitio</button>
     </div>
 
     <!-- Header -->
@@ -53,7 +54,7 @@
                             </tr>
                         </thead>
                         <tbody id="table-body">
-                            <tr><td colspan="4" class="py-10 text-center text-gray-400 italic font-medium">No hay equipos registrados en el nuevo proyecto.</td></tr>
+                            <tr><td colspan="4" class="py-10 text-center text-gray-400 italic font-medium">Cargando datos... o base de datos vacía.</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -75,8 +76,8 @@
     </main>
 
     <!-- Footer / Admin Access -->
-    <footer class="fixed bottom-0 left-0 w-full bg-white/80 backdrop-blur-md border-t p-3 flex justify-between items-center px-6">
-        <p class="text-[10px] text-gray-400 font-mono" id="db-status">Estado: Verificando...</p>
+    <footer class="fixed bottom-0 left-0 w-full bg-white/95 backdrop-blur-md border-t p-3 flex justify-between items-center px-6">
+        <p class="text-[10px] text-gray-400 font-mono" id="db-status">Estado: Iniciando...</p>
         <div>
             <button onclick="app.openLogin()" id="login-trigger" class="text-xs font-bold text-green-700 bg-green-50 px-4 py-1.5 rounded-full border border-green-200">Acceso Admin</button>
             <button onclick="app.logout()" id="logout-trigger" class="hidden text-xs font-bold text-red-600 bg-red-50 px-4 py-1.5 rounded-full border border-red-200">Salir</button>
@@ -89,7 +90,7 @@
             <h2 class="text-xl font-bold mb-6 text-center text-gray-800">Mundialito Admin</h2>
             <input type="password" id="field-pass" placeholder="Contraseña Maestra" class="w-full p-4 border rounded-2xl mb-4 text-center text-lg focus:ring-2 focus:ring-green-500 outline-none">
             <button onclick="app.handleLogin()" class="w-full bg-green-700 text-white py-4 rounded-2xl font-bold shadow-lg">Entrar</button>
-            <button onclick="document.getElementById('modal-login').classList.add('hidden')" class="w-full mt-4 text-gray-400 text-xs">Cerrar</button>
+            <button onclick="document.getElementById('modal-login').classList.add('hidden')" class="w-full mt-4 text-gray-400 text-xs hover:text-gray-800">Cerrar</button>
         </div>
     </div>
 
@@ -104,9 +105,20 @@
             isAdmin: false,
 
             init: async function() {
+                // Si algo falla catastróficamente, a los 6 segundos cerramos el bloqueo sí o sí.
+                setTimeout(() => { this.closeLoading(); }, 6000);
+
                 try {
                     const res = await fetch('/api/get-config');
-                    const config = await res.json();
+                    // Verifica si la respuesta es JSON válido
+                    const textRes = await res.text();
+                    let config;
+                    
+                    try {
+                        config = JSON.parse(textRes);
+                    } catch (err) {
+                        throw new Error("La API no respondió correctamente. ¿Está Vercel configurado?");
+                    }
                     
                     if (config.error) {
                         this.logError(config.message);
@@ -123,12 +135,16 @@
                             if (!user.isAnonymous) this.setAdminState(true);
                             this.startSync();
                         } else {
-                            signInAnonymously(this.auth).catch(e => this.logError("Error de Conexión"));
+                            signInAnonymously(this.auth).catch(e => {
+                                console.error(e);
+                                this.logError("Autenticación Anónima desactivada en Firebase.");
+                            });
                         }
                     });
 
                 } catch (e) {
-                    this.logError("Error al cargar configuración");
+                    console.error(e);
+                    this.logError(e.message || "Error al conectar con el servidor.");
                 }
             },
 
@@ -136,13 +152,18 @@
                 onSnapshot(doc(this.db, "torneo", "data"), (snap) => {
                     this.closeLoading();
                     document.getElementById('db-status').innerText = "DB: Mundialito-7ed91 Online";
+                    
                     if (snap.exists()) {
                         this.data = snap.data();
+                    } else {
+                        // Base de datos vacía, mostramos el render limpio
+                        this.data = { teams: [] };
                     }
                     this.render();
                 }, (err) => {
-                    this.logError("Revisa las reglas de Firestore");
                     console.error(err);
+                    this.logError("Error de lectura: Revisa las Reglas de Firestore.");
+                    this.closeLoading(); // Forzamos apertura para que vea el error abajo
                 });
             },
 
@@ -159,7 +180,7 @@
                         </tr>
                     `).join('');
                 } else {
-                    tbody.innerHTML = '<tr><td colspan="4" class="py-10 text-center text-gray-400 italic font-medium">No hay equipos registrados en el nuevo proyecto.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="4" class="py-10 text-center text-gray-500 italic font-medium">No hay equipos registrados. Usa el botón Admin abajo.</td></tr>';
                 }
 
                 const grid = document.getElementById('teams-grid');
@@ -189,7 +210,9 @@
                         teams: this.data.teams,
                         lastUpdate: Date.now()
                     });
-                } catch (e) { alert("Error al guardar: Verifique reglas de Firestore"); }
+                } catch (e) { 
+                    alert("Error al guardar: " + e.message); 
+                }
             },
 
             setAdminState: function(s) {
@@ -209,7 +232,9 @@
                     this.setAdminState(true);
                     document.getElementById('modal-login').classList.add('hidden');
                     document.getElementById('field-pass').value = "";
-                } else alert("Clave Maestra Incorrecta");
+                } else {
+                    alert("Clave Maestra Incorrecta");
+                }
             },
 
             logout: () => { signOut(app.auth); location.reload(); },
@@ -221,10 +246,19 @@
                 document.getElementById(`tab-${t}`).classList.add('active');
             },
 
-            closeLoading: () => document.getElementById('loading-overlay').classList.add('hidden'),
-            logError: (m) => {
+            closeLoading: () => {
+                const overlay = document.getElementById('loading-overlay');
+                if(overlay) overlay.classList.add('hidden');
+            },
+            
+            logError: function(m) {
                 const txt = document.getElementById('status-text');
+                const spinner = document.getElementById('spinner-icon');
+                const footerStatus = document.getElementById('db-status');
+                
                 if (txt) txt.innerHTML = `<span class="text-red-500 font-bold">${m}</span>`;
+                if (spinner) spinner.classList.add('hidden'); // Ocultar el spinner si hay error
+                if (footerStatus) footerStatus.innerText = "Error: " + m;
             }
         };
 
