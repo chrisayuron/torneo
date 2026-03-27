@@ -117,10 +117,16 @@
                     if (loader) loader.classList.add('hidden');
                     
                     const dbStatus = document.getElementById('db-status');
-                    if (dbStatus) dbStatus.innerText = "ONLINE: MUNDIALITO-7ED91";
+                    if (dbStatus) {
+                        dbStatus.innerText = "ONLINE: MUNDIALITO-7ED91";
+                    }
                     
                     this.data = snap.exists() ? snap.data() : { teams: [] };
                     this.render();
+                }, (error) => {
+                    console.error("Error en Snapshot:", error);
+                    const dbStatus = document.getElementById('db-status');
+                    if (dbStatus) dbStatus.innerText = "ERROR DE CONEXIÓN";
                 });
             },
 
@@ -128,21 +134,21 @@
                 const sorted = [...(this.data.teams || [])].sort((a,b) => (b.pts||0) - (a.pts||0));
                 const tbody = document.getElementById('table-body');
                 if (tbody) {
-                    tbody.innerHTML = sorted.map((t, i) => `
+                    tbody.innerHTML = sorted.length > 0 ? sorted.map((t, i) => `
                         <tr class="border-b"><td class="py-4 px-2 font-bold text-gray-300">${i+1}</td>
                         <td class="py-4 font-bold text-xs uppercase">${t.name}</td>
                         <td class="py-4 text-center">${t.pj||0}</td>
                         <td class="py-4 text-center font-bold text-green-600">${t.pts||0}</td></tr>
-                    `).join('');
+                    `).join('') : '<tr><td colspan="4" class="py-10 text-center text-gray-400">No hay datos disponibles.</td></tr>';
                 }
                 
                 const grid = document.getElementById('teams-grid');
                 if (grid) {
-                    grid.innerHTML = (this.data.teams || []).map(t => `
+                    grid.innerHTML = (this.data.teams || []).length > 0 ? (this.data.teams || []).map(t => `
                         <div class="bg-white p-4 rounded-xl border flex justify-between items-center">
                             <span class="font-bold text-xs uppercase">${t.name}</span>
                         </div>
-                    `).join('');
+                    `).join('') : '<p class="col-span-full text-center text-gray-400 py-4">Agrega equipos en modo Admin.</p>';
                 }
             },
 
@@ -152,8 +158,12 @@
                 if (!name || !this.isAdmin) return;
                 this.data.teams = this.data.teams || [];
                 this.data.teams.push({ name, pj:0, g:0, e:0, p:0, pts:0 });
-                await setDoc(doc(this.db, "torneo", "data"), this.data);
-                if (nameInput) nameInput.value = "";
+                try {
+                    await setDoc(doc(this.db, "torneo", "data"), this.data);
+                    if (nameInput) nameInput.value = "";
+                } catch (e) {
+                    alert("Error al guardar: " + e.message);
+                }
             },
 
             setAdminState: function(s) {
@@ -171,7 +181,7 @@
                     this.setAdminState(true);
                     const modal = document.getElementById('modal-login');
                     if (modal) modal.classList.add('hidden');
-                } else alert("Error");
+                } else alert("Error: Clave incorrecta");
             },
 
             openLogin: () => {
