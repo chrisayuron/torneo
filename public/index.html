@@ -22,8 +22,8 @@
     <!-- Pantalla de Carga -->
     <div id="loading-screen">
         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mb-4"></div>
-        <p id="loading-text" class="text-gray-600 font-medium">Cargando aplicación...</p>
-        <button id="emergency-btn" onclick="location.reload()" class="hidden mt-4 text-xs text-blue-500 underline">¿Tarda demasiado? Recargar</button>
+        <p id="loading-text" class="text-gray-600 font-medium">Conectando con el servidor...</p>
+        <button id="emergency-btn" onclick="app.forceCloseLoading()" class="hidden mt-4 text-xs text-blue-500 underline font-bold">Omitir carga (Forzar entrada)</button>
     </div>
 
     <!-- Navegación -->
@@ -43,17 +43,19 @@
         <section id="view-standings" class="view">
             <div class="bg-white rounded-xl shadow-md p-6 overflow-x-auto">
                 <h2 class="text-xl font-bold mb-6 text-gray-800 border-b pb-2">Tabla de Posiciones</h2>
-                <table class="w-full text-sm">
+                <table class="w-full text-sm text-left">
                     <thead>
-                        <tr class="text-left bg-gray-50 text-gray-500 uppercase font-bold border-b">
+                        <tr class="bg-gray-50 text-gray-500 uppercase font-bold border-b">
                             <th class="p-3 text-center">#</th>
                             <th class="p-3">Equipo</th>
                             <th class="p-3 text-center">PJ</th>
                             <th class="p-3 text-center">G</th>
-                            <th class="p-3 text-center">PTS</th>
+                            <th class="p-3 text-center text-green-700">PTS</th>
                         </tr>
                     </thead>
-                    <tbody id="standings-body"></tbody>
+                    <tbody id="standings-body">
+                        <tr><td colspan="5" class="p-10 text-center text-gray-400 italic">Cargando datos...</td></tr>
+                    </tbody>
                 </table>
             </div>
         </section>
@@ -61,21 +63,21 @@
         <!-- VISTA: CALENDARIO -->
         <section id="view-matches" class="view hidden">
             <div class="flex justify-between items-center mb-6">
-                <h2 class="text-xl font-bold text-gray-800">Jornadas</h2>
-                <button onclick="app.generateRounds()" class="admin-only bg-green-600 text-white px-4 py-2 rounded-lg text-xs font-bold">Generar Calendario</button>
+                <h2 class="text-xl font-bold text-gray-800">Calendario de Jornadas</h2>
+                <button onclick="app.generateRounds()" class="admin-only bg-green-600 text-white px-4 py-2 rounded-lg text-xs font-bold shadow-sm">Generar Fechas</button>
             </div>
-            <div id="rounds-container" class="space-y-6 text-center text-gray-400 py-10">
-                Aún no hay partidos programados.
+            <div id="rounds-container" class="space-y-6">
+                <p class="text-center text-gray-400 py-10">No hay partidos programados.</p>
             </div>
         </section>
 
         <!-- VISTA: EQUIPOS -->
         <section id="view-teams" class="view hidden">
-            <div class="admin-only bg-white p-6 rounded-xl shadow-md mb-8">
-                <h3 class="font-bold mb-4">Gestión de Equipos</h3>
+            <div class="admin-only bg-white p-6 rounded-xl shadow-md mb-8 border-t-4 border-green-600">
+                <h3 class="font-bold mb-4 text-gray-700">Añadir Nuevo Equipo</h3>
                 <div class="flex gap-2">
-                    <input type="text" id="new-team-name" placeholder="Nombre del equipo..." class="flex-grow p-2 border rounded-lg">
-                    <button onclick="app.addTeam()" class="bg-green-600 text-white px-6 py-2 rounded-lg font-bold">Añadir</button>
+                    <input type="text" id="new-team-name" placeholder="Nombre (ej: 11-A)" class="flex-grow p-3 border rounded-xl focus:ring-2 focus:ring-green-500 outline-none">
+                    <button onclick="app.addTeam()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-xl font-bold transition-colors">Añadir</button>
                 </div>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="teams-list"></div>
@@ -83,20 +85,22 @@
     </main>
 
     <!-- Footer / Admin -->
-    <footer class="fixed bottom-0 left-0 w-full bg-white border-t p-4 flex justify-between items-center">
-        <span class="text-xs text-gray-400">Beth Shalom v2.1</span>
+    <footer class="fixed bottom-0 left-0 w-full bg-white border-t p-4 flex justify-between items-center z-40">
+        <span class="text-xs text-gray-400 font-medium">Torneo Beth Shalom © 2024</span>
         <div id="admin-controls">
-            <button onclick="app.showLogin()" id="btn-login" class="text-xs font-bold text-green-700 bg-green-50 px-4 py-2 rounded-full border">🔐 Admin</button>
-            <button onclick="app.logout()" id="btn-logout" class="hidden text-xs font-bold text-red-600 bg-red-50 px-4 py-2 rounded-full border">Salir</button>
+            <button onclick="app.showLogin()" id="btn-login" class="text-xs font-bold text-green-700 bg-green-50 px-4 py-2 rounded-full border border-green-200 hover:bg-green-100 transition-all">🔐 Admin Access</button>
+            <button onclick="app.logout()" id="btn-logout" class="hidden text-xs font-bold text-red-600 bg-red-50 px-4 py-2 rounded-full border border-red-200 hover:bg-red-100 transition-all">Cerrar Sesión</button>
         </div>
     </footer>
 
     <!-- Login Modal -->
-    <div id="login-modal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-[60]">
-        <div class="bg-white p-8 rounded-2xl max-w-sm w-full mx-4">
-            <h2 class="text-xl font-bold mb-4">Acceso Admin</h2>
-            <input type="password" id="pass-input" placeholder="Contraseña Maestra" class="w-full p-3 border rounded-xl mb-4 text-center">
-            <button onclick="app.login()" class="w-full bg-green-600 text-white py-3 rounded-xl font-bold">Entrar</button>
+    <div id="login-modal" class="fixed inset-0 bg-black/60 hidden flex items-center justify-center z-[100] backdrop-blur-sm">
+        <div class="bg-white p-8 rounded-3xl max-w-sm w-full mx-4 shadow-2xl">
+            <h2 class="text-2xl font-bold mb-2 text-gray-800 text-center">Panel Admin</h2>
+            <p class="text-gray-500 text-center text-sm mb-6">Ingresa la contraseña maestra</p>
+            <input type="password" id="pass-input" placeholder="••••••••" class="w-full p-4 border rounded-2xl mb-4 text-center text-xl tracking-widest focus:ring-2 focus:ring-green-500 outline-none">
+            <button onclick="app.login()" class="w-full bg-green-600 hover:bg-green-700 text-white py-4 rounded-2xl font-bold text-lg shadow-lg shadow-green-200 transition-all">Ingresar Ahora</button>
+            <button onclick="document.getElementById('login-modal').classList.add('hidden')" class="w-full mt-4 text-gray-400 text-sm font-medium">Cancelar</button>
         </div>
     </div>
 
@@ -110,14 +114,14 @@
             this.teams = []; this.rounds = []; this.isAdmin = false;
 
             this.init = async function() {
-                console.log("1. Iniciando aplicación...");
+                console.log("Iniciando App...");
                 try {
+                    // 1. Obtener config desde el servidor Vercel
                     const res = await fetch('/api/get-config');
                     const config = await res.json();
-                    console.log("2. Configuración recibida:", config.status);
-
+                    
                     if (config.error) {
-                        document.getElementById('loading-text').innerText = "Error: " + config.message;
+                        this.handleFatalError("Error de Servidor: " + config.message);
                         return;
                     }
 
@@ -126,44 +130,61 @@
                     this.auth = getAuth(firebaseApp);
                     this.db = getFirestore(firebaseApp);
 
+                    // 2. Gestionar sesión anónima o admin
                     onAuthStateChanged(this.auth, (user) => {
-                        console.log("3. Estado de Auth cambiado:", user ? "Conectado" : "Desconectado");
-                        if (user && !user.isAnonymous) this.setAdminUI(true);
-                        else if (!user) signInAnonymously(this.auth);
-                        
-                        this.syncData();
+                        console.log("Auth Status:", user ? (user.isAnonymous ? "Anónimo" : "Identificado") : "Nadie");
+                        if (user) {
+                            if (!user.isAnonymous) this.setAdminUI(true);
+                            this.syncData();
+                        } else {
+                            signInAnonymously(this.auth).catch(e => console.error("Error Auth:", e));
+                        }
                     });
                     
-                    // Botón de emergencia si tarda mucho
-                    setTimeout(() => document.getElementById('emergency-btn').classList.remove('hidden'), 5000);
+                    // Mostrar botón de emergencia después de 6 segundos
+                    setTimeout(() => {
+                        const btn = document.getElementById('emergency-btn');
+                        if (btn) btn.classList.remove('hidden');
+                    }, 6000);
 
                 } catch (e) {
-                    console.error("Fallo crítico en init:", e);
-                    document.getElementById('loading-text').innerText = "Error al conectar con el servidor.";
+                    this.handleFatalError("Error de conexión inicial.");
+                    console.error(e);
                 }
             };
 
             this.syncData = function() {
-                console.log("4. Escuchando base de datos...");
+                console.log("Escuchando base de datos...");
                 const docRef = doc(this.db, "torneo", "actual");
                 
                 onSnapshot(docRef, (snap) => {
-                    console.log("5. Datos recibidos de Firestore:", snap.exists());
-                    document.getElementById('loading-screen').classList.add('hidden');
-                    
+                    this.forceCloseLoading();
                     if (snap.exists()) {
                         const data = snap.data();
                         this.teams = data.teams || [];
                         this.rounds = data.rounds || [];
-                        this.render();
+                        console.log("Datos cargados correctamente.");
                     } else {
-                        console.warn("Documento 'actual' no existe. El Admin debe inicializar.");
-                        this.render(); // Renderiza vacío para quitar estados previos
+                        console.warn("La base de datos está vacía.");
+                        this.teams = []; this.rounds = [];
                     }
+                    this.render();
                 }, (err) => {
                     console.error("Error Firestore:", err);
-                    alert("Error al leer datos. Verifica las reglas de Firebase.");
+                    this.forceCloseLoading();
+                    this.render(); // Mostrar interfaz vacía para que no se vea el spinner
                 });
+            };
+
+            this.forceCloseLoading = () => {
+                const screen = document.getElementById('loading-screen');
+                if (screen) screen.classList.add('hidden');
+            };
+
+            this.handleFatalError = (msg) => {
+                const text = document.getElementById('loading-text');
+                if (text) text.innerText = msg;
+                this.forceCloseLoading();
             };
 
             this.setAdminUI = function(val) {
@@ -173,20 +194,36 @@
                 document.getElementById('btn-logout').classList.toggle('hidden', !val);
             };
 
-            this.showLogin = () => document.getElementById('login-modal').classList.remove('hidden');
+            this.showLogin = () => {
+                document.getElementById('login-modal').classList.remove('hidden');
+                document.getElementById('pass-input').focus();
+            };
+
             this.login = function() {
-                if (document.getElementById('pass-input').value === this.masterPass) {
+                const pass = document.getElementById('pass-input').value;
+                if (pass === this.masterPass) {
                     this.setAdminUI(true);
                     document.getElementById('login-modal').classList.add('hidden');
-                } else alert("Incorrecto");
+                    document.getElementById('pass-input').value = "";
+                } else {
+                    alert("Contraseña Incorrecta");
+                }
             };
-            this.logout = () => { this.setAdminUI(false); signOut(this.auth); };
+
+            this.logout = () => {
+                this.setAdminUI(false);
+                signOut(this.auth);
+                location.reload();
+            };
 
             this.addTeam = async function() {
-                const name = document.getElementById('new-team-name').value.trim();
+                const input = document.getElementById('new-team-name');
+                const name = input.value.trim();
                 if (name) {
-                    this.teams.push({ name, pj:0, g:0, e:0, p:0, gf:0, gc:0, dg:0, pts:0 });
-                    document.getElementById('new-team-name').value = "";
+                    this.teams.push({ 
+                        name, pj:0, g:0, e:0, p:0, gf:0, gc:0, dg:0, pts:0 
+                    });
+                    input.value = "";
                     await this.save();
                 }
             };
@@ -197,32 +234,39 @@
                     await setDoc(doc(this.db, "torneo", "actual"), {
                         teams: this.teams,
                         rounds: this.rounds,
-                        updatedAt: new Date().toISOString()
+                        lastUpdate: new Date().getTime()
                     });
-                    console.log("Datos guardados.");
-                } catch (e) { alert("Error al guardar: " + e.message); }
+                } catch (e) {
+                    alert("No tienes permisos para escribir en la DB. Revisa las Reglas de Firebase.");
+                }
             };
 
             this.render = function() {
-                // Tabla
+                // Render Tabla
                 const sBody = document.getElementById('standings-body');
-                sBody.innerHTML = this.teams.length ? this.teams.map((t, i) => `
-                    <tr class="border-b">
-                        <td class="p-3 text-center">${i+1}</td>
-                        <td class="p-3 font-bold">${t.name}</td>
-                        <td class="p-3 text-center">${t.pj || 0}</td>
-                        <td class="p-3 text-center">${t.g || 0}</td>
-                        <td class="p-3 text-center font-bold text-green-600">${t.pts || 0}</td>
-                    </tr>
-                `).join('') : '<tr><td colspan="5" class="p-10 text-center text-gray-400 italic">No hay equipos registrados aún.</td></tr>';
+                if (this.teams.length === 0) {
+                    sBody.innerHTML = '<tr><td colspan="5" class="p-10 text-center text-gray-400 italic">No hay equipos registrados. Accede como Admin para empezar.</td></tr>';
+                } else {
+                    const sorted = [...this.teams].sort((a,b) => (b.pts || 0) - (a.pts || 0));
+                    sBody.innerHTML = sorted.map((t, i) => `
+                        <tr class="border-b hover:bg-gray-50 transition-colors">
+                            <td class="p-4 text-center font-bold text-gray-400">${i+1}</td>
+                            <td class="p-4 font-bold text-gray-800">${t.name}</td>
+                            <td class="p-4 text-center">${t.pj || 0}</td>
+                            <td class="p-4 text-center">${t.g || 0}</td>
+                            <td class="p-4 text-center font-bold text-green-600">${t.pts || 0}</td>
+                        </tr>
+                    `).join('');
+                }
 
-                // Lista de equipos
+                // Render Equipos
                 const tList = document.getElementById('teams-list');
-                tList.innerHTML = this.teams.map(t => `
-                    <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-green-500 flex justify-between">
-                        <span class="font-bold">${t.name}</span>
+                tList.innerHTML = this.teams.length ? this.teams.map(t => `
+                    <div class="bg-white p-5 rounded-2xl shadow-sm border-l-4 border-green-500 flex justify-between items-center group">
+                        <span class="font-bold text-gray-700 uppercase">${t.name}</span>
+                        <div class="text-[10px] text-gray-300 font-bold">ACTIVO</div>
                     </div>
-                `).join('');
+                `).join('') : '<p class="col-span-full text-center text-gray-400 italic py-10">Esperando creación de equipos...</p>';
             };
 
             this.switchTab = (tab) => {
