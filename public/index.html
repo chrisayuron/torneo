@@ -37,6 +37,16 @@
     </header>
 
     <main class="container mx-auto p-4 max-w-4xl">
+        <!-- Alerta de base de datos vacía (Solo Admin) -->
+        <div id="db-empty-alert" class="hidden admin-only bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 rounded-r-xl">
+            <div class="flex items-center">
+                <div class="flex-1 text-sm text-yellow-700 font-medium">
+                    La base de datos no ha sido inicializada. ¿Quieres crear la estructura inicial?
+                </div>
+                <button onclick="app.initDB()" class="bg-yellow-500 text-white px-4 py-2 rounded-lg text-xs font-bold shadow-sm">Inicializar Ahora</button>
+            </div>
+        </div>
+
         <!-- Vista Posiciones -->
         <section id="view-posiciones" class="view-content">
             <div class="bg-white rounded-2xl shadow-sm border p-6">
@@ -71,7 +81,7 @@
 
     <!-- Barra Inferior -->
     <footer class="fixed bottom-0 left-0 w-full bg-white/95 border-t p-3 flex justify-between items-center px-6">
-        <p class="text-[10px] text-gray-400 font-mono uppercase" id="db-status">v2.2 - Offline</p>
+        <p class="text-[10px] text-gray-400 font-mono uppercase" id="db-status">v2.3 - Offline</p>
         <button onclick="app.openLogin()" id="login-trigger" class="text-xs font-bold text-green-700 hover:underline">Acceso Admin</button>
         <button onclick="app.logout()" id="logout-trigger" class="hidden text-xs font-bold text-red-600 hover:underline">Cerrar Sesión</button>
     </footer>
@@ -95,16 +105,15 @@
             db: null, auth: null, pass: "", data: { teams: [] }, isAdmin: false,
             
             init: async function() {
-                // Mostrar botón de emergencia si tarda más de 10 segundos
                 setTimeout(() => {
                     const btn = document.getElementById('btn-emergency');
                     if(btn) btn.classList.remove('hidden');
-                }, 10000);
+                }, 8000);
 
                 this.updateStatus("Obteniendo credenciales...");
                 try {
                     const res = await fetch('/api/get-config');
-                    if (!res.ok) throw new Error("Servidor no responde (404/500)");
+                    if (!res.ok) throw new Error("Servidor no responde (API Offline)");
                     
                     const config = await res.json();
                     if (config.error) throw new Error(config.details || "Error de Config");
@@ -114,13 +123,12 @@
                     this.auth = getAuth(fApp);
                     this.db = getFirestore(fApp);
 
-                    this.updateStatus("Autenticando...");
                     onAuthStateChanged(this.auth, (user) => {
                         if (user) {
                             if (!user.isAnonymous) this.setAdminState(true);
                             this.startSync();
                         } else {
-                            signInAnonymously(this.auth).catch(e => this.showCriticalError("Auth Anónima Desactivada en Firebase"));
+                            signInAnonymously(this.auth).catch(e => this.showCriticalError("Activa Auth Anónima en Firebase Console"));
                         }
                     });
 
@@ -131,8 +139,6 @@
 
             startSync: function() {
                 this.updateStatus("Sincronizando con la nube...");
-                
-                // Referencia al documento 'data' en la colección 'torneo'
                 const docRef = doc(this.db, "torneo", "data");
 
                 onSnapshot(docRef, (snap) => {
@@ -140,16 +146,19 @@
                     const dbStatus = document.getElementById('db-status');
                     if (dbStatus) dbStatus.innerText = "Sincronizado: OK";
                     
+                    const emptyAlert = document.getElementById('db-empty-alert');
+                    
                     if (snap.exists()) {
                         this.data = snap.data();
+                        if (emptyAlert) emptyAlert.classList.add('hidden');
                     } else {
                         this.data = { teams: [] };
-                        console.warn("El documento 'torneo/data' no existe en Firestore.");
+                        if (emptyAlert) emptyAlert.classList.remove('hidden');
                     }
                     this.render();
                 }, (error) => {
                     console.error("Firebase Sync Error:", error);
-                    this.updateStatus("Error de Permisos: Verifica las reglas en Firebase Console.");
+                    this.updateStatus("Error de Permisos en Firestore Rules.");
                 });
             },
 
@@ -164,7 +173,7 @@
                             <td class="py-4 text-center font-medium">${t.pj||0}</td>
                             <td class="py-4 text-center font-bold text-green-600">${t.pts||0}</td>
                         </tr>
-                    `).join('') : '<tr><td colspan="4" class="py-10 text-center text-gray-400 italic font-medium">No hay equipos creados. Entra como Admin para empezar.</td></tr>';
+                    `).join('') : '<tr><td colspan="4" class="py-10 text-center text-gray-400 italic">No hay equipos registrados.</td></tr>';
                 }
                 
                 const grid = document.getElementById('teams-grid');
@@ -174,7 +183,21 @@
                             <span class="font-bold text-xs uppercase text-gray-500 group-hover:text-green-700 transition-colors">${t.name}</span>
                             <div class="w-1.5 h-1.5 rounded-full bg-green-400"></div>
                         </div>
-                    `).join('') : '<p class="col-span-full text-center text-gray-400 py-10 text-sm">Base de datos vacía.</p>';
+                    `).join('') : '<p class="col-span-full text-center text-gray-400 py-10 text-sm italic">Sin equipos.</p>';
+                }
+            },
+
+            initDB: async function() {
+                this.updateStatus("Inicializando...");
+                try {
+                    await setDoc(doc(this.db, "torneo", "data"), {
+                        teams: [],
+                        lastUpdate: Date.now(),
+                        initialized: true
+                    });
+                    document.getElementById('db-empty-alert')?.classList.add('hidden');
+                } catch (e) {
+                    alert("Error al inicializar. Revisa las 'Rules' de Firestore.");
                 }
             },
 
@@ -193,7 +216,7 @@
                     });
                     if (nameInput) nameInput.value = "";
                 } catch (e) {
-                    alert("Error al guardar. Revisa la pestaña 'Rules' en tu consola Firebase Firestore.");
+                    alert("Error al guardar en Firestore.");
                 }
             },
 
@@ -213,7 +236,7 @@
                     const modal = document.getElementById('modal-login');
                     if (modal) modal.classList.add('hidden');
                     passInput.value = "";
-                } else alert("Contraseña Maestra incorrecta");
+                } else alert("Contraseña incorrecta");
             },
 
             updateStatus: (m) => {
