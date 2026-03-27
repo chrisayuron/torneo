@@ -1,64 +1,45 @@
 /**
- * Este archivo actúa como un puente seguro entre las variables de entorno de Vercel
- * y el frontend de la aplicación.
+ * Servidor de configuración para el Torneo Beth Shalom.
+ * Versión ultra-simplificada para evitar Error 500.
  */
-export default function handler(request, response) {
+export default function handler(req, res) {
+  // Cabeceras obligatorias para evitar caché y 304/302
+  res.setHeader('Content-Type', 'application/json');
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+
   try {
-    // 1. Obtención y limpieza de variables de entorno
-    const rawApiKey = process.eanv.FIREBASE_API_KEY || "";
-    const rawMasterPassword = process.env.MASTER_PASSWORD || "";
+    // 1. Obtener variables directamente
+    const apiKey = process.env.FIREBASE_API_KEY || "";
+    const masterPass = process.env.MASTER_PASSWORD || "";
 
-    // Eliminamos posibles espacios o comillas accidentales
-    const apiKey = rawApiKey.trim().replace(/['"]+/g, '');
-    const masterPassword = rawMasterPassword.trim().replace(/['"]+/g, '');
-
-    // Log para depuración en el panel de Vercel (no visible para el usuario final)
-    console.log("Iniciando solicitud de configuración...");
-
-    // 2. Validación de presencia de datos críticos
-    if (!apiKey) {
-      console.error("Falta FIREBASE_API_KEY en las variables de entorno.");
-      return response.status(500).json({ 
-        error: 'Configuración incompleta', 
-        details: 'Falta la API Key en el servidor.' 
+    // 2. Si faltan variables, no lanzamos error 500, enviamos un 200 con el aviso
+    if (!apiKey || !masterPass) {
+      return res.status(200).json({
+        error: true,
+        message: "Faltan variables de entorno en el panel de Vercel.",
+        missingKey: !apiKey,
+        missingPass: !masterPass
       });
     }
 
-    if (!masterPassword) {
-      console.error("Falta MASTER_PASSWORD en las variables de entorno.");
-      return response.status(500).json({ 
-        error: 'Configuración incompleta', 
-        details: 'Falta la contraseña maestra en el servidor.' 
-      });
-    }
-
-    // 3. Objeto de configuración de Firebase
-    const config = {
-      apiKey: apiKey,
+    // 3. Respuesta exitosa con los datos limpios
+    return res.status(200).json({
+      apiKey: apiKey.trim().replace(/['"]+/g, ''),
       authDomain: "torneo-interclases.firebaseapp.com",
       projectId: "torneo-interclases",
       storageBucket: "torneo-interclases.firebasestorage.app",
       messagingSenderId: "676891636137",
       appId: "1:676891636137:web:06562e91b7680ad7ad54b8",
-      masterPassword: masterPassword
-    };
-
-    // 4. Configuración de cabeceras para prevenir redirecciones (302) y caché (304)
-    // Forzamos al navegador a obtener siempre una respuesta nueva en formato JSON
-    response.setHeader('Access-Control-Allow-Origin', '*'); // Permite peticiones desde cualquier origen si fuera necesario
-    response.setHeader('Content-Type', 'application/json');
-    response.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-    response.setHeader('Pragma', 'no-cache');
-    response.setHeader('Expires', '0');
-
-    console.log("Configuración enviada correctamente.");
-    return response.status(200).json(config);
+      masterPassword: masterPass.trim().replace(/['"]+/g, ''),
+      status: "online"
+    });
 
   } catch (error) {
-    console.error("Error crítico en get-config:", error.message);
-    return response.status(500).json({ 
-      error: 'Error interno del servidor', 
-      message: error.message 
+    // En caso de un error catastrófico, enviamos JSON en lugar de HTML de error
+    return res.status(200).json({
+      error: true,
+      message: error.message
     });
   }
 }
