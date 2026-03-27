@@ -18,12 +18,14 @@
 </head>
 <body class="min-h-screen pb-20">
 
+    <!-- Pantalla de Carga -->
     <div id="loading-overlay">
         <div id="spinner" class="animate-spin rounded-full h-10 w-10 border-b-2 border-green-600 mb-4"></div>
         <p id="status-text" class="text-gray-500 text-sm font-medium px-4 text-center">Iniciando sistema...</p>
-        <div id="debug-info" class="mt-4 text-[10px] text-gray-300 font-mono hidden"></div>
+        <button id="btn-emergency" onclick="app.closeLoading()" class="hidden mt-8 text-[10px] bg-gray-100 px-3 py-1 rounded text-gray-400">Forzar entrada (Debug)</button>
     </div>
 
+    <!-- Encabezado -->
     <header class="bg-green-800 text-white p-4 shadow-md sticky top-0 z-50">
         <div class="container mx-auto flex justify-between items-center">
             <h1 class="text-xl font-bold italic">🏆 MUNDIALITO</h1>
@@ -35,6 +37,7 @@
     </header>
 
     <main class="container mx-auto p-4 max-w-4xl">
+        <!-- Vista Posiciones -->
         <section id="view-posiciones" class="view-content">
             <div class="bg-white rounded-2xl shadow-sm border p-6">
                 <table class="w-full text-left text-sm">
@@ -47,62 +50,64 @@
                         </tr>
                     </thead>
                     <tbody id="table-body">
-                        <tr><td colspan="4" class="py-10 text-center text-gray-400">Cargando datos...</td></tr>
+                        <tr><td colspan="4" class="py-10 text-center text-gray-400 italic">Cargando datos del torneo...</td></tr>
                     </tbody>
                 </table>
             </div>
         </section>
 
+        <!-- Vista Equipos (Gestión) -->
         <section id="view-equipos" class="view-content hidden">
             <div class="admin-only bg-white rounded-2xl shadow-sm border p-6 mb-6">
+                <h3 class="text-sm font-bold mb-4 text-gray-500 uppercase">Nuevo Equipo</h3>
                 <div class="flex gap-2">
-                    <input type="text" id="input-team" placeholder="Nombre equipo..." class="flex-1 p-3 border rounded-xl outline-none">
-                    <button onclick="app.addNewTeam()" class="bg-green-600 text-white px-6 rounded-xl font-bold">Añadir</button>
+                    <input type="text" id="input-team" placeholder="Nombre del equipo..." class="flex-1 p-3 border rounded-xl outline-none focus:ring-2 focus:ring-green-500">
+                    <button onclick="app.addNewTeam()" class="bg-green-600 text-white px-6 rounded-xl font-bold hover:bg-green-700 transition-colors">Añadir</button>
                 </div>
             </div>
             <div id="teams-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
         </section>
     </main>
 
+    <!-- Barra Inferior -->
     <footer class="fixed bottom-0 left-0 w-full bg-white/95 border-t p-3 flex justify-between items-center px-6">
-        <p class="text-[10px] text-gray-400 font-mono uppercase" id="db-status">v2.1 - Desconectado</p>
-        <button onclick="app.openLogin()" id="login-trigger" class="text-xs font-bold text-green-700">Admin</button>
-        <button onclick="app.logout()" id="logout-trigger" class="hidden text-xs font-bold text-red-600">Salir</button>
+        <p class="text-[10px] text-gray-400 font-mono uppercase" id="db-status">v2.2 - Offline</p>
+        <button onclick="app.openLogin()" id="login-trigger" class="text-xs font-bold text-green-700 hover:underline">Acceso Admin</button>
+        <button onclick="app.logout()" id="logout-trigger" class="hidden text-xs font-bold text-red-600 hover:underline">Cerrar Sesión</button>
     </footer>
 
-    <div id="modal-login" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-[110]">
+    <!-- Modal Login -->
+    <div id="modal-login" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-[110] backdrop-blur-sm">
         <div class="bg-white p-8 rounded-3xl w-full max-w-xs shadow-2xl">
-            <h2 class="text-lg font-bold mb-4 text-center">Acceso Admin</h2>
-            <input type="password" id="field-pass" placeholder="Clave Maestra" class="w-full p-4 border rounded-2xl mb-4 text-center">
-            <button onclick="app.handleLogin()" class="w-full bg-green-700 text-white py-4 rounded-2xl font-bold">Entrar</button>
-            <button onclick="document.getElementById('modal-login').classList.add('hidden')" class="w-full mt-2 text-gray-400 text-xs">Cancelar</button>
+            <h2 class="text-lg font-bold mb-4 text-center text-gray-800">Panel de Control</h2>
+            <input type="password" id="field-pass" placeholder="Contraseña Maestra" class="w-full p-4 border rounded-2xl mb-4 text-center text-lg focus:ring-2 focus:ring-green-500 outline-none">
+            <button onclick="app.handleLogin()" class="w-full bg-green-700 text-white py-4 rounded-2xl font-bold shadow-lg active:scale-95 transition-transform">Ingresar</button>
+            <button onclick="document.getElementById('modal-login').classList.add('hidden')" class="w-full mt-2 text-gray-400 text-[10px] uppercase font-bold tracking-widest">Cancelar</button>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-        import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { getFirestore, doc, onSnapshot, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
         const app = {
             db: null, auth: null, pass: "", data: { teams: [] }, isAdmin: false,
-
+            
             init: async function() {
-                this.updateStatus("Obteniendo configuración...");
+                // Mostrar botón de emergencia si tarda más de 10 segundos
+                setTimeout(() => {
+                    const btn = document.getElementById('btn-emergency');
+                    if(btn) btn.classList.remove('hidden');
+                }, 10000);
+
+                this.updateStatus("Obteniendo credenciales...");
                 try {
-                    // Intentamos obtener la config de la API
                     const res = await fetch('/api/get-config');
-                    
-                    if (!res.ok) {
-                        const errorData = await res.json().catch(() => ({}));
-                        throw new Error(errorData.details || `Error del servidor (${res.status})`);
-                    }
+                    if (!res.ok) throw new Error("Servidor no responde (404/500)");
                     
                     const config = await res.json();
-                    
-                    if (config.error) {
-                        throw new Error(config.details || "Error en la configuración recibida");
-                    }
+                    if (config.error) throw new Error(config.details || "Error de Config");
 
                     this.pass = config.masterPassword;
                     const fApp = initializeApp(config);
@@ -115,9 +120,7 @@
                             if (!user.isAnonymous) this.setAdminState(true);
                             this.startSync();
                         } else {
-                            signInAnonymously(this.auth).catch(err => {
-                                this.showCriticalError("Error Auth: Habilita 'Anonymous' en Firebase Console.");
-                            });
+                            signInAnonymously(this.auth).catch(e => this.showCriticalError("Auth Anónima Desactivada en Firebase"));
                         }
                     });
 
@@ -127,21 +130,26 @@
             },
 
             startSync: function() {
-                this.updateStatus("Sincronizando base de datos...");
-                onSnapshot(doc(this.db, "torneo", "data"), (snap) => {
-                    const loader = document.getElementById('loading-overlay');
-                    if (loader) loader.classList.add('hidden');
-                    
+                this.updateStatus("Sincronizando con la nube...");
+                
+                // Referencia al documento 'data' en la colección 'torneo'
+                const docRef = doc(this.db, "torneo", "data");
+
+                onSnapshot(docRef, (snap) => {
+                    this.closeLoading();
                     const dbStatus = document.getElementById('db-status');
-                    if (dbStatus) dbStatus.innerText = "ONLINE: MUNDIALITO-7ED91";
+                    if (dbStatus) dbStatus.innerText = "Sincronizado: OK";
                     
-                    this.data = snap.exists() ? snap.data() : { teams: [] };
+                    if (snap.exists()) {
+                        this.data = snap.data();
+                    } else {
+                        this.data = { teams: [] };
+                        console.warn("El documento 'torneo/data' no existe en Firestore.");
+                    }
                     this.render();
                 }, (error) => {
-                    console.error("Firebase Error:", error);
-                    this.updateStatus("Error de Permisos: Revisa las reglas de Firestore.");
-                    const dbStatus = document.getElementById('db-status');
-                    if (dbStatus) dbStatus.innerText = "ERROR DE REGLAS";
+                    console.error("Firebase Sync Error:", error);
+                    this.updateStatus("Error de Permisos: Verifica las reglas en Firebase Console.");
                 });
             },
 
@@ -150,23 +158,23 @@
                 const tbody = document.getElementById('table-body');
                 if (tbody) {
                     tbody.innerHTML = sorted.length > 0 ? sorted.map((t, i) => `
-                        <tr class="border-b hover:bg-gray-50 transition-colors">
+                        <tr class="border-b hover:bg-green-50/30 transition-colors">
                             <td class="py-4 px-2 font-bold text-gray-300">${i+1}</td>
                             <td class="py-4 font-bold text-xs uppercase text-gray-700">${t.name}</td>
                             <td class="py-4 text-center font-medium">${t.pj||0}</td>
                             <td class="py-4 text-center font-bold text-green-600">${t.pts||0}</td>
                         </tr>
-                    `).join('') : '<tr><td colspan="4" class="py-10 text-center text-gray-400 italic">No hay equipos registrados.</td></tr>';
+                    `).join('') : '<tr><td colspan="4" class="py-10 text-center text-gray-400 italic font-medium">No hay equipos creados. Entra como Admin para empezar.</td></tr>';
                 }
                 
                 const grid = document.getElementById('teams-grid');
                 if (grid) {
                     grid.innerHTML = (this.data.teams || []).length > 0 ? (this.data.teams || []).map(t => `
-                        <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex justify-between items-center">
-                            <span class="font-bold text-xs uppercase text-gray-600">${t.name}</span>
-                            <div class="w-2 h-2 rounded-full bg-green-400"></div>
+                        <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex justify-between items-center group">
+                            <span class="font-bold text-xs uppercase text-gray-500 group-hover:text-green-700 transition-colors">${t.name}</span>
+                            <div class="w-1.5 h-1.5 rounded-full bg-green-400"></div>
                         </div>
-                    `).join('') : '<p class="col-span-full text-center text-gray-400 py-10 italic">Usa el modo Admin para gestionar equipos.</p>';
+                    `).join('') : '<p class="col-span-full text-center text-gray-400 py-10 text-sm">Base de datos vacía.</p>';
                 }
             },
 
@@ -185,7 +193,7 @@
                     });
                     if (nameInput) nameInput.value = "";
                 } catch (e) {
-                    alert("Error al guardar: Revisa las Reglas de Firestore.");
+                    alert("Error al guardar. Revisa la pestaña 'Rules' en tu consola Firebase Firestore.");
                 }
             },
 
@@ -205,7 +213,7 @@
                     const modal = document.getElementById('modal-login');
                     if (modal) modal.classList.add('hidden');
                     passInput.value = "";
-                } else alert("Clave Incorrecta");
+                } else alert("Contraseña Maestra incorrecta");
             },
 
             updateStatus: (m) => {
@@ -214,25 +222,21 @@
             },
 
             showCriticalError: function(m) {
-                this.updateStatus("");
                 const el = document.getElementById('status-text');
-                if (el) el.innerHTML = `<div class="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 font-bold">Error Crítico:<br><span class="text-xs font-normal">${m}</span></div>`;
+                if (el) el.innerHTML = `<div class="bg-red-50 text-red-700 p-4 rounded-xl border border-red-200 text-xs font-bold shadow-sm">Error de Inicio:<br>${m}</div>`;
                 const spinner = document.getElementById('spinner');
                 if (spinner) spinner.classList.add('hidden');
             },
 
+            closeLoading: () => document.getElementById('loading-overlay')?.classList.add('hidden'),
             openLogin: () => {
-                const modal = document.getElementById('modal-login');
-                if (modal) {
-                    modal.classList.remove('hidden');
-                    document.getElementById('field-pass').focus();
-                }
+                document.getElementById('modal-login')?.classList.remove('hidden');
+                document.getElementById('field-pass')?.focus();
             },
             logout: () => { signOut(app.auth); location.reload(); },
             setTab: (t) => {
                 document.querySelectorAll('.view-content').forEach(v => v.classList.add('hidden'));
-                const view = document.getElementById(`view-${t}`);
-                if (view) view.classList.remove('hidden');
+                document.getElementById(`view-${t}`)?.classList.remove('hidden');
             }
         };
 

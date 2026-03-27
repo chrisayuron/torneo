@@ -22,7 +22,7 @@ export default function handler(req, res) {
     if (!apiKey || !masterPass) {
       return res.status(200).json({
         error: true,
-        details: "Faltan variables de entorno",
+        details: "Faltan variables de entorno en Vercel",
         env_status: {
           has_api_key: !!apiKey,
           has_master_pass: !!masterPass
@@ -30,7 +30,7 @@ export default function handler(req, res) {
       });
     }
 
-    // Respuesta con los datos del proyecto
+    // Respuesta con los datos del proyecto mundialito-7ed91
     return res.status(200).json({
       apiKey: apiKey.replace(/['"]+/g, '').trim(),
       authDomain: "mundialito-7ed91.firebaseapp.com",
