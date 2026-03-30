@@ -9,7 +9,6 @@
     <!-- Fuente Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Configuración Institucional de Tailwind -->
     <script>
         tailwind.config = {
             theme: {
@@ -31,8 +30,6 @@
     </script>
     
     <style>
-        /* NOTA PARA EL USUARIO: Cuando pases esto a tu proyecto local, 
-           puedes mover todo este bloque a tu archivo externo style.css */
         body {
             font-family: 'Inter', sans-serif;
             background-color: theme('colors.institucional.grisFondo');
@@ -58,7 +55,7 @@
             justify-content: center;
             gap: 0.5rem;
         }
-        .btn:disabled { background-color: #9ca3af; cursor: not-allowed; }
+        .btn:disabled { background-color: #9ca3af; cursor: not-allowed; opacity: 0.7; }
         
         .btn-primary { background-color: theme('colors.institucional.azul'); color: white; }
         .btn-primary:hover:not(:disabled) { background-color: theme('colors.institucional.azulHover'); }
@@ -67,7 +64,7 @@
         .btn-secondary:hover:not(:disabled) { background-color: theme('colors.institucional.amarilloHover'); }
         
         .btn-danger { background-color: #dc2626; color: white; }
-        .btn-danger:hover { background-color: #b91c1c; }
+        .btn-danger:hover:not(:disabled) { background-color: #b91c1c; }
 
         .input-field {
             width: 100%;
@@ -86,26 +83,29 @@
         .vista-activa { display: block; animation: fadeIn 0.3s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Estilo para las notificaciones (reemplazo de alert) */
-        #notification-toast {
-            transition: opacity 0.3s, transform 0.3s;
-        }
+        #notification-toast { transition: opacity 0.3s, transform 0.3s; }
     </style>
 </head>
 <body class="p-4 sm:p-6 md:p-8">
 
-    <!-- Notificaciones en pantalla (Reemplazo de alert) -->
+    <!-- Notificaciones -->
     <div id="notification-toast" class="fixed top-4 left-1/2 transform -translate-x-1/2 z-[100] bg-institucional-azul text-white px-6 py-3 rounded-full shadow-lg opacity-0 pointer-events-none translate-y-[-20px]">
         <span id="notification-msg">Mensaje</span>
     </div>
 
-    <!-- ==========================================
-         MODAL DE LOGIN
-         ========================================== -->
+    <!-- Modal de Alertas/Confirmaciones -->
+    <div id="modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-[60] p-4 hidden">
+        <div class="bg-white rounded-xl shadow-xl p-6 max-w-sm w-full text-center border-t-4 border-institucional-amarillo">
+            <div id="modal-message" class="mb-6 text-institucional-azul font-medium"></div>
+            <div id="modal-buttons" class="flex justify-center gap-4"></div>
+        </div>
+    </div>
+
+    <!-- Modal de Login -->
     <div id="login-screen" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4 hidden">
         <div class="w-full max-w-sm">
             <div class="card text-center relative !border-t-institucional-amarillo">
-                <button id="btn-cerrar-modal" class="absolute top-2 right-4 text-gray-500 hover:text-institucional-azul font-bold text-2xl">&times;</button>
+                <button onclick="app.hideLoginModal()" class="absolute top-2 right-4 text-gray-500 hover:text-institucional-azul font-bold text-2xl">&times;</button>
                 <h2 class="text-2xl font-bold mb-4 text-institucional-azul">Acceso Admin</h2>
                 <p class="text-gray-600 mb-6 text-sm">Ingresa tus credenciales para gestionar el torneo.</p>
                 <input type="email" id="email-input" class="input-field mb-3" placeholder="Correo electrónico">
@@ -117,17 +117,15 @@
                     </button>
                 </div>
                 <p id="login-error" class="text-red-500 text-sm mb-4 h-5"></p>
-                <button id="btn-ingresar" class="btn btn-secondary w-full">Ingresar</button>
+                <button id="btn-ingresar" onclick="app.login()" class="btn btn-secondary w-full">Ingresar</button>
             </div>
         </div>
     </div>
 
-    <!-- ==========================================
-         CONTENEDOR PRINCIPAL DE LA APP
-         ========================================== -->
-    <div id="app" class="max-w-6xl mx-auto">
+    <!-- Contenedor Principal -->
+    <div id="app-container" class="max-w-6xl mx-auto">
         <header class="text-center mb-8 relative">
-            <button id="btn-top-auth" class="absolute top-0 right-0 btn border-2 border-institucional-azul text-institucional-azul bg-transparent hover:bg-institucional-azul hover:text-white px-4 py-2 mt-2 mr-2 text-sm rounded-full">
+            <button id="btn-top-auth" onclick="app.toggleAuth()" class="absolute top-0 right-0 btn border-2 border-institucional-azul text-institucional-azul bg-transparent hover:bg-institucional-azul hover:text-white px-4 py-2 mt-2 mr-2 text-sm rounded-full">
                 Ingresar Admin
             </button>
             <h1 class="text-4xl font-extrabold text-institucional-azul flex items-center justify-center uppercase tracking-wide pt-12 sm:pt-0">
@@ -136,13 +134,13 @@
                 </svg>
                 Mundialito Interclases
             </h1>
-            <p class="text-lg text-gray-600 mt-2 font-medium">Torneo Oficial - Tabla en vivo</p>
+            <p class="text-lg text-gray-600 mt-2 font-medium">Torneo Oficial - Resultados en vivo</p>
             
             <nav class="flex justify-center flex-wrap gap-3 mt-6">
-                <button class="nav-btn btn btn-secondary px-6 rounded-full" data-target="vista-posiciones">Posiciones</button>
-                <button class="nav-btn btn bg-gray-200 text-institucional-azul px-6 rounded-full hover:bg-gray-300" data-target="vista-goleadores">Goleadores</button>
-                <button class="nav-btn btn bg-gray-200 text-institucional-azul px-6 rounded-full hover:bg-gray-300" data-target="vista-partidos">Partidos</button>
-                <button id="nav-btn-admin" class="nav-btn btn bg-gray-200 text-institucional-azul px-6 rounded-full hover:bg-gray-300 hidden" data-target="vista-admin">Panel de Control</button>
+                <button class="nav-btn btn btn-secondary px-6 rounded-full" onclick="app.switchTab('vista-posiciones', this)">Posiciones</button>
+                <button class="nav-btn btn bg-gray-200 text-institucional-azul px-6 rounded-full hover:bg-gray-300" onclick="app.switchTab('vista-goleadores', this)">Goleadores</button>
+                <button class="nav-btn btn bg-gray-200 text-institucional-azul px-6 rounded-full hover:bg-gray-300" onclick="app.switchTab('vista-partidos', this)">Partidos</button>
+                <button id="nav-btn-admin" class="nav-btn btn bg-gray-200 text-institucional-azul px-6 rounded-full hover:bg-gray-300 hidden" onclick="app.switchTab('vista-admin', this)">Panel Admin</button>
             </nav>
         </header>
 
@@ -162,9 +160,8 @@
                                     <th class="p-3 text-center">PJ</th><th class="p-3 text-center">G</th><th class="p-3 text-center">E</th><th class="p-3 text-center">P</th><th class="p-3 text-center">GF</th><th class="p-3 text-center">GC</th><th class="p-3 text-center">DG</th><th class="p-3 text-center">Pts</th>
                                 </tr>
                             </thead>
-                            <!-- ID agregado para inyectar desde Firebase -->
-                            <tbody id="body-posiciones" class="divide-y divide-gray-200">
-                                <tr><td colspan="10" class="p-4 text-center text-gray-500">Cargando equipos...</td></tr>
+                            <tbody id="standings-body" class="divide-y divide-gray-200">
+                                <tr><td colspan="10" class="p-4 text-center text-gray-500">Aún no hay equipos registrados.</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -182,8 +179,8 @@
                         <thead class="bg-gray-100 font-semibold border-b-2 border-institucional-azul">
                             <tr><th class="p-3">Pos</th><th class="p-3">Jugador</th><th class="p-3">Equipo</th><th class="p-3 text-center">Goles</th></tr>
                         </thead>
-                        <tbody id="body-goleadores" class="divide-y divide-gray-200">
-                             <tr><td colspan="4" class="p-4 text-center text-gray-500">Próximamente...</td></tr>
+                        <tbody id="top-scorers-body" class="divide-y divide-gray-200">
+                             <tr><td colspan="4" class="p-4 text-center text-gray-500">No hay goles registrados aún.</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -191,34 +188,41 @@
 
             <!-- VISTA: PARTIDOS -->
             <section id="vista-partidos" class="vista-oculta">
-                <div class="card !bg-gray-50 mb-6">
-                    <h3 class="text-xl font-bold mb-4 text-center text-institucional-azul">Próximos Partidos</h3>
-                    <p class="text-center text-gray-500">Calendario en construcción...</p>
+                <div id="schedule-section">
+                    <div class="card bg-gray-50 text-center text-gray-500">El calendario aún no ha sido generado.</div>
                 </div>
             </section>
 
             <!-- VISTA: ADMIN -->
             <section id="vista-admin" class="vista-oculta">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="card">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div class="card" id="add-team-wrapper">
                         <h2 class="text-xl font-bold mb-4 flex items-center text-institucional-azul">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-institucional-amarillo" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.653-.124-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.653.124-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
-                            1. Registrar Equipos
+                            1. Añadir Equipo
                         </h2>
-                        <div class="flex gap-2">
-                            <!-- IDs Agregados para JS -->
-                            <input type="text" id="input-nombre-equipo" class="input-field" placeholder="Nombre del curso (Ej: 11-A)">
-                            <button id="btn-guardar-equipo" class="btn btn-primary">+</button>
+                        <div class="flex gap-2 mb-4">
+                            <input type="text" id="team-name" class="input-field" placeholder="Nombre del equipo (Ej: 11-A)">
+                            <button id="add-team-btn" onclick="app.addTeam()" class="btn btn-primary">+</button>
+                        </div>
+                        <div class="space-y-2" id="teams-list">
+                            <!-- Equipos añadidos se listan aquí -->
                         </div>
                     </div>
 
-                    <div class="card">
-                        <h2 class="text-xl font-bold mb-4 flex items-center text-institucional-azul">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-institucional-amarillo" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                            2. Generar Partidos
-                        </h2>
-                        <p class="text-sm text-gray-600 mb-4">Genera un calendario justo automáticamente.</p>
-                        <button class="btn btn-secondary w-full">Generar Calendario</button>
+                    <div class="card flex flex-col justify-between">
+                        <div>
+                            <h2 class="text-xl font-bold mb-4 flex items-center text-institucional-azul">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-institucional-amarillo" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                                2. Generar Partidos
+                            </h2>
+                            <p class="text-sm text-gray-600 mb-4">Crea un fixture cruzando a todos los equipos registrados.</p>
+                            <button id="generate-schedule-btn" onclick="app.generateSchedule()" class="btn btn-secondary w-full mb-4" disabled>Generar Calendario</button>
+                        </div>
+                        
+                        <div class="pt-4 border-t border-gray-200">
+                            <button id="reset-tournament-btn" onclick="app.resetTournament()" class="btn btn-danger w-full hidden">Reiniciar Todo el Torneo</button>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -226,233 +230,79 @@
     </div>
 
     <!-- ==========================================
-         LÓGICA JAVASCRIPT Y FIREBASE (Auth + DB)
+         LOGICA APP (Fusión UI + Matemáticas + Auth)
          ========================================== -->
     <script type="module">
-        // 1. IMPORTACIONES (Auth y Firestore)
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // 2. CONFIGURACIÓN (Reemplaza con tu Firebase)
+        // Configuración de Firebase
         const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
             apiKey: "AIzaSyDr1W6YktGX9lV-9qVpSP-PJC2Js0cMwgo",
             authDomain: "mundialito-7ed91.firebaseapp.com",
             projectId: "mundialito-7ed91"
-            // ...
         };
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        
-        // Variable global de usuario
-        let currentUser = null;
-        let unsubscribeEquipos = null;
-
-        // --- SISTEMA DE NOTIFICACIONES ---
-        const showNotification = (msg, isError = false) => {
-            const toast = document.getElementById('notification-toast');
-            const toastMsg = document.getElementById('notification-msg');
-            toastMsg.textContent = msg;
-            toast.classList.remove('bg-institucional-azul', 'bg-red-600');
-            toast.classList.add(isError ? 'bg-red-600' : 'bg-institucional-azul');
-            
-            toast.classList.remove('opacity-0', 'translate-y-[-20px]', 'pointer-events-none');
-            toast.classList.add('opacity-100', 'translate-y-0');
-            
-            setTimeout(() => {
-                toast.classList.remove('opacity-100', 'translate-y-0');
-                toast.classList.add('opacity-0', 'translate-y-[-20px]', 'pointer-events-none');
-            }, 3000);
-        };
-
-        // --- RUTAS DE BASE DE DATOS ---
-        // Nota: Si usas tu propio Firebase y quieres colecciones en la raíz, puedes cambiar 
-        // el interior de esta función a: return collection(db, collectionName);
-        const getCollectionRef = (collectionName) => {
-            const appId = typeof __app_id !== 'undefined' ? __app_id : 'mundialito-app';
-            return collection(db, 'artifacts', appId, 'public', 'data', collectionName);
-        };
-
-        // 3. REFERENCIAS AL DOM
-        const loginScreen = document.getElementById('login-screen');
-        const btnTopAuth = document.getElementById('btn-top-auth');
-        const btnCerrarModal = document.getElementById('btn-cerrar-modal');
-        const btnIngresar = document.getElementById('btn-ingresar');
-        const errorMsg = document.getElementById('login-error');
-        const navBtnAdmin = document.getElementById('nav-btn-admin');
-        const navButtons = document.querySelectorAll('.nav-btn');
-        const vistas = ['vista-posiciones', 'vista-goleadores', 'vista-partidos', 'vista-admin'];
-
-        // 4. INICIALIZACIÓN DE AUTENTICACIÓN
-        const initAuth = async () => {
-            try {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth); // Visitante por defecto
-                }
-            } catch (error) {
-                console.error("Error iniciando Auth:", error);
-            }
-        };
-
-        // 5. OBSERVADOR DE SESIÓN Y LECTURA DE BASE DE DATOS
-        onAuthStateChanged(auth, (user) => {
-            currentUser = user;
-            if (!user) return; // Guarda de seguridad
-
-            const isAdmin = user && !user.isAnonymous && user.email;
-
-            // Ajustes de UI según el rol
-            if (isAdmin) {
-                loginScreen.classList.add('hidden');
-                btnTopAuth.textContent = "Cerrar Sesión";
-                btnTopAuth.classList.remove('border-institucional-azul', 'text-institucional-azul');
-                btnTopAuth.classList.add('bg-red-600', 'text-white', 'border-red-600', 'hover:bg-red-700');
-                navBtnAdmin.classList.remove('hidden');
-            } else {
-                btnTopAuth.textContent = "Ingresar Admin";
-                btnTopAuth.classList.remove('bg-red-600', 'text-white', 'border-red-600', 'hover:bg-red-700');
-                btnTopAuth.classList.add('border-institucional-azul', 'text-institucional-azul');
-                navBtnAdmin.classList.add('hidden');
-                
-                // Expulsar si estaba en Admin
-                if (!document.getElementById('vista-admin').classList.contains('vista-oculta')) {
-                    document.getElementById('nav-btn-admin').previousElementSibling.click(); // Clic a Partidos u otro
-                    document.querySelector('[data-target="vista-posiciones"]').click();
-                }
+        class TournamentApp {
+            constructor() {
+                this.teams = [];
+                this.schedule = [];
+                this.isAuthenticated = false; 
+                this.db = null;
+                this.auth = null;
+                this.appId = typeof __app_id !== 'undefined' ? __app_id : 'mundialito-app';
+                this.unsubscribe = null;
             }
 
-            // Iniciar lectura de la Base de Datos (Posiciones)
-            setupDatabaseListeners();
-        });
-
-        const setupDatabaseListeners = () => {
-            if (unsubscribeEquipos) unsubscribeEquipos(); // Limpiar listener previo
-
-            const equiposRef = getCollectionRef('equipos');
-            // Escuchar cambios en la colección en tiempo real
-            unsubscribeEquipos = onSnapshot(equiposRef, (snapshot) => {
-                const tbody = document.getElementById('body-posiciones');
-                tbody.innerHTML = '';
-                
-                const equipos = [];
-                snapshot.forEach(doc => equipos.push({ id: doc.id, ...doc.data() }));
-                
-                // Ordenar por puntos (mayor a menor) y luego diferencia de goles
-                equipos.sort((a, b) => (b.pts - a.pts) || ((b.gf - b.gc) - (a.gf - a.gc)));
-
-                if (equipos.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="10" class="p-4 text-center text-gray-500">Aún no hay equipos registrados.</td></tr>';
-                    return;
-                }
-
-                equipos.forEach((equipo, index) => {
-                    const pos = index + 1;
-                    const dg = (equipo.gf || 0) - (equipo.gc || 0);
-                    const highlightClass = pos <= 2 ? 'bg-yellow-50' : 'hover:bg-gray-50'; // Resaltar los 2 primeros
-
-                    tbody.innerHTML += `
-                        <tr class="${highlightClass} border-b border-gray-100 transition">
-                            <td class="p-3 font-bold text-institucional-azul">${pos}</td>
-                            <td class="p-3 font-semibold">${equipo.nombre}</td>
-                            <td class="p-3 text-center">${equipo.pj || 0}</td>
-                            <td class="p-3 text-center">${equipo.g || 0}</td>
-                            <td class="p-3 text-center">${equipo.e || 0}</td>
-                            <td class="p-3 text-center">${equipo.p || 0}</td>
-                            <td class="p-3 text-center">${equipo.gf || 0}</td>
-                            <td class="p-3 text-center">${equipo.gc || 0}</td>
-                            <td class="p-3 text-center font-semibold">${dg}</td>
-                            <td class="p-3 text-center font-bold text-institucional-azul text-lg">${equipo.pts || 0}</td>
-                        </tr>
-                    `;
-                });
-            }, (error) => {
-                console.error("Error al leer equipos: ", error);
-            });
-        };
-
-        // 6. GUARDAR NUEVO EQUIPO EN LA BASE DE DATOS
-        document.getElementById('btn-guardar-equipo').addEventListener('click', async () => {
-            if (!currentUser || currentUser.isAnonymous) return showNotification("No tienes permisos.", true);
-            
-            const inputElement = document.getElementById('input-nombre-equipo');
-            const nombre = inputElement.value.trim();
-            
-            if (!nombre) return showNotification("Ingresa un nombre válido.", true);
-
-            const btn = document.getElementById('btn-guardar-equipo');
-            btn.disabled = true;
-
-            try {
-                await addDoc(getCollectionRef('equipos'), {
-                    nombre: nombre,
-                    pj: 0, g: 0, e: 0, p: 0, gf: 0, gc: 0, pts: 0
-                });
-                inputElement.value = '';
-                showNotification(`Equipo "${nombre}" guardado.`);
-            } catch (error) {
-                console.error("Error al guardar:", error);
-                showNotification("Error al guardar en la base de datos.", true);
-            } finally {
-                btn.disabled = false;
+            // ---------------- UI & Modales ----------------
+            showNotification(msg, isError = false) {
+                const toast = document.getElementById('notification-toast');
+                document.getElementById('notification-msg').textContent = msg;
+                toast.classList.remove('bg-institucional-azul', 'bg-red-600');
+                toast.classList.add(isError ? 'bg-red-600' : 'bg-institucional-azul');
+                toast.classList.remove('opacity-0', 'translate-y-[-20px]', 'pointer-events-none');
+                toast.classList.add('opacity-100', 'translate-y-0');
+                setTimeout(() => {
+                    toast.classList.remove('opacity-100', 'translate-y-0');
+                    toast.classList.add('opacity-0', 'translate-y-[-20px]', 'pointer-events-none');
+                }, 3000);
             }
-        });
 
-        // 7. INTERACCIONES UI (Botones, Modales, Pestañas)
-        btnTopAuth.addEventListener('click', async () => {
-            if (currentUser && !currentUser.isAnonymous) {
-                await signOut(auth);
-                // SignInAnonymously se activará gracias a un flujo en onAuthStateChanged si quisieras, 
-                // pero por seguridad forzamos inicio anónimo al salir:
-                await signInAnonymously(auth);
-                showNotification("Sesión cerrada. Modo visitante.");
-            } else {
-                errorMsg.textContent = '';
-                loginScreen.classList.remove('hidden');
+            showAlert(message) {
+                const modal = document.getElementById('modal');
+                document.getElementById('modal-message').innerHTML = `<p class="text-lg">${message}</p>`;
+                document.getElementById('modal-buttons').innerHTML = `<button onclick="app.hideModal()" class="btn btn-primary">Entendido</button>`;
+                modal.classList.remove('hidden');
             }
-        });
 
-        btnCerrarModal.addEventListener('click', () => loginScreen.classList.add('hidden'));
-
-        btnIngresar.addEventListener('click', async () => {
-            const email = document.getElementById('email-input').value;
-            const password = document.getElementById('password-input').value;
-
-            if (!email || !password) return errorMsg.textContent = "Llena ambos campos.";
-
-            btnIngresar.textContent = "Verificando...";
-            btnIngresar.disabled = true;
-
-            try {
-                await signInWithEmailAndPassword(auth, email, password);
-                document.getElementById('email-input').value = '';
-                document.getElementById('password-input').value = '';
-                document.getElementById('nav-btn-admin').click(); // Redirigir al panel
-                showNotification("Bienvenido al panel de administración.");
-            } catch (error) {
-                errorMsg.textContent = error.code === 'auth/invalid-credential' 
-                    ? "Correo o contraseña incorrectos." 
-                    : "Error al conectar.";
-            } finally {
-                btnIngresar.textContent = "Ingresar";
-                btnIngresar.disabled = false;
+            showConfirm(message, onConfirm) {
+                const modal = document.getElementById('modal');
+                document.getElementById('modal-message').innerHTML = `<p class="text-lg">${message}</p>`;
+                document.getElementById('modal-buttons').innerHTML = `
+                    <button onclick="app.hideModal()" class="btn btn-secondary">Cancelar</button>
+                    <button id="confirm-btn" class="btn btn-danger">Confirmar</button>`;
+                modal.classList.remove('hidden');
+                document.getElementById('confirm-btn').onclick = () => {
+                    this.hideModal();
+                    onConfirm();
+                };
             }
-        });
 
-        navButtons.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                navButtons.forEach(b => {
+            hideModal() { document.getElementById('modal').classList.add('hidden'); }
+            showLoginModal() { document.getElementById('login-screen').classList.remove('hidden'); }
+            hideLoginModal() { document.getElementById('login-screen').classList.add('hidden'); }
+
+            switchTab(targetId, btnElement) {
+                const navBtns = document.querySelectorAll('.nav-btn');
+                navBtns.forEach(b => {
                     b.classList.remove('btn-secondary');
                     b.classList.add('bg-gray-200', 'text-institucional-azul');
                 });
-                
-                e.target.classList.remove('bg-gray-200', 'text-institucional-azul');
-                e.target.classList.add('btn-secondary');
+                btnElement.classList.remove('bg-gray-200', 'text-institucional-azul');
+                btnElement.classList.add('btn-secondary');
 
-                const targetId = e.target.getAttribute('data-target');
+                const vistas = ['vista-posiciones', 'vista-goleadores', 'vista-partidos', 'vista-admin'];
                 vistas.forEach(id => {
                     const vista = document.getElementById(id);
                     if (vista) {
@@ -460,20 +310,391 @@
                         vista.classList.toggle('vista-oculta', id !== targetId);
                     }
                 });
-            });
-        });
+            }
 
-        const togglePasswordBtn = document.getElementById('toggle-password-btn');
-        togglePasswordBtn.addEventListener('click', () => {
-            const pwd = document.getElementById('password-input');
-            const isPwd = pwd.type === 'password';
-            pwd.type = isPwd ? 'text' : 'password';
-            document.getElementById('eye-icon').classList.toggle('hidden', isPwd);
-            document.getElementById('eye-slash-icon').classList.toggle('hidden', !isPwd);
-        });
+            // ---------------- Inicialización & Auth ----------------
+            async init() {
+                const firebaseApp = initializeApp(firebaseConfig);
+                this.db = getFirestore(firebaseApp);
+                this.auth = getAuth(firebaseApp);
 
-        // 8. ARRANQUE
-        initAuth();
+                try {
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        await signInWithCustomToken(this.auth, __initial_auth_token);
+                    } else {
+                        await signInAnonymously(this.auth); 
+                    }
+                } catch (e) { console.error("Error Auth Inicial:", e); }
+
+                onAuthStateChanged(this.auth, (user) => {
+                    const isAdmin = user && !user.isAnonymous && user.email;
+                    this.isAuthenticated = isAdmin;
+                    this.updateUIForRole();
+                    this.setupFirestoreListener();
+                });
+
+                // Funcionalidad del ojito de contraseña
+                document.getElementById('toggle-password-btn').addEventListener('click', () => {
+                    const pwd = document.getElementById('password-input');
+                    const isPwd = pwd.type === 'password';
+                    pwd.type = isPwd ? 'text' : 'password';
+                    document.getElementById('eye-icon').classList.toggle('hidden', isPwd);
+                    document.getElementById('eye-slash-icon').classList.toggle('hidden', !isPwd);
+                });
+            }
+
+            async toggleAuth() {
+                if (this.isAuthenticated) {
+                    await signOut(this.auth);
+                    await signInAnonymously(this.auth);
+                    this.showNotification("Sesión cerrada. Estás en modo visitante.");
+                } else {
+                    document.getElementById('login-error').textContent = '';
+                    this.showLoginModal();
+                }
+            }
+
+            async login() {
+                const email = document.getElementById('email-input').value;
+                const password = document.getElementById('password-input').value;
+                const btn = document.getElementById('btn-ingresar');
+                const errorMsg = document.getElementById('login-error');
+
+                if (!email || !password) return errorMsg.textContent = "Llena ambos campos.";
+                btn.textContent = "Verificando..."; btn.disabled = true;
+
+                try {
+                    await signInWithEmailAndPassword(this.auth, email, password);
+                    document.getElementById('email-input').value = '';
+                    document.getElementById('password-input').value = '';
+                    this.hideLoginModal();
+                    document.getElementById('nav-btn-admin').click(); // Redirigir a Admin
+                    this.showNotification("Bienvenido al panel de administración.");
+                } catch (error) {
+                    errorMsg.textContent = error.code === 'auth/invalid-credential' 
+                        ? "Correo o contraseña incorrectos." : "Error al conectar.";
+                } finally {
+                    btn.textContent = "Ingresar"; btn.disabled = false;
+                }
+            }
+
+            updateUIForRole() {
+                const btnTopAuth = document.getElementById('btn-top-auth');
+                const navBtnAdmin = document.getElementById('nav-btn-admin');
+                
+                if (this.isAuthenticated) {
+                    btnTopAuth.textContent = "Cerrar Sesión";
+                    btnTopAuth.classList.remove('border-institucional-azul', 'text-institucional-azul');
+                    btnTopAuth.classList.add('bg-red-600', 'text-white', 'border-red-600');
+                    navBtnAdmin.classList.remove('hidden');
+                } else {
+                    btnTopAuth.textContent = "Ingresar Admin";
+                    btnTopAuth.classList.remove('bg-red-600', 'text-white', 'border-red-600');
+                    btnTopAuth.classList.add('border-institucional-azul', 'text-institucional-azul');
+                    navBtnAdmin.classList.add('hidden');
+                    
+                    if (!document.getElementById('vista-admin').classList.contains('vista-oculta')) {
+                        document.querySelector('[data-target="vista-posiciones"]')?.click();
+                    }
+                }
+                this.renderAll(); // Re-renderizar todo para mostrar/ocultar botones de edición
+            }
+
+            // ---------------- Datos & Lógica del Torneo ----------------
+            setupFirestoreListener() {
+                if (this.unsubscribe) this.unsubscribe();
+                
+                // Usamos un único documento "mainState" para facilitar los cálculos matemáticos locales
+                const mainStateRef = doc(this.db, 'artifacts', this.appId, 'public', 'data', 'mainState');
+                
+                this.unsubscribe = onSnapshot(mainStateRef, (docSnap) => {
+                    if (docSnap.exists()) {
+                        const state = docSnap.data();
+                        this.teams = state.teams || [];
+                        this.schedule = state.schedule || [];
+                    } else {
+                        this.teams = []; this.schedule = [];
+                    }
+                    this.renderAll();
+                });
+            }
+
+            async saveStateToFirestore() {
+                if (!this.isAuthenticated) return;
+                const mainStateRef = doc(this.db, 'artifacts', this.appId, 'public', 'data', 'mainState');
+                await setDoc(mainStateRef, {
+                    teams: JSON.parse(JSON.stringify(this.teams)), 
+                    schedule: JSON.parse(JSON.stringify(this.schedule))
+                });
+            }
+
+            addTeam() {
+                if (this.schedule.length > 0) return this.showNotification("No puedes añadir equipos si el torneo ya empezó.", true);
+                const input = document.getElementById('team-name');
+                const name = input.value.trim();
+                
+                if (name && !this.teams.some(t => t.name === name)) {
+                    this.teams.push({ name, pj: 0, g: 0, e: 0, p: 0, gf: 0, gc: 0, dg: 0, pts: 0 });
+                    input.value = '';
+                    this.saveStateToFirestore();
+                } else if (name) {
+                    this.showNotification("El equipo ya existe.", true);
+                }
+            }
+
+            removeTeam(index) {
+                if (this.schedule.length > 0) return;
+                this.teams.splice(index, 1);
+                this.saveStateToFirestore();
+            }
+
+            generateSchedule() {
+                if (this.teams.length < 2) return this.showAlert("Necesitas al menos 2 equipos.");
+                this.showConfirm("¿Generar calendario? Ya no podrás añadir o eliminar equipos.", () => {
+                    let teams = [...this.teams.map(t => t.name)];
+                    const groupedSchedule = [];
+                    if (teams.length % 2 !== 0) teams.push("descanso");
+                    
+                    const numTeams = teams.length;
+                    const numRounds = numTeams - 1;
+                    
+                    // Algoritmo Round Robin
+                    for (let round = 0; round < numRounds; round++) {
+                        const roundMatches = [];
+                        for (let i = 0; i < numTeams / 2; i++) {
+                            const t1 = teams[i];
+                            const t2 = teams[numTeams - 1 - i];
+                            if (t1 !== "descanso" && t2 !== "descanso") {
+                                const match = (round % 2 === 1) ? { team1: t1, team2: t2 } : { team1: t2, team2: t1 };
+                                roundMatches.push({ ...match, score1: null, score2: null, played: false, scorers: [] });
+                            }
+                        }
+                        groupedSchedule.push(roundMatches);
+                        teams.splice(1, 0, teams.pop());
+                    }
+                    
+                    this.schedule = groupedSchedule.map((matches, index) => ({ round: index + 1, matches }));
+                    this.saveStateToFirestore();
+                    this.showNotification("¡Calendario generado exitosamente!");
+                });
+            }
+
+            updateScore(rIdx, mIdx) {
+                const match = this.schedule[rIdx].matches[mIdx];
+                const id = `${rIdx}-${mIdx}`;
+                const s1 = parseInt(document.getElementById(`score1-${id}`).value);
+                const s2 = parseInt(document.getElementById(`score2-${id}`).value);
+
+                if (!isNaN(s1) && !isNaN(s2) && s1 >= 0 && s2 >= 0) {
+                    match.score1 = s1; match.score2 = s2; match.played = true;
+                    this.saveStateToFirestore();
+                    this.showNotification("Marcador actualizado.");
+                } else {
+                    this.showAlert("Por favor ingresa números válidos.");
+                }
+            }
+
+            requestEditMatch(rIdx, mIdx) {
+                this.showConfirm("¿Habilitar edición para este partido?", () => {
+                    const id = `${rIdx}-${mIdx}`;
+                    document.getElementById(`score1-${id}`).readOnly = false;
+                    document.getElementById(`score2-${id}`).readOnly = false;
+                    document.getElementById(`edit-btn-${id}`).classList.add('hidden');
+                    document.getElementById(`save-btn-${id}`).classList.remove('hidden');
+                });
+            }
+
+            addScorer(rIdx, mIdx) {
+                const match = this.schedule[rIdx].matches[mIdx];
+                const id = `${rIdx}-${mIdx}`;
+                const playerName = document.getElementById(`scorer-name-${id}`).value.trim();
+                const teamName = document.getElementById(`scorer-team-${id}`).value;
+
+                if (playerName && teamName) {
+                    if (!match.scorers) match.scorers = [];
+                    match.scorers.push({ player: playerName, team: teamName });
+                    this.saveStateToFirestore();
+                }
+            }
+
+            removeScorer(rIdx, mIdx, sIdx) {
+                this.schedule[rIdx].matches[mIdx].scorers.splice(sIdx, 1);
+                this.saveStateToFirestore();
+            }
+
+            calculateTeamStats() {
+                this.teams.forEach(t => { t.pj=0; t.g=0; t.e=0; t.p=0; t.gf=0; t.gc=0; t.dg=0; t.pts=0; });
+                
+                this.schedule.forEach(round => {
+                    round.matches.forEach(match => {
+                        if (match.played) {
+                            const t1 = this.teams.find(t => t.name === match.team1);
+                            const t2 = this.teams.find(t => t.name === match.team2);
+                            if (!t1 || !t2) return;
+                            
+                            t1.pj++; t2.pj++;
+                            t1.gf += match.score1; t1.gc += match.score2;
+                            t2.gf += match.score2; t2.gc += match.score1;
+                            
+                            if (match.score1 > match.score2) { t1.g++; t2.p++; t1.pts += 3; }
+                            else if (match.score2 > match.score1) { t2.g++; t1.p++; t2.pts += 3; }
+                            else { t1.e++; t2.e++; t1.pts += 1; t2.pts += 1; }
+                        }
+                    });
+                });
+
+                this.teams.forEach(t => t.dg = t.gf - t.gc);
+                this.teams.sort((a, b) => b.pts - a.pts || b.dg - a.dg || b.gf - a.gf || a.name.localeCompare(b.name));
+            }
+
+            resetTournament() {
+                this.showConfirm("¿Estás 100% seguro? Se borrarán todos los equipos y partidos.", async () => {
+                    if(this.isAuthenticated) {
+                        const mainStateRef = doc(this.db, 'artifacts', this.appId, 'public', 'data', 'mainState');
+                        await deleteDoc(mainStateRef);
+                        this.showNotification("Torneo reiniciado exitosamente.");
+                    }
+                });
+            }
+
+            // ---------------- Renderizado ----------------
+            renderAll() {
+                this.calculateTeamStats(); // Se calcula al vuelo siempre
+                
+                const started = this.schedule.length > 0;
+                
+                // Panel Admin UI
+                document.getElementById('add-team-wrapper').classList.toggle('opacity-50', started);
+                document.getElementById('team-name').disabled = started;
+                document.getElementById('add-team-btn').disabled = started;
+                document.getElementById('generate-schedule-btn').disabled = this.teams.length < 2 || started;
+                document.getElementById('reset-tournament-btn').classList.toggle('hidden', !started && this.teams.length === 0);
+
+                this.renderTeamsAdmin();
+                this.renderStandings();
+                this.renderSchedule();
+                this.renderTopScorers();
+            }
+
+            renderTeamsAdmin() {
+                document.getElementById('teams-list').innerHTML = this.teams.map((t, i) => `
+                    <div class="flex justify-between items-center bg-gray-100 p-2 rounded">
+                        <span class="font-semibold">${t.name}</span>
+                        <button onclick="app.removeTeam(${i})" class="text-red-500 hover:text-red-700 font-bold ${this.schedule.length > 0 ? 'hidden' : ''}">X</button>
+                    </div>`).join('');
+            }
+
+            renderStandings() {
+                const body = document.getElementById('standings-body');
+                if(this.teams.length === 0) return body.innerHTML = '<tr><td colspan="10" class="p-4 text-center text-gray-500">Aún no hay equipos registrados.</td></tr>';
+                
+                body.innerHTML = this.teams.map((t, i) => `
+                    <tr class="${i < 2 ? 'bg-yellow-50' : 'hover:bg-gray-50'} border-b border-gray-100 transition">
+                        <td class="p-3 font-bold text-institucional-azul">${i + 1}</td>
+                        <td class="p-3 font-semibold">${t.name}</td>
+                        <td class="p-3 text-center">${t.pj}</td>
+                        <td class="p-3 text-center">${t.g}</td><td class="p-3 text-center">${t.e}</td><td class="p-3 text-center">${t.p}</td>
+                        <td class="p-3 text-center">${t.gf}</td><td class="p-3 text-center">${t.gc}</td>
+                        <td class="p-3 text-center font-semibold">${t.dg}</td>
+                        <td class="p-3 text-center font-bold text-institucional-azul text-lg">${t.pts}</td>
+                    </tr>`).join('');
+            }
+
+            renderTopScorers() {
+                const map = new Map();
+                this.schedule.forEach(r => r.matches.forEach(m => {
+                    if(m.scorers) m.scorers.forEach(s => {
+                        const key = `${s.player}-${s.team}`;
+                        if (!map.has(key)) map.set(key, { player: s.player, team: s.team, goals: 0 });
+                        map.get(key).goals++;
+                    });
+                }));
+                const sorted = Array.from(map.values()).sort((a, b) => b.goals - a.goals);
+                
+                const body = document.getElementById('top-scorers-body');
+                if(sorted.length === 0) return body.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-gray-500">No hay goles registrados aún.</td></tr>';
+                
+                body.innerHTML = sorted.map((s, i) => `
+                    <tr class="border-b border-gray-100">
+                        <td class="p-3 font-bold text-institucional-azul">${i+1}</td>
+                        <td class="p-3 font-semibold">${s.player}</td>
+                        <td class="p-3 text-gray-500">${s.team}</td>
+                        <td class="p-3 text-center font-bold text-lg">${s.goals}</td>
+                    </tr>`).join('');
+            }
+
+            renderSchedule() {
+                const section = document.getElementById('schedule-section');
+                if (this.schedule.length === 0) return section.innerHTML = '<div class="card bg-gray-50 text-center text-gray-500">El calendario aún no ha sido generado.</div>';
+                
+                section.innerHTML = this.schedule.map((r, rIdx) => `
+                    <div class="card !bg-gray-50 mb-6">
+                        <h3 class="text-xl font-bold mb-4 text-center text-institucional-azul border-b-2 border-institucional-amarillo pb-2 inline-block">Jornada ${r.round}</h3>
+                        <div class="space-y-4 mt-4">
+                            ${r.matches.map((m, mIdx) => this.renderMatchCard(m, rIdx, mIdx)).join('')}
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            renderMatchCard(match, rIdx, mIdx) {
+                 const id = `${rIdx}-${mIdx}`;
+                 const ro = (match.played || !this.isAuthenticated) ? 'readonly' : '';
+                 
+                 return `
+                    <div class="bg-white border p-4 rounded-lg shadow-sm ${match.played ? 'border-l-4 border-l-institucional-amarillo' : ''}">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                            <div class="sm:w-1/3 text-center sm:text-right font-semibold text-lg text-institucional-azul">${match.team1}</div>
+                            <div class="flex items-center justify-center gap-2">
+                                <input type="number" min="0" id="score1-${id}" class="input-field text-center w-16 text-xl font-bold bg-gray-50" value="${match.score1 ?? ''}" ${ro}>
+                                <span class="font-bold text-gray-400">vs</span>
+                                <input type="number" min="0" id="score2-${id}" class="input-field text-center w-16 text-xl font-bold bg-gray-50" value="${match.score2 ?? ''}" ${ro}>
+                            </div>
+                            <div class="sm:w-1/3 text-center sm:text-left font-semibold text-lg text-institucional-azul">${match.team2}</div>
+                        </div>
+
+                        ${this.isAuthenticated ? `
+                            <div class="mt-4 flex justify-center gap-2">
+                                <button id="save-btn-${id}" onclick="app.updateScore(${rIdx}, ${mIdx})" class="btn btn-primary py-1 px-4 text-sm ${match.played ? 'hidden' : ''}">Guardar Marcador</button>
+                                <button id="edit-btn-${id}" onclick="app.requestEditMatch(${rIdx}, ${mIdx})" class="btn btn-secondary py-1 px-4 text-sm ${!match.played ? 'hidden' : ''}">Editar Marcador</button>
+                            </div>
+                        ` : ''}
+                        
+                        ${(match.played || this.isAuthenticated) ? `
+                            <hr class="my-4 border-gray-100">
+                            <div class="text-sm">
+                                <h4 class="font-semibold mb-2 text-center text-gray-500 uppercase tracking-wide text-xs">Goles del Partido</h4>
+                                
+                                ${this.isAuthenticated ? `
+                                    <div class="flex flex-col sm:flex-row gap-2 items-center mb-3 max-w-lg mx-auto bg-gray-50 p-2 rounded">
+                                        <input type="text" id="scorer-name-${id}" class="input-field text-sm py-1" placeholder="Nombre goleador">
+                                        <select id="scorer-team-${id}" class="input-field text-sm py-1">
+                                            <option value="${match.team1}">${match.team1}</option>
+                                            <option value="${match.team2}">${match.team2}</option>
+                                        </select>
+                                        <button onclick="app.addScorer(${rIdx}, ${mIdx})" class="btn btn-secondary py-1 px-3 text-sm whitespace-nowrap">Añadir</button>
+                                    </div>
+                                ` : ''}
+
+                                <ul class="space-y-1 text-sm max-w-sm mx-auto">
+                                    ${ (match.scorers || []).map((scorer, s_index) => `
+                                        <li class="flex justify-between items-center bg-gray-100 p-2 rounded">
+                                            <span>⚽ <span class="font-semibold">${scorer.player}</span> <span class="text-xs text-gray-500">(${scorer.team})</span></span>
+                                            ${this.isAuthenticated ? `<button onclick="app.removeScorer(${rIdx}, ${mIdx}, ${s_index})" class="text-red-500 font-bold text-xs hover:text-red-700 p-1">X</button>` : ''}
+                                        </li>
+                                    `).join('')}
+                                    ${(match.scorers || []).length === 0 ? '<li class="text-center text-gray-400 italic text-xs">Sin goles registrados</li>' : ''}
+                                </ul>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }
+        }
+        
+        // Arrancar la app
+        window.app = new TournamentApp();
+        document.addEventListener('DOMContentLoaded', () => window.app.init());
 
     </script>
 </body>
