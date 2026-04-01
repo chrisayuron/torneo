@@ -44,45 +44,55 @@
             border-top: 4px solid theme('colors.institucional.azul');
         }
         
-        /* --- MEJORA DE BOTONES --- */
+        /* --- ESTILOS DE BOTONES UNIFICADOS (Estilo Login) --- */
         .btn {
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
-            font-weight: 600;
+            border-radius: 0.75rem; /* rounded-xl */
+            font-weight: 700;
             transition: all 0.2s ease-in-out;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
-        .btn:disabled { background-color: #9ca3af !important; color: white !important; cursor: not-allowed; opacity: 0.7; box-shadow: none !important; transform: none !important; }
         .btn:active:not(:disabled) { transform: scale(0.96); } 
+        
+        /* Solución al contraste del botón deshabilitado */
+        .btn:disabled { 
+            background-color: #e2e8f0 !important; /* bg-slate-200 */
+            color: #94a3b8 !important; /* text-slate-400 */
+            cursor: not-allowed; 
+            box-shadow: none !important; 
+            transform: none !important; 
+            border: none !important;
+        }
         
         .btn-primary { 
             background-color: theme('colors.institucional.azul'); 
             color: white; 
-            box-shadow: 0 4px 6px -1px rgba(11, 57, 84, 0.3);
         }
         .btn-primary:hover:not(:disabled) { 
             background-color: theme('colors.institucional.azulHover'); 
             transform: translateY(-2px); 
-            box-shadow: 0 6px 8px -1px rgba(11, 57, 84, 0.4);
+            box-shadow: 0 10px 15px -3px rgba(11, 57, 84, 0.3);
         }
         
         .btn-secondary { 
             background-color: theme('colors.institucional.amarillo'); 
             color: theme('colors.institucional.azul'); 
-            box-shadow: 0 4px 6px -1px rgba(255, 209, 102, 0.4);
         }
         .btn-secondary:hover:not(:disabled) { 
             background-color: theme('colors.institucional.amarilloHover'); 
             transform: translateY(-2px); 
-            box-shadow: 0 6px 8px -1px rgba(255, 209, 102, 0.5);
+            box-shadow: 0 10px 15px -3px rgba(255, 209, 102, 0.4);
         }
+
+        .btn-success { background-color: #16a34a; color: white; }
+        .btn-success:hover:not(:disabled) { background-color: #15803d; transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(22, 163, 74, 0.4); }
         
-        .btn-danger { background-color: #dc2626; color: white; box-shadow: 0 4px 6px -1px rgba(220, 38, 38, 0.3); }
-        .btn-danger:hover:not(:disabled) { background-color: #b91c1c; transform: translateY(-2px); box-shadow: 0 6px 8px -1px rgba(220, 38, 38, 0.4); }
+        .btn-danger { background-color: #dc2626; color: white; }
+        .btn-danger:hover:not(:disabled) { background-color: #b91c1c; transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(220, 38, 38, 0.4); }
 
         .input-field {
             width: 100%;
@@ -151,7 +161,7 @@
                 
                 <p id="login-error" class="text-red-500 text-sm mt-3 h-5 text-center font-medium transition-opacity"></p>
                 
-                <button id="btn-ingresar" onclick="app.login()" class="w-full bg-institucional-amarillo hover:bg-institucional-amarilloHover text-institucional-azul font-bold py-3 px-4 rounded-xl shadow-md transition-all mt-4 transform hover:-translate-y-0.5">
+                <button id="btn-ingresar" onclick="app.login()" class="btn btn-secondary w-full py-3 mt-4">
                     Ingresar al Sistema
                 </button>
             </div>
@@ -173,10 +183,10 @@
             <p class="text-lg text-gray-600 mt-2 font-medium">Torneo Oficial - Resultados en vivo</p>
             
             <nav class="flex justify-center flex-wrap gap-3 mt-6">
-                <button class="nav-btn btn bg-institucional-amarillo text-institucional-azul font-bold shadow-md scale-105 px-6 rounded-full transition-all" onclick="app.switchTab('vista-posiciones', this)" data-target="vista-posiciones">Posiciones</button>
-                <button class="nav-btn btn bg-institucional-azul text-white opacity-90 px-6 rounded-full transition-all" onclick="app.switchTab('vista-goleadores', this)" data-target="vista-goleadores">Goleadores</button>
-                <button class="nav-btn btn bg-institucional-azul text-white opacity-90 px-6 rounded-full transition-all" onclick="app.switchTab('vista-partidos', this)" data-target="vista-partidos">Partidos</button>
-                <button id="nav-btn-admin" class="nav-btn btn bg-institucional-azul text-white opacity-90 px-6 rounded-full transition-all hidden" onclick="app.switchTab('vista-admin', this)" data-target="vista-admin">Panel Admin</button>
+                <button class="nav-btn btn bg-institucional-amarillo text-institucional-azul font-bold shadow-md scale-105 px-6 py-2 rounded-full transition-all" onclick="app.switchTab('vista-posiciones', this)" data-target="vista-posiciones">Posiciones</button>
+                <button class="nav-btn btn bg-institucional-azul text-white opacity-90 px-6 py-2 rounded-full transition-all" onclick="app.switchTab('vista-goleadores', this)" data-target="vista-goleadores">Goleadores</button>
+                <button class="nav-btn btn bg-institucional-azul text-white opacity-90 px-6 py-2 rounded-full transition-all" onclick="app.switchTab('vista-partidos', this)" data-target="vista-partidos">Partidos</button>
+                <button id="nav-btn-admin" class="nav-btn btn bg-institucional-azul text-white opacity-90 px-6 py-2 rounded-full transition-all hidden" onclick="app.switchTab('vista-admin', this)" data-target="vista-admin">Panel Admin</button>
             </nav>
         </header>
 
@@ -240,7 +250,7 @@
                         
                         <div class="flex flex-col sm:flex-row gap-3 mb-6">
                             <input type="text" id="team-name" class="input-field flex-grow border-2" placeholder="Nombre del equipo (Ej: 11-A)" onkeypress="if(event.key === 'Enter') app.addTeam()">
-                            <button id="add-team-btn" onclick="app.addTeam()" class="btn bg-green-600 hover:bg-green-700 text-white shadow-lg whitespace-nowrap">
+                            <button id="add-team-btn" onclick="app.addTeam()" class="btn btn-success py-3 px-6 whitespace-nowrap">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
                                   <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
                                 </svg>
@@ -261,7 +271,6 @@
                             </h2>
                             <p class="text-sm text-gray-600 mb-4">Define el rango de fechas. El sistema asignará automáticamente una jornada a cada martes y jueves hábil.</p>
                             
-                            <!-- NUEVOS CAMPOS DE FECHA -->
                             <div class="flex flex-col sm:flex-row gap-3 mb-4 border-l-4 border-institucional-amarillo pl-3">
                                 <div class="w-full sm:w-1/2">
                                     <label class="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wide">Inicio de Temporada</label>
@@ -273,11 +282,11 @@
                                 </div>
                             </div>
 
-                            <button id="generate-schedule-btn" onclick="app.generateSchedule()" class="btn btn-secondary w-full mb-4" disabled>Generar Calendario</button>
+                            <button id="generate-schedule-btn" onclick="app.generateSchedule()" class="btn btn-secondary w-full py-3 mb-4" disabled>Generar Calendario</button>
                         </div>
                         
                         <div class="pt-4 border-t border-gray-200">
-                            <button id="reset-tournament-btn" onclick="app.resetTournament()" class="btn btn-danger w-full hidden">Reiniciar Todo el Torneo</button>
+                            <button id="reset-tournament-btn" onclick="app.resetTournament()" class="btn btn-danger w-full py-3 hidden">Reiniciar Todo el Torneo</button>
                         </div>
                     </div>
                 </div>
@@ -414,7 +423,7 @@
             showAlert(message) {
                 const modal = document.getElementById('modal');
                 document.getElementById('modal-message').innerHTML = `<p class="text-lg">${message}</p>`;
-                document.getElementById('modal-buttons').innerHTML = `<button onclick="app.hideModal()" class="btn btn-primary">Entendido</button>`;
+                document.getElementById('modal-buttons').innerHTML = `<button onclick="app.hideModal()" class="btn btn-primary py-2 px-6">Entendido</button>`;
                 modal.classList.remove('hidden');
             }
 
@@ -422,8 +431,8 @@
                 const modal = document.getElementById('modal');
                 document.getElementById('modal-message').innerHTML = `<p class="text-lg text-gray-700">${message}</p>`;
                 document.getElementById('modal-buttons').innerHTML = `
-                    <button onclick="app.hideModal()" class="btn btn-secondary">Cancelar</button>
-                    <button id="confirm-btn" class="btn btn-primary">Confirmar</button>`;
+                    <button onclick="app.hideModal()" class="btn btn-secondary py-2 px-4">Cancelar</button>
+                    <button id="confirm-btn" class="btn btn-primary py-2 px-4">Confirmar</button>`;
                 modal.classList.remove('hidden');
                 document.getElementById('confirm-btn').onclick = () => {
                     this.hideModal();
@@ -647,6 +656,26 @@
                 });
             }
 
+            // NUEVAS FUNCIONES PARA EDITAR FECHA
+            toggleEditDate(rIdx) {
+                const editor = document.getElementById(`date-editor-${rIdx}`);
+                if (editor) {
+                    editor.classList.toggle('hidden');
+                }
+            }
+
+            saveMatchDate(rIdx) {
+                const newDate = document.getElementById(`new-date-${rIdx}`).value;
+                if (newDate) {
+                    this.schedule[rIdx].date = newDate;
+                    this.saveStateToFirestore();
+                    this.showNotification("Fecha actualizada correctamente.");
+                    this.toggleEditDate(rIdx);
+                } else {
+                    this.showNotification("Selecciona una fecha válida", true);
+                }
+            }
+
             updateScore(rIdx, mIdx) {
                 const match = this.schedule[rIdx].matches[mIdx];
                 const id = `${rIdx}-${mIdx}`;
@@ -816,11 +845,35 @@
                     <div class="card !bg-gray-50 mb-6 border-t-4 border-t-institucional-amarillo relative">
                         <div class="text-center mb-6">
                             <h3 class="text-2xl font-black text-institucional-azul inline-block uppercase tracking-wider">Jornada ${r.round}</h3>
-                            <div class="mt-1 flex items-center justify-center text-gray-600 font-medium">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1 text-institucional-amarillo" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                  <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                </svg>
-                                ${fechaText}
+                            <div class="mt-1 flex flex-col items-center justify-center text-gray-600 font-medium">
+                                <div class="flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1 text-institucional-amarillo" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                      <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                    <span>${fechaText}</span>
+                                    
+                                    <!-- Botón para Editar Fecha (Solo Admin) -->
+                                    ${this.isAuthenticated ? `
+                                        <button onclick="app.toggleEditDate(${rIdx})" class="ml-2 text-institucional-azul hover:text-institucional-amarilloHover transition-colors" title="Modificar fecha">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                              <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                            </svg>
+                                        </button>
+                                    ` : ''}
+                                </div>
+                                
+                                <!-- Formulario Desplegable para Editar Fecha -->
+                                ${this.isAuthenticated ? `
+                                <div id="date-editor-${rIdx}" class="hidden mt-3 flex gap-2 items-center bg-white p-2 rounded-lg border shadow-sm">
+                                    <input type="date" id="new-date-${rIdx}" value="${r.date}" class="input-field text-sm py-1.5 w-auto">
+                                    <button onclick="app.saveMatchDate(${rIdx})" class="bg-green-600 hover:bg-green-700 text-white p-2 rounded transition shadow-sm" title="Guardar">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                                    </button>
+                                    <button onclick="app.toggleEditDate(${rIdx})" class="bg-red-500 hover:bg-red-600 text-white p-2 rounded transition shadow-sm" title="Cancelar">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                                    </button>
+                                </div>
+                                ` : ''}
                             </div>
                         </div>
                         <div class="space-y-4">
