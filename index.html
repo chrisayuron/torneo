@@ -44,9 +44,9 @@
             border-top: 4px solid #0B3954; /* institucional.azul */
         }
         
-        /* --- ESTILOS DE BOTONES UNIFICADOS (Estilo Login) --- */
+        /* --- ESTILOS DE BOTONES UNIFICADOS --- */
         .btn {
-            border-radius: 0.75rem; /* rounded-xl */
+            border-radius: 0.75rem; 
             font-weight: 700;
             transition: all 0.2s ease-in-out;
             cursor: pointer;
@@ -58,36 +58,20 @@
         }
         .btn:active:not(:disabled) { transform: scale(0.96); } 
         
-        /* Solución al contraste del botón deshabilitado */
         .btn:disabled { 
-            background-color: #cbd5e1 !important; /* Gris pizarra medio */
-            color: #475569 !important; /* Gris pizarra oscuro (muy legible) */
+            background-color: #cbd5e1 !important; 
+            color: #475569 !important; 
             cursor: not-allowed; 
             box-shadow: none !important; 
             transform: none !important; 
             border: none !important;
         }
         
-        /* Uso de Hexadecimales directos para evitar bugs del CDN */
-        .btn-primary { 
-            background-color: #0B3954; /* institucional.azul */
-            color: white; 
-        }
-        .btn-primary:hover:not(:disabled) { 
-            background-color: #135075; /* institucional.azulHover */
-            transform: translateY(-2px); 
-            box-shadow: 0 10px 15px -3px rgba(11, 57, 84, 0.3);
-        }
+        .btn-primary { background-color: #0B3954; color: white; }
+        .btn-primary:hover:not(:disabled) { background-color: #135075; transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(11, 57, 84, 0.3); }
         
-        .btn-secondary { 
-            background-color: #FFD166; /* institucional.amarillo */
-            color: #0B3954; /* institucional.azul */
-        }
-        .btn-secondary:hover:not(:disabled) { 
-            background-color: #FFC233; /* institucional.amarilloHover */
-            transform: translateY(-2px); 
-            box-shadow: 0 10px 15px -3px rgba(255, 209, 102, 0.4);
-        }
+        .btn-secondary { background-color: #FFD166; color: #0B3954; }
+        .btn-secondary:hover:not(:disabled) { background-color: #FFC233; transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(255, 209, 102, 0.4); }
 
         .btn-success { background-color: #16a34a; color: white; }
         .btn-success:hover:not(:disabled) { background-color: #15803d; transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(22, 163, 74, 0.4); }
@@ -103,10 +87,7 @@
             transition: border-color 0.2s, box-shadow 0.2s;
             outline: none;
         }
-        .input-field:focus {
-            border-color: #0B3954; /* institucional.azul */
-            box-shadow: 0 0 0 2px rgba(11, 57, 84, 0.2);
-        }
+        .input-field:focus { border-color: #0B3954; box-shadow: 0 0 0 2px rgba(11, 57, 84, 0.2); }
 
         .vista-oculta { display: none !important; }
         .vista-activa { display: block; animation: fadeIn 0.3s ease-in-out; }
@@ -117,12 +98,11 @@
 </head>
 <body class="p-4 sm:p-6 md:p-8">
 
-    <!-- Notificaciones -->
+    <!-- Notificaciones y Modales (Se mantienen igual) -->
     <div id="notification-toast" class="fixed top-4 left-1/2 transform -translate-x-1/2 z-[100] bg-institucional-azul text-white px-6 py-3 rounded-full shadow-lg opacity-0 pointer-events-none translate-y-[-20px]">
         <span id="notification-msg">Mensaje</span>
     </div>
 
-    <!-- Modal de Alertas/Confirmaciones -->
     <div id="modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-[60] p-4 hidden backdrop-blur-sm">
         <div class="bg-white rounded-xl shadow-xl p-6 max-w-sm w-full text-center border-t-4 border-institucional-amarillo transform transition-all">
             <div id="modal-message" class="mb-6 text-institucional-azul font-medium"></div>
@@ -130,7 +110,6 @@
         </div>
     </div>
 
-    <!-- Modal de Login -->
     <div id="login-screen" class="fixed inset-0 bg-gray-900 bg-opacity-80 flex items-center justify-center z-50 p-4 hidden backdrop-blur-sm">
         <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden transform transition-all">
             <div class="bg-gradient-to-r from-institucional-azul to-institucional-azulHover p-6 text-center relative">
@@ -143,7 +122,6 @@
                 <h2 class="text-2xl font-bold text-white">Acceso Admin</h2>
                 <p class="text-blue-100 text-sm mt-1">Ingresa tus credenciales de Firebase</p>
             </div>
-            
             <div class="p-8">
                 <div class="space-y-5">
                     <div>
@@ -159,17 +137,13 @@
                         </button>
                     </div>
                 </div>
-                
                 <p id="login-error" class="text-red-500 text-sm mt-3 h-5 text-center font-medium transition-opacity"></p>
-                
-                <button id="btn-ingresar" onclick="app.login()" class="btn btn-secondary w-full py-3 mt-4">
-                    Ingresar al Sistema
-                </button>
+                <button id="btn-ingresar" onclick="app.login()" class="btn btn-secondary w-full py-3 mt-4">Ingresar al Sistema</button>
             </div>
         </div>
     </div>
 
-    <!-- Contenedor Principal -->
+    <!-- Header y Navegación -->
     <div id="app-container" class="max-w-6xl mx-auto">
         <header class="text-center mb-8 relative">
             <button id="btn-top-auth" onclick="app.toggleAuth()" class="absolute top-0 right-0 btn border-2 border-institucional-azul text-institucional-azul bg-transparent hover:bg-institucional-azul hover:text-white px-4 py-2 mt-2 mr-2 text-sm rounded-full">
@@ -192,7 +166,7 @@
         </header>
 
         <main id="main-content">
-            <!-- VISTA: POSICIONES -->
+            <!-- VISTAS: Posiciones y Goleadores -->
             <section id="vista-posiciones" class="vista-activa">
                 <div class="card">
                     <h2 class="text-2xl font-bold mb-4 flex items-center text-institucional-azul">
@@ -215,7 +189,6 @@
                 </div>
             </section>
 
-            <!-- VISTA: GOLEADORES -->
             <section id="vista-goleadores" class="vista-oculta">
                 <div class="card">
                     <h2 class="text-2xl font-bold mb-4 flex items-center text-institucional-azul">
@@ -233,7 +206,7 @@
                 </div>
             </section>
 
-            <!-- VISTA: PARTIDOS -->
+            <!-- VISTA: PARTIDOS (Con Fase Final) -->
             <section id="vista-partidos" class="vista-oculta">
                 <div id="schedule-section">
                     <div class="card bg-gray-50 text-center text-gray-500">El calendario aún no ha sido generado.</div>
@@ -258,10 +231,7 @@
                                 Añadir Equipo
                             </button>
                         </div>
-
-                        <div class="space-y-2" id="teams-list">
-                            <!-- Equipos añadidos se listan aquí -->
-                        </div>
+                        <div class="space-y-2" id="teams-list"></div>
                     </div>
 
                     <div class="card flex flex-col justify-between">
@@ -270,7 +240,7 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-institucional-amarillo" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                                 2. Generar Partidos
                             </h2>
-                            <p class="text-sm text-gray-600 mb-4">Define el rango de fechas. El sistema asignará automáticamente una jornada a cada lunes, martes y jueves hábil.</p>
+                            <p class="text-sm text-gray-600 mb-4">El sistema asignará una jornada cada Lunes, Martes y Jueves. (El 10 de Abril se fuerza como el primer partido).</p>
                             
                             <div class="flex flex-col sm:flex-row gap-3 mb-4 border-l-4 border-institucional-amarillo pl-3">
                                 <div class="w-full sm:w-1/2">
@@ -282,7 +252,6 @@
                                     <input type="date" id="tournament-end" class="input-field border-gray-300">
                                 </div>
                             </div>
-
                             <button id="generate-schedule-btn" onclick="app.generateSchedule()" class="btn btn-secondary w-full py-3 mb-4" disabled>Generar Calendario</button>
                         </div>
                         
@@ -291,13 +260,23 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- NUEVA SECCIÓN: GESTIÓN DE FASE FINAL -->
+                <div class="card mt-6 hidden" id="fase-final-admin">
+                    <h2 class="text-xl font-bold mb-4 flex items-center text-institucional-azul">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-institucional-amarillo" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>
+                        3. Gestión de Fase Final (Knockout)
+                    </h2>
+                    <p class="text-sm text-gray-600 mb-6">Genera las llaves finales una vez termine el 'Todos contra Todos'. Las fechas se deben asignar manualmente.</p>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <button onclick="app.generateSemifinals()" class="btn btn-primary flex-1 py-3" id="btn-gen-semi">Generar Semifinales (Top 4)</button>
+                        <button onclick="app.generateFinal()" class="btn btn-secondary flex-1 py-3" id="btn-gen-final">Generar Gran Final</button>
+                    </div>
+                </div>
             </section>
         </main>
     </div>
 
-    <!-- ==========================================
-         LOGICA APP (Fusión UI + Matemáticas + Auth)
-         ========================================== -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -307,17 +286,10 @@
         // UTILIDADES DE CALENDARIO DEPORTIVO
         // ==========================================
         function calcularPascua(year) {
-            const a = year % 19;
-            const b = Math.floor(year / 100);
-            const c = year % 100;
-            const d = Math.floor(b / 4);
-            const e = b % 4;
-            const f = Math.floor((b + 8) / 25);
-            const g = Math.floor((b - f + 1) / 3);
-            const h = (19 * a + b - d - g + 15) % 30;
-            const i = Math.floor(c / 4);
-            const k = c % 4;
-            const l = (32 + 2 * e + 2 * i - h - k) % 7;
+            const a = year % 19; const b = Math.floor(year / 100); const c = year % 100;
+            const d = Math.floor(b / 4); const e = b % 4; const f = Math.floor((b + 8) / 25);
+            const g = Math.floor((b - f + 1) / 3); const h = (19 * a + b - d - g + 15) % 30;
+            const i = Math.floor(c / 4); const k = c % 4; const l = (32 + 2 * e + 2 * i - h - k) % 7;
             const m = Math.floor((a + 11 * h + 22 * l) / 451);
             const month = Math.floor((h + l - 7 * m + 114) / 31) - 1; 
             const day = ((h + l - 7 * m + 114) % 31) + 1;
@@ -326,64 +298,63 @@
 
         function moverALunes(fecha) {
             const d = new Date(fecha);
-            const dayOfWeek = d.getDay();
-            if (dayOfWeek !== 1) { 
-                const diff = (dayOfWeek === 0 ? 1 : 8 - dayOfWeek);
-                d.setDate(d.getDate() + diff);
-            }
+            if (d.getDay() !== 1) d.setDate(d.getDate() + (d.getDay() === 0 ? 1 : 8 - d.getDay()));
             return d;
         }
 
         function obtenerFestivosColombia(year) {
             const pascua = calcularPascua(year);
             const addDays = (date, days) => new Date(date.getFullYear(), date.getMonth(), date.getDate() + days);
-            const toISO = (d) => {
-                const z = n => ('0' + n).slice(-2);
-                return `${d.getFullYear()}-${z(d.getMonth() + 1)}-${z(d.getDate())}`;
-            };
+            const toISO = (d) => { const z = n => ('0' + n).slice(-2); return `${d.getFullYear()}-${z(d.getMonth() + 1)}-${z(d.getDate())}`; };
 
             const festivos = [
-                new Date(year, 0, 1),   new Date(year, 4, 1),   new Date(year, 6, 20),
-                new Date(year, 7, 7),   new Date(year, 11, 8),  new Date(year, 11, 25),
-                moverALunes(new Date(year, 0, 6)),   moverALunes(new Date(year, 2, 19)),
-                moverALunes(new Date(year, 5, 29)),  moverALunes(new Date(year, 7, 15)),
-                moverALunes(new Date(year, 9, 12)),  moverALunes(new Date(year, 10, 1)),
-                moverALunes(new Date(year, 10, 11)), addDays(pascua, -3), addDays(pascua, -2),
-                moverALunes(addDays(pascua, 39)),    moverALunes(addDays(pascua, 60)),
-                moverALunes(addDays(pascua, 68))
+                new Date(year, 0, 1), new Date(year, 4, 1), new Date(year, 6, 20), new Date(year, 7, 7), new Date(year, 11, 8), new Date(year, 11, 25),
+                moverALunes(new Date(year, 0, 6)), moverALunes(new Date(year, 2, 19)), moverALunes(new Date(year, 5, 29)), moverALunes(new Date(year, 7, 15)), moverALunes(new Date(year, 9, 12)), moverALunes(new Date(year, 10, 1)), moverALunes(new Date(year, 10, 11)),
+                addDays(pascua, -3), addDays(pascua, -2), moverALunes(addDays(pascua, 39)), moverALunes(addDays(pascua, 60)), moverALunes(addDays(pascua, 68))
             ];
             return new Set(festivos.map(toISO));
         }
 
+        // --- ACTUALIZADO: RESTRICCIÓN DE SEMANA 6-10 ABRIL ---
         function generarCalendarioPartidos(fechaInicioStr, fechaFinStr) {
             const startDate = new Date(fechaInicioStr + "T12:00:00");
             const endDate = new Date(fechaFinStr + "T12:00:00");
             if (startDate > endDate) return [];
 
-            const startYear = startDate.getFullYear();
-            const endYear = endDate.getFullYear();
-            
             let festivos = new Set();
-            for (let y = startYear; y <= endYear; y++) {
+            for (let y = startDate.getFullYear(); y <= endDate.getFullYear(); y++) {
                 obtenerFestivosColombia(y).forEach(f => festivos.add(f));
             }
 
             const fechasValidas = [];
             let currentDate = new Date(startDate);
-            const toISO = (d) => {
-                const z = n => ('0' + n).slice(-2);
-                return `${d.getFullYear()}-${z(d.getMonth() + 1)}-${z(d.getDate())}`;
-            };
+            const toISO = (d) => { const z = n => ('0' + n).slice(-2); return `${d.getFullYear()}-${z(d.getMonth() + 1)}-${z(d.getDate())}`; };
 
             while (currentDate <= endDate) {
                 const diaSemana = currentDate.getDay(); // 1: Lun, 2: Mar, 4: Jue
                 const isoDate = toISO(currentDate);
+                const m = currentDate.getMonth();
+                const d = currentDate.getDate();
 
-                if ((diaSemana === 1 || diaSemana === 2 || diaSemana === 4) && !festivos.has(isoDate)) {
-                    fechasValidas.push(isoDate);
+                // Regla especial: Restringir cualquier día entre el 6 y el 10 de abril
+                const isRestrictedWeek = (m === 3 && d >= 6 && d <= 10);
+
+                if (!isRestrictedWeek) {
+                    if ((diaSemana === 1 || diaSemana === 2 || diaSemana === 4) && !festivos.has(isoDate)) {
+                        fechasValidas.push(isoDate);
+                    }
                 }
                 currentDate.setDate(currentDate.getDate() + 1);
             }
+
+            // Agregar el Viernes 10 de Abril obligatoriamente como el PRIMER partido 
+            // (Si la fecha entra dentro del rango del torneo)
+            const startYear = startDate.getFullYear();
+            const fechaEspecial = new Date(startYear, 3, 10, 12, 0, 0); // Mes 3 = Abril
+            if (fechaEspecial >= startDate && fechaEspecial <= endDate) {
+                fechasValidas.unshift(toISO(fechaEspecial));
+            }
+
             return fechasValidas;
         }
 
@@ -400,6 +371,7 @@
             constructor() {
                 this.teams = [];
                 this.schedule = [];
+                this.knockout = null; // Nuevo estado para Fase Final
                 this.isAuthenticated = false; 
                 this.db = null;
                 this.auth = null;
@@ -435,17 +407,11 @@
                     <button onclick="app.hideModal()" class="btn btn-secondary py-2 px-4">Cancelar</button>
                     <button id="confirm-btn" class="btn btn-primary py-2 px-4">Confirmar</button>`;
                 modal.classList.remove('hidden');
-                document.getElementById('confirm-btn').onclick = () => {
-                    this.hideModal();
-                    onConfirm();
-                };
+                document.getElementById('confirm-btn').onclick = () => { this.hideModal(); onConfirm(); };
             }
 
             hideModal() { document.getElementById('modal').classList.add('hidden'); }
-            showLoginModal() { 
-                document.getElementById('login-screen').classList.remove('hidden');
-                document.getElementById('email-input').focus();
-            }
+            showLoginModal() { document.getElementById('login-screen').classList.remove('hidden'); document.getElementById('email-input').focus(); }
             hideLoginModal() { document.getElementById('login-screen').classList.add('hidden'); }
 
             switchTab(targetId, btnElement) {
@@ -476,14 +442,11 @@
                 try {
                     if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                         await signInWithCustomToken(this.auth, __initial_auth_token);
-                    } else {
-                        await signInAnonymously(this.auth); 
-                    }
+                    } else { await signInAnonymously(this.auth); }
                 } catch (e) { console.error("Error Auth Inicial:", e); }
 
                 onAuthStateChanged(this.auth, (user) => {
-                    const isAdmin = user && !user.isAnonymous && user.email;
-                    this.isAuthenticated = isAdmin;
+                    this.isAuthenticated = user && !user.isAnonymous && user.email;
                     this.updateUIForRole();
                     this.setupFirestoreListener();
                 });
@@ -495,10 +458,7 @@
                     document.getElementById('eye-icon').classList.toggle('hidden', isPwd);
                     document.getElementById('eye-slash-icon').classList.toggle('hidden', !isPwd);
                 });
-
-                document.getElementById('password-input').addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') this.login();
-                });
+                document.getElementById('password-input').addEventListener('keypress', (e) => { if (e.key === 'Enter') this.login(); });
             }
 
             async toggleAuth() {
@@ -523,14 +483,11 @@
 
                 try {
                     await signInWithEmailAndPassword(this.auth, email, password);
-                    document.getElementById('email-input').value = '';
-                    document.getElementById('password-input').value = '';
-                    this.hideLoginModal();
-                    document.getElementById('nav-btn-admin').click(); 
+                    document.getElementById('email-input').value = ''; document.getElementById('password-input').value = '';
+                    this.hideLoginModal(); document.getElementById('nav-btn-admin').click(); 
                     this.showNotification("Bienvenido al panel de administración.");
                 } catch (error) {
-                    errorMsg.textContent = error.code === 'auth/invalid-credential' 
-                        ? "Correo o contraseña incorrectos." : "Error al conectar.";
+                    errorMsg.textContent = error.code === 'auth/invalid-credential' ? "Correo o contraseña incorrectos." : "Error al conectar.";
                 } finally {
                     btn.textContent = "Ingresar al Sistema"; btn.disabled = false;
                 }
@@ -569,8 +526,9 @@
                         const state = docSnap.data();
                         this.teams = state.teams || [];
                         this.schedule = state.schedule || [];
+                        this.knockout = state.knockout || null; // Cargar fase final
                     } else {
-                        this.teams = []; this.schedule = [];
+                        this.teams = []; this.schedule = []; this.knockout = null;
                     }
                     this.renderAll();
                 });
@@ -581,7 +539,8 @@
                 const mainStateRef = doc(this.db, 'artifacts', this.appId, 'public', 'data', 'torneo', 'mainState');
                 await setDoc(mainStateRef, {
                     teams: JSON.parse(JSON.stringify(this.teams)), 
-                    schedule: JSON.parse(JSON.stringify(this.schedule))
+                    schedule: JSON.parse(JSON.stringify(this.schedule)),
+                    knockout: this.knockout ? JSON.parse(JSON.stringify(this.knockout)) : null
                 });
             }
 
@@ -607,21 +566,17 @@
 
             generateSchedule() {
                 if (this.teams.length < 2) return this.showAlert("Necesitas al menos 2 equipos para armar un torneo.");
-                
                 const startStr = document.getElementById('tournament-start').value;
                 const endStr = document.getElementById('tournament-end').value;
 
-                if (!startStr || !endStr) {
-                    return this.showAlert("¡Faltan las fechas! Por favor indica cuándo inicia y cuándo termina la temporada.");
-                }
+                if (!startStr || !endStr) return this.showAlert("¡Faltan las fechas! Por favor indica cuándo inicia y cuándo termina la temporada.");
 
                 let teams = [...this.teams.map(t => t.name)];
                 if (teams.length % 2 !== 0) teams.push("descanso");
                 
                 const numTeams = teams.length;
-                const numRounds = numTeams - 1; // Número de rondas teóricas
+                const numRounds = numTeams - 1; 
 
-                // 1. Extraer TODOS los partidos cruzados en una sola lista plana
                 const allMatches = [];
                 for (let round = 0; round < numRounds; round++) {
                     for (let i = 0; i < numTeams / 2; i++) {
@@ -635,50 +590,94 @@
                     teams.splice(1, 0, teams.pop());
                 }
 
-                // 2. Extraemos las fechas válidas (sin festivos)
                 const fechasValidas = generarCalendarioPartidos(startStr, endStr);
 
-                // 3. Verificamos que tengamos suficientes fechas para la cantidad total de partidos
                 if (fechasValidas.length < allMatches.length) {
-                    return this.showAlert(`<strong>Faltan días en el calendario.</strong><br><br>El torneo consta de ${allMatches.length} partidos (1 por fecha), pero entre ese rango solo hay ${fechasValidas.length} días habilitados (Lunes, Martes y Jueves). Amplía la fecha de fin.`);
+                    return this.showAlert(`<strong>Faltan días en el calendario.</strong><br><br>El torneo consta de ${allMatches.length} partidos (1 por fecha), pero entre ese rango solo hay ${fechasValidas.length} días habilitados (Lunes, Martes y Jueves). Recordar que la semana del 6 al 10 de abril está restringida. Amplía la fecha de fin.`);
                 }
 
-                this.showConfirm(`Se programarán <strong>${allMatches.length} Partidos individuales</strong>, asignando un lunes, martes o jueves único para cada partido.<br><br>Ya no podrás añadir o eliminar equipos. ¿Confirmas la generación?`, () => {
-                    // 4. Asignamos una fecha única a CADA partido
+                this.showConfirm(`Se programarán <strong>${allMatches.length} Partidos individuales</strong>.<br>El 10 de Abril se ha reservado como el primer encuentro.<br><br>Ya no podrás añadir o eliminar equipos. ¿Confirmas la generación?`, () => {
                     this.schedule = allMatches.map((match, index) => ({ 
-                        round: index + 1, // Ahora cada "Jornada" en la interfaz es 1 solo partido
+                        round: index + 1, 
                         date: fechasValidas[index], 
                         matches: [match] 
                     }));
-                    
                     this.saveStateToFirestore();
                     this.showNotification("¡Calendario oficial generado!");
                     document.querySelector('[data-target="vista-partidos"]')?.click();
                 });
             }
 
-            // NUEVAS FUNCIONES PARA EDITAR FECHA
-            toggleEditDate(rIdx) {
-                const editor = document.getElementById(`date-editor-${rIdx}`);
-                if (editor) {
-                    editor.classList.toggle('hidden');
-                }
+            // --- LÓGICA FASE FINAL ---
+            generateSemifinals() {
+                if (this.teams.length < 4) return this.showAlert("Se necesitan al menos 4 equipos para hacer semifinales.");
+                this.calculateTeamStats(); // Asegurar tabla actualizada
+                
+                this.showConfirm("Se generarán las Semifinales con los 4 mejores equipos de la tabla actual. Las fechas deberás asignarlas manualmente. ¿Continuar?", () => {
+                    const top4 = this.teams.slice(0, 4);
+                    this.knockout = {
+                        semifinals: [
+                            { team1: top4[0].name, team2: top4[3].name, score1: null, score2: null, played: false, scorers: [], date: '' },
+                            { team1: top4[1].name, team2: top4[2].name, score1: null, score2: null, played: false, scorers: [], date: '' }
+                        ],
+                        final: null
+                    };
+                    this.saveStateToFirestore();
+                    this.showNotification("Semifinales generadas. Ve a la pestaña 'Partidos'.");
+                });
             }
 
-            saveMatchDate(rIdx) {
-                const newDate = document.getElementById(`new-date-${rIdx}`).value;
+            generateFinal() {
+                if (!this.knockout || !this.knockout.semifinals) return this.showAlert("Primero debes generar y jugar las semifinales.");
+                const sf1 = this.knockout.semifinals[0];
+                const sf2 = this.knockout.semifinals[1];
+
+                if (!sf1.played || !sf2.played) return this.showAlert("Aún faltan por jugar partidos de semifinales.");
+                if (sf1.score1 === sf1.score2 || sf2.score1 === sf2.score2) return this.showAlert("¡Las semifinales no pueden terminar en empate! Por favor, define el ganador ajustando los goles (incluyendo penales si es necesario).");
+
+                this.showConfirm("Se generará la Gran Final con los ganadores. ¿Continuar?", () => {
+                    const winner1 = sf1.score1 > sf1.score2 ? sf1.team1 : sf1.team2;
+                    const winner2 = sf2.score1 > sf2.score2 ? sf2.team1 : sf2.team2;
+                    
+                    this.knockout.final = [
+                        { team1: winner1, team2: winner2, score1: null, score2: null, played: false, scorers: [], date: '' }
+                    ];
+                    this.saveStateToFirestore();
+                    this.showNotification("¡La Gran Final está servida!");
+                });
+            }
+
+            // Obtenedor dinámico para soportar Fase Regular y Knockout
+            getMatchObj(rIdx, mIdx) {
+                if (rIdx === 'semi') return this.knockout.semifinals[mIdx];
+                if (rIdx === 'final') return this.knockout.final[mIdx];
+                return this.schedule[rIdx].matches[mIdx];
+            }
+
+            toggleEditDate(rIdx, mIdx = null) {
+                const id = mIdx !== null ? `${rIdx}-${mIdx}` : rIdx;
+                const editor = document.getElementById(`date-editor-${id}`);
+                if (editor) editor.classList.toggle('hidden');
+            }
+
+            saveMatchDate(rIdx, mIdx = null) {
+                const id = mIdx !== null ? `${rIdx}-${mIdx}` : rIdx;
+                const newDate = document.getElementById(`new-date-${id}`).value;
                 if (newDate) {
-                    this.schedule[rIdx].date = newDate;
+                    if (rIdx === 'semi') this.knockout.semifinals[mIdx].date = newDate;
+                    else if (rIdx === 'final') this.knockout.final[mIdx].date = newDate;
+                    else this.schedule[rIdx].date = newDate;
+                    
                     this.saveStateToFirestore();
                     this.showNotification("Fecha actualizada correctamente.");
-                    this.toggleEditDate(rIdx);
+                    this.toggleEditDate(rIdx, mIdx);
                 } else {
                     this.showNotification("Selecciona una fecha válida", true);
                 }
             }
 
             updateScore(rIdx, mIdx) {
-                const match = this.schedule[rIdx].matches[mIdx];
+                const match = this.getMatchObj(rIdx, mIdx);
                 const id = `${rIdx}-${mIdx}`;
                 const s1 = parseInt(document.getElementById(`score1-${id}`).value);
                 const s2 = parseInt(document.getElementById(`score2-${id}`).value);
@@ -703,7 +702,7 @@
             }
 
             addScorer(rIdx, mIdx) {
-                const match = this.schedule[rIdx].matches[mIdx];
+                const match = this.getMatchObj(rIdx, mIdx);
                 const id = `${rIdx}-${mIdx}`;
                 const playerName = document.getElementById(`scorer-name-${id}`).value.trim();
                 const teamName = document.getElementById(`scorer-team-${id}`).value;
@@ -711,20 +710,21 @@
                 if (playerName && teamName) {
                     if (!match.scorers) match.scorers = [];
                     match.scorers.push({ player: playerName, team: teamName });
-                    
                     document.getElementById(`scorer-name-${id}`).value = '';
                     this.saveStateToFirestore();
                 }
             }
 
             removeScorer(rIdx, mIdx, sIdx) {
-                this.schedule[rIdx].matches[mIdx].scorers.splice(sIdx, 1);
+                const match = this.getMatchObj(rIdx, mIdx);
+                match.scorers.splice(sIdx, 1);
                 this.saveStateToFirestore();
             }
 
             calculateTeamStats() {
                 this.teams.forEach(t => { t.pj=0; t.g=0; t.e=0; t.p=0; t.gf=0; t.gc=0; t.dg=0; t.pts=0; });
                 
+                // Las estadísticas SOLO se calculan con el Round Robin (Fase Regular)
                 this.schedule.forEach(round => {
                     round.matches.forEach(match => {
                         if (match.played) {
@@ -748,7 +748,7 @@
             }
 
             resetTournament() {
-                this.showConfirm("¿Estás 100% seguro? Se borrarán todos los equipos y partidos.", async () => {
+                this.showConfirm("¿Estás 100% seguro? Se borrarán todos los equipos, partidos y fases finales.", async () => {
                     if(this.isAuthenticated) {
                         const mainStateRef = doc(this.db, 'artifacts', this.appId, 'public', 'data', 'torneo', 'mainState');
                         await deleteDoc(mainStateRef);
@@ -771,6 +771,11 @@
                 document.getElementById('tournament-end').disabled = started;
                 document.getElementById('generate-schedule-btn').disabled = this.teams.length < 2 || started;
                 document.getElementById('reset-tournament-btn').classList.toggle('hidden', !started && this.teams.length === 0);
+                
+                // Panel Fase Final UI
+                const faseFinalPanel = document.getElementById('fase-final-admin');
+                if (started) faseFinalPanel.classList.remove('hidden');
+                else faseFinalPanel.classList.add('hidden');
 
                 this.renderTeamsAdmin();
                 this.renderStandings();
@@ -793,7 +798,7 @@
                 if(this.teams.length === 0) return body.innerHTML = '<tr><td colspan="10" class="p-4 text-center text-gray-500">Aún no hay equipos registrados.</td></tr>';
                 
                 body.innerHTML = this.teams.map((t, i) => `
-                    <tr class="${i < 2 ? 'bg-yellow-50' : 'hover:bg-gray-50'} border-b border-gray-100 transition">
+                    <tr class="${i < 4 ? 'bg-green-50' : 'hover:bg-gray-50'} border-b border-gray-100 transition">
                         <td class="p-3 font-bold text-institucional-azul">${i + 1}</td>
                         <td class="p-3 font-semibold">${t.name}</td>
                         <td class="p-3 text-center">${t.pj}</td>
@@ -806,16 +811,24 @@
 
             renderTopScorers() {
                 const map = new Map();
-                this.schedule.forEach(r => r.matches.forEach(m => {
-                    if(m.scorers) m.scorers.forEach(s => {
-                        const key = `${s.player}-${s.team}`;
-                        if (!map.has(key)) map.set(key, { player: s.player, team: s.team, goals: 0 });
-                        map.get(key).goals++;
+                // Combinar goles de fase regular y knockout
+                const processScorers = (matches) => {
+                    matches.forEach(m => {
+                        if(m.scorers) m.scorers.forEach(s => {
+                            const key = `${s.player}-${s.team}`;
+                            if (!map.has(key)) map.set(key, { player: s.player, team: s.team, goals: 0 });
+                            map.get(key).goals++;
+                        });
                     });
-                }));
-                const sorted = Array.from(map.values()).sort((a, b) => b.goals - a.goals);
+                };
                 
+                this.schedule.forEach(r => processScorers(r.matches));
+                if (this.knockout && this.knockout.semifinals) processScorers(this.knockout.semifinals);
+                if (this.knockout && this.knockout.final) processScorers(this.knockout.final);
+
+                const sorted = Array.from(map.values()).sort((a, b) => b.goals - a.goals);
                 const body = document.getElementById('top-scorers-body');
+                
                 if(sorted.length === 0) return body.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-gray-500">No hay goles registrados aún.</td></tr>';
                 
                 body.innerHTML = sorted.map((s, i) => `
@@ -833,39 +846,32 @@
                 
                 const formatter = new Intl.DateTimeFormat('es-CO', { weekday: 'long', month: 'long', day: 'numeric' });
 
-                // Función auxiliar para obtener el lunes correspondiente a una fecha (sirve para agrupar)
                 const getMondayTimestamp = (dateString) => {
                     if (!dateString) return 0;
                     const d = new Date(dateString + "T12:00:00");
-                    const day = d.getDay(); // 0 = Domingo, 1 = Lunes...
+                    const day = d.getDay(); 
                     const diff = d.getDate() - day + (day === 0 ? -6 : 1);
                     return new Date(d.getFullYear(), d.getMonth(), diff).getTime();
                 };
 
-                // Agrupar los partidos por el lunes de su respectiva semana
                 const weeksMap = new Map();
                 
                 this.schedule.forEach((r, rIdx) => {
                     const ts = getMondayTimestamp(r.date);
-                    if (!weeksMap.has(ts)) {
-                        weeksMap.set(ts, []);
-                    }
+                    if (!weeksMap.has(ts)) weeksMap.set(ts, []);
                     weeksMap.get(ts).push({ r, rIdx });
                 });
 
-                // Ordenar las semanas cronológicamente
                 const sortedWeekTimestamps = Array.from(weeksMap.keys()).sort((a, b) => a - b);
                 
                 let html = '';
                 let weekNumber = 1;
 
-                // Generar el HTML agrupado
+                // 1. Renderizar Fase Regular (Round Robin)
                 for (const ts of sortedWeekTimestamps) {
                     const matchesInWeek = weeksMap.get(ts);
-                    
                     html += `
                     <div class="mb-12">
-                        <!-- Título de la Semana -->
                         <div class="flex items-center mb-6">
                             <h2 class="text-3xl font-extrabold text-institucional-azul uppercase tracking-wider">Semana ${weekNumber}</h2>
                             <div class="flex-grow h-1 bg-institucional-amarillo ml-4 rounded-full"></div>
@@ -873,74 +879,122 @@
                         <div class="grid grid-cols-1 gap-6">
                     `;
                     
-                    // Renderizar los partidos dentro de esta semana
                     matchesInWeek.forEach(item => {
                         const r = item.r;
                         const rIdx = item.rIdx;
-                        
                         let fechaText = "Fecha no asignada";
                         if (r.date) {
                             const d = new Date(r.date + "T12:00:00");
-                            fechaText = formatter.format(d);
-                            fechaText = fechaText.charAt(0).toUpperCase() + fechaText.slice(1);
+                            fechaText = formatter.format(d).charAt(0).toUpperCase() + formatter.format(d).slice(1);
                         }
 
                         html += `
                         <div class="card !bg-white border-l-4 border-l-institucional-azul !border-t-0 rounded-l-none relative shadow-sm hover:shadow-md transition-shadow">
-                            <!-- Cabecera del Partido -->
                             <div class="flex flex-col sm:flex-row justify-between items-center mb-4 pb-4 border-b border-gray-100">
                                 <h3 class="text-xl font-black text-institucional-azul uppercase tracking-wider mb-2 sm:mb-0">Jornada ${r.round}</h3>
                                 <div class="flex flex-col items-center sm:items-end text-gray-600 font-medium">
                                     <div class="flex items-center">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1 text-institucional-amarillo" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                          <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                        </svg>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1 text-institucional-amarillo" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                                         <span>${fechaText}</span>
-                                        
-                                        <!-- Botón para Editar Fecha (Solo Admin) -->
                                         ${this.isAuthenticated ? `
                                             <button onclick="app.toggleEditDate(${rIdx})" class="ml-2 text-institucional-azul hover:text-institucional-amarilloHover transition-colors" title="Modificar fecha">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                  <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                                                </svg>
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
                                             </button>
                                         ` : ''}
                                     </div>
-                                    
-                                    <!-- Formulario Desplegable para Editar Fecha -->
                                     ${this.isAuthenticated ? `
                                     <div id="date-editor-${rIdx}" class="hidden mt-2 flex gap-2 items-center bg-gray-50 p-2 rounded border border-gray-200 shadow-inner">
                                         <input type="date" id="new-date-${rIdx}" value="${r.date}" class="input-field text-sm py-1.5 w-auto border-gray-300">
-                                        <button onclick="app.saveMatchDate(${rIdx})" class="bg-green-600 hover:bg-green-700 text-white p-2 rounded transition shadow-sm" title="Guardar">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
-                                        </button>
-                                        <button onclick="app.toggleEditDate(${rIdx})" class="bg-red-500 hover:bg-red-600 text-white p-2 rounded transition shadow-sm" title="Cancelar">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-                                        </button>
+                                        <button onclick="app.saveMatchDate(${rIdx})" class="bg-green-600 hover:bg-green-700 text-white p-2 rounded transition shadow-sm" title="Guardar"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg></button>
+                                        <button onclick="app.toggleEditDate(${rIdx})" class="bg-red-500 hover:bg-red-600 text-white p-2 rounded transition shadow-sm" title="Cancelar"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg></button>
                                     </div>
                                     ` : ''}
                                 </div>
                             </div>
-                            
-                            <!-- Tarjeta interna del Marcador -->
                             <div class="space-y-4">
                                 ${r.matches.map((m, mIdx) => this.renderMatchCard(m, rIdx, mIdx)).join('')}
                             </div>
-                        </div>
-                        `;
+                        </div>`;
                     });
-                    
-                    html += `</div></div>`; // Cierra la Grid y el Div de la Semana
+                    html += `</div></div>`;
                     weekNumber++;
+                }
+
+                // 2. Renderizar Fase Final (Si Existe)
+                if (this.knockout && this.knockout.semifinals) {
+                    html += `
+                    <div class="mb-12 border-t-4 border-institucional-amarillo pt-8 mt-12">
+                        <div class="flex items-center justify-center mb-8">
+                            <h2 class="text-4xl font-extrabold text-institucional-azul uppercase tracking-wider text-center flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mr-3 text-institucional-amarillo" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1.323l3.954 1.582 1.599-.8a1 1 0 01.894 1.79l-1.233.616 1.738 5.42a1 1 0 01-.285 1.05A3.989 3.989 0 0115 15a3.989 3.989 0 01-2.667-1.019 1 1 0 01-.285-1.05l1.715-5.349L11 6.477V16h2a1 1 0 110 2H7a1 1 0 110-2h2V6.477L6.237 7.582l1.715 5.349a1 1 0 01-.285 1.05A3.989 3.989 0 015 15a3.989 3.989 0 01-2.667-1.019 1 1 0 01-.285-1.05l1.738-5.42-1.233-.617a1 1 0 01.894-1.788l1.599.799L9 4.323V3a1 1 0 011-1z" clip-rule="evenodd" /></svg>
+                                Semifinales
+                            </h2>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            ${this.knockout.semifinals.map((m, mIdx) => this.renderKnockoutCard(m, 'semi', mIdx, `Semifinal ${mIdx + 1}`)).join('')}
+                        </div>
+                    </div>`;
+                }
+
+                if (this.knockout && this.knockout.final) {
+                    html += `
+                    <div class="mb-12">
+                        <div class="flex items-center justify-center mb-8">
+                            <h2 class="text-4xl font-extrabold text-institucional-azul uppercase tracking-wider text-center flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mr-3 text-yellow-500" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd" /></svg>
+                                Gran Final
+                            </h2>
+                        </div>
+                        <div class="max-w-3xl mx-auto">
+                            ${this.knockout.final.map((m, mIdx) => this.renderKnockoutCard(m, 'final', mIdx, `Final por el Título`)).join('')}
+                        </div>
+                    </div>`;
                 }
 
                 section.innerHTML = html;
             }
 
+            // Nueva Tarjeta de Partido Específica para la Fase Final (Knockout)
+            renderKnockoutCard(match, rIdx, mIdx, title) {
+                const id = `${rIdx}-${mIdx}`;
+                const formatter = new Intl.DateTimeFormat('es-CO', { weekday: 'long', month: 'long', day: 'numeric' });
+                let fechaText = "Fecha por definir";
+                if (match.date) {
+                    const d = new Date(match.date + "T12:00:00");
+                    fechaText = formatter.format(d).charAt(0).toUpperCase() + formatter.format(d).slice(1);
+                }
+
+                return `
+                <div class="card !bg-white border-4 border-institucional-amarillo shadow-lg">
+                    <div class="text-center pb-4 border-b border-gray-100 mb-4 relative">
+                        <h3 class="text-lg font-black text-institucional-azul uppercase tracking-widest">${title}</h3>
+                        <div class="flex items-center justify-center mt-1 text-sm text-gray-500 font-medium">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 text-institucional-amarillo" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                            ${fechaText}
+                            ${this.isAuthenticated ? `
+                                <button onclick="app.toggleEditDate('${rIdx}', ${mIdx})" class="ml-2 text-institucional-azul hover:text-institucional-amarilloHover transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg></button>
+                            ` : ''}
+                        </div>
+                        ${this.isAuthenticated ? `
+                        <div id="date-editor-${id}" class="hidden mt-2 flex justify-center gap-2 items-center bg-gray-50 p-2 rounded border border-gray-200">
+                            <input type="date" id="new-date-${id}" value="${match.date}" class="input-field text-sm py-1 w-auto">
+                            <button onclick="app.saveMatchDate('${rIdx}', ${mIdx})" class="bg-green-600 text-white p-1 rounded"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg></button>
+                            <button onclick="app.toggleEditDate('${rIdx}', ${mIdx})" class="bg-red-500 text-white p-1 rounded"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg></button>
+                        </div>
+                        ` : ''}
+                    </div>
+                    ${this.renderMatchCard(match, rIdx, mIdx)}
+                </div>`;
+            }
+
+            // Tarjeta Base (Reutilizada)
             renderMatchCard(match, rIdx, mIdx) {
                  const id = `${rIdx}-${mIdx}`;
                  const ro = (match.played || !this.isAuthenticated) ? 'readonly' : '';
                  
+                 // Para que los inputs en Fase Final se diferencien de Fase Regular string params
+                 const rIdxParam = typeof rIdx === 'string' ? `'${rIdx}'` : rIdx; 
+
                  return `
                     <div class="bg-gray-50 border p-4 rounded-lg shadow-sm ${match.played ? 'border-l-4 border-l-institucional-amarillo' : ''}">
                         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -955,8 +1009,8 @@
 
                         ${this.isAuthenticated ? `
                             <div class="mt-4 flex justify-center gap-2">
-                                <button id="save-btn-${id}" onclick="app.updateScore(${rIdx}, ${mIdx})" class="btn btn-primary py-1.5 px-4 text-sm ${match.played ? 'hidden' : ''}">Guardar Marcador</button>
-                                <button id="edit-btn-${id}" onclick="app.requestEditMatch(${rIdx}, ${mIdx})" class="btn btn-secondary py-1.5 px-4 text-sm ${!match.played ? 'hidden' : ''}">Editar Marcador</button>
+                                <button id="save-btn-${id}" onclick="app.updateScore(${rIdxParam}, ${mIdx})" class="btn btn-primary py-1.5 px-4 text-sm ${match.played ? 'hidden' : ''}">Guardar Marcador</button>
+                                <button id="edit-btn-${id}" onclick="app.requestEditMatch(${rIdxParam}, ${mIdx})" class="btn btn-secondary py-1.5 px-4 text-sm ${!match.played ? 'hidden' : ''}">Editar Marcador</button>
                             </div>
                         ` : ''}
                         
@@ -973,7 +1027,7 @@
                                             <option value="${match.team1}">${match.team1}</option>
                                             <option value="${match.team2}">${match.team2}</option>
                                         </select>
-                                        <button onclick="app.addScorer(${rIdx}, ${mIdx})" class="btn btn-primary py-1.5 px-3 text-xs whitespace-nowrap">Añadir Gol</button>
+                                        <button onclick="app.addScorer(${rIdxParam}, ${mIdx})" class="btn btn-primary py-1.5 px-3 text-xs whitespace-nowrap">Añadir Gol</button>
                                     </div>
                                 ` : ''}
 
@@ -981,7 +1035,7 @@
                                     ${ (match.scorers || []).map((scorer, s_index) => `
                                         <li class="flex justify-between items-center bg-white p-2 rounded border border-gray-200 shadow-sm">
                                             <span>⚽ <span class="font-semibold text-institucional-azul">${scorer.player}</span> <span class="text-xs text-gray-500">(${scorer.team})</span></span>
-                                            ${this.isAuthenticated ? `<button onclick="app.removeScorer(${rIdx}, ${mIdx}, ${s_index})" class="text-red-500 font-bold text-lg leading-none hover:text-red-700 p-1">&times;</button>` : ''}
+                                            ${this.isAuthenticated ? `<button onclick="app.removeScorer(${rIdxParam}, ${mIdx}, ${s_index})" class="text-red-500 font-bold text-lg leading-none hover:text-red-700 p-1">&times;</button>` : ''}
                                         </li>
                                     `).join('')}
                                     ${(match.scorers || []).length === 0 ? '<li class="text-center text-gray-400 italic text-xs mt-2">Sin goles registrados</li>' : ''}
