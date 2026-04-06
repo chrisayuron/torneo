@@ -32,8 +32,8 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: theme('colors.institucional.grisFondo');
-            color: theme('colors.institucional.grisTexto');
+            background-color: #F4F6F8; /* institucional.grisFondo */
+            color: #4A5568; /* institucional.grisTexto */
         }
         
         .card {
@@ -41,7 +41,7 @@
             border-radius: 0.75rem;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             padding: 1.5rem;
-            border-top: 4px solid theme('colors.institucional.azul');
+            border-top: 4px solid #0B3954; /* institucional.azul */
         }
         
         /* --- ESTILOS DE BOTONES UNIFICADOS (Estilo Login) --- */
@@ -60,30 +60,31 @@
         
         /* Solución al contraste del botón deshabilitado */
         .btn:disabled { 
-            background-color: #e2e8f0 !important; /* bg-slate-200 */
-            color: #94a3b8 !important; /* text-slate-400 */
+            background-color: #cbd5e1 !important; /* Gris pizarra medio */
+            color: #475569 !important; /* Gris pizarra oscuro (muy legible) */
             cursor: not-allowed; 
             box-shadow: none !important; 
             transform: none !important; 
             border: none !important;
         }
         
+        /* Uso de Hexadecimales directos para evitar bugs del CDN */
         .btn-primary { 
-            background-color: theme('colors.institucional.azul'); 
+            background-color: #0B3954; /* institucional.azul */
             color: white; 
         }
         .btn-primary:hover:not(:disabled) { 
-            background-color: theme('colors.institucional.azulHover'); 
+            background-color: #135075; /* institucional.azulHover */
             transform: translateY(-2px); 
             box-shadow: 0 10px 15px -3px rgba(11, 57, 84, 0.3);
         }
         
         .btn-secondary { 
-            background-color: theme('colors.institucional.amarillo'); 
-            color: theme('colors.institucional.azul'); 
+            background-color: #FFD166; /* institucional.amarillo */
+            color: #0B3954; /* institucional.azul */
         }
         .btn-secondary:hover:not(:disabled) { 
-            background-color: theme('colors.institucional.amarilloHover'); 
+            background-color: #FFC233; /* institucional.amarilloHover */
             transform: translateY(-2px); 
             box-shadow: 0 10px 15px -3px rgba(255, 209, 102, 0.4);
         }
@@ -103,7 +104,7 @@
             outline: none;
         }
         .input-field:focus {
-            border-color: theme('colors.institucional.azul');
+            border-color: #0B3954; /* institucional.azul */
             box-shadow: 0 0 0 2px rgba(11, 57, 84, 0.2);
         }
 
