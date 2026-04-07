@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mundialito Interclases</title>
+    <title>Mundialito BethShalom</title>
+    <link rel="icon" href="./EscudoBS.png" type="png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
@@ -142,16 +143,22 @@
 
     <div id="app-container" class="max-w-6xl mx-auto">
         <header class="text-center mb-8 relative">
-            <button id="btn-top-auth" onclick="app.toggleAuth()" class="absolute top-0 right-0 btn border-2 border-institucional-azul text-institucional-azul bg-transparent hover:bg-institucional-azul hover:text-white px-4 py-2 mt-2 mr-2 text-sm rounded-full">
+            <button id="btn-top-auth" onclick="app.toggleAuth()" class="absolute top-0 right-0 btn border-2 border-institucional-azul text-institucional-azul bg-transparent hover:bg-institucional-azul hover:text-white px-4 py-2 mt-2 mr-2 text-sm rounded-full z-10">
                 Ingresar Admin
             </button>
-            <h1 class="text-4xl font-extrabold text-institucional-azul flex items-center justify-center uppercase tracking-wide pt-12 sm:pt-0">
-                <img src="./EscudoBS.png" alt="Escudo Beth Shalom" class="h-12 w-12 mr-4 object-contain drop-shadow-md">
-                Mundialito Interclases
-            </h1>
-            <p class="text-lg text-gray-600 mt-2 font-medium">Torneo Oficial - Resultados en vivo</p>
             
-            <nav class="flex justify-center flex-wrap gap-3 mt-6">
+            <!-- CONTENEDOR DEL ESCUDO Y TÍTULO SEPARADOS -->
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 pt-16 sm:pt-4">
+                <img src="./EscudoBS.png" alt="Escudo Beth Shalom" class="h-28 sm:h-36 md:h-44 w-auto object-contain drop-shadow-xl transition-transform hover:scale-105">
+                <div class="text-center sm:text-left">
+                    <h1 class="text-4xl sm:text-5xl font-extrabold text-institucional-azul uppercase tracking-wide leading-tight">
+                        Mundialito<br class="hidden sm:block"> Interclases
+                    </h1>
+                    <p class="text-lg sm:text-xl text-gray-600 mt-2 font-medium">Torneo Oficial - Resultados en vivo</p>
+                </div>
+            </div>
+            
+            <nav class="flex justify-center flex-wrap gap-3 mt-8">
                 <button class="nav-btn btn bg-institucional-amarillo text-institucional-azul font-bold shadow-md scale-105 px-6 py-2 rounded-full transition-all" onclick="app.switchTab('vista-posiciones', this)" data-target="vista-posiciones">Posiciones</button>
                 <button class="nav-btn btn bg-institucional-azul text-white opacity-90 px-6 py-2 rounded-full transition-all" onclick="app.switchTab('vista-goleadores', this)" data-target="vista-goleadores">Goleadores</button>
                 <button class="nav-btn btn bg-institucional-azul text-white opacity-90 px-6 py-2 rounded-full transition-all" onclick="app.switchTab('vista-partidos', this)" data-target="vista-partidos">Partidos</button>
