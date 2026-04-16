@@ -37,951 +37,1127 @@
         
         .card {
             background-color: white;
-            border-radius: 0.5rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            border-top: 4px solid #0B3954; /* institucional.azul */
         }
-
+        
+       
         .btn {
-            font-weight: 600;
-            transition: all 0.2s;
+            border-radius: 0.75rem; 
+            font-weight: 700;
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
             display: inline-flex;
             align-items: center;
             justify-content: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .btn:active:not(:disabled) { transform: scale(0.96); } 
+        
+        .btn:disabled { 
+            background-color: #cbd5e1 !important; 
+            color: #475569 !important; 
+            cursor: not-allowed; 
+            box-shadow: none !important; 
+            transform: none !important; 
+            border: none !important;
         }
         
-        .btn:active { transform: scale(0.95); }
+        .btn-primary { background-color: #0B3954; color: white; }
+        .btn-primary:hover:not(:disabled) { background-color: #135075; transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(11, 57, 84, 0.3); }
+        
+        .btn-secondary { background-color: #FFD166; color: #0B3954; }
+        .btn-secondary:hover:not(:disabled) { background-color: #FFC233; transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(255, 209, 102, 0.4); }
 
-        /* Vistas */
+        .btn-success { background-color: #16a34a; color: white; }
+        .btn-success:hover:not(:disabled) { background-color: #15803d; transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(22, 163, 74, 0.4); }
+        
+        .btn-danger { background-color: #dc2626; color: white; }
+        .btn-danger:hover:not(:disabled) { background-color: #b91c1c; transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(220, 38, 38, 0.4); }
+
+        .input-field {
+            width: 100%;
+            padding: 0.6rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            outline: none;
+        }
+        .input-field:focus { border-color: #0B3954; box-shadow: 0 0 0 2px rgba(11, 57, 84, 0.2); }
+
+        .vista-oculta { display: none !important; }
         .vista-activa { display: block; animation: fadeIn 0.3s ease-in-out; }
-        .vista-oculta { display: none; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        #notification-toast { transition: opacity 0.3s, transform 0.3s; }
 
-        /* Utilidad para ocultar por rol */
-        .admin-only { display: none; }
-        body.is-admin .admin-only { display: block; }
-        body.is-admin .admin-only-inline { display: inline-block; }
-        body.is-admin .admin-only-flex { display: flex; }
+        @keyframes shine {
+    0% { left: -100%; }
+    20% { left: 100%; }
+    100% { left: 100%; }
+}
 
-        /* Loader */
-        .loader {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #0B3954;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+.animate-shine {
+    position: relative;
+    overflow: hidden;
+}
 
+.animate-shine::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(
+        to right,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.4) 50%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    transform: skewX(-25deg);
+    animation: shine 4s infinite;
+}
     </style>
 </head>
-<body class="pb-20"> <!-- Padding bottom para el navbar inferior si lo hubiera en móvil -->
+<body class="p-4 sm:p-6 md:p-8">
 
-    <!-- Navbar Superior -->
-    <header class="bg-institucional-azul text-white p-4 shadow-md sticky top-0 z-50">
-        <div class="container mx-auto flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <img src="./EscudoBS.png" alt="Logo" class="h-10 w-10 object-contain bg-white rounded-full p-1" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0MCIgZmlsbD0iI0ZGQzIzMyIvPjwvc3ZnPg=='">
-                <div>
-                    <h1 class="text-xl font-bold leading-tight text-institucional-amarillo">Mundialito</h1>
-                    <p class="text-xs text-white/80">BethShalom 2024</p>
+    <div id="notification-toast" class="fixed top-4 left-1/2 transform -translate-x-1/2 z-[100] bg-institucional-azul text-white px-6 py-3 rounded-full shadow-lg opacity-0 pointer-events-none translate-y-[-20px]">
+        <span id="notification-msg">Mensaje</span>
+    </div>
+
+    <div id="modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-[60] p-4 hidden backdrop-blur-sm">
+        <div class="bg-white rounded-xl shadow-xl p-6 max-w-sm w-full text-center border-t-4 border-institucional-amarillo transform transition-all">
+            <div id="modal-message" class="mb-6 text-institucional-azul font-medium"></div>
+            <div id="modal-buttons" class="flex justify-center gap-4"></div>
+        </div>
+    </div>
+
+    <div id="login-screen" class="fixed inset-0 bg-gray-900 bg-opacity-80 flex items-center justify-center z-50 p-4 hidden backdrop-blur-sm">
+        <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden transform transition-all">
+            <div class="bg-gradient-to-r from-institucional-azul to-institucional-azulHover p-6 text-center relative">
+                <button onclick="app.hideLoginModal()" class="absolute top-4 right-4 text-white hover:text-gray-200 font-bold text-2xl leading-none transition-colors">&times;</button>
+                <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-3 shadow-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-institucional-amarillo" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
                 </div>
+                <h2 class="text-2xl font-bold text-white">Acceso Admin</h2>
+                <p class="text-blue-100 text-sm mt-1">Ingresa tus credenciales de Firebase</p>
             </div>
-            
-            <div class="flex items-center gap-2">
-                <!-- Indicador de estado de Auth -->
-                <div id="auth-status-indicator" class="hidden text-xs px-2 py-1 bg-white/10 rounded-full flex items-center gap-1">
-                    <span class="w-2 h-2 rounded-full bg-green-400"></span> Admin
+            <div class="p-8">
+                <div class="space-y-5">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Correo Electrónico</label>
+                        <input type="email" id="email-input" class="input-field bg-gray-50 border-gray-300 text-gray-900" placeholder="admin@ejemplo.com">
+                    </div>
+                    <div class="relative">
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Contraseña</label>
+                        <input type="password" id="password-input" class="input-field bg-gray-50 border-gray-300 text-gray-900 pr-10" placeholder="••••••••">
+                        <button id="toggle-password-btn" class="absolute bottom-2 right-1 px-3 py-1 flex items-center text-gray-400 hover:text-institucional-azul focus:outline-none">
+                            <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                            <svg id="eye-slash-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7 1.274-4.057-5.064 7-9.542 7 .847 0 1.67 .111 2.457 .311M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2 2l20 20" /></svg>
+                        </button>
+                    </div>
                 </div>
-                <!-- Botón Login -->
-                <button id="login-btn" onclick="app.login()" class="text-sm bg-institucional-amarillo text-institucional-azul font-bold px-4 py-2 rounded-full shadow hover:bg-institucional-amarilloHover transition">
-                    Acceso Coord.
-                </button>
-                <!-- Botón Logout (Oculto inicialmente) -->
-                <button id="logout-btn" onclick="app.logout()" class="hidden text-sm border border-white/30 text-white hover:bg-white/10 px-4 py-2 rounded-full transition">
-                    Salir
-                </button>
+                <p id="login-error" class="text-red-500 text-sm mt-3 h-5 text-center font-medium transition-opacity"></p>
+                <button id="btn-ingresar" onclick="app.login()" class="btn btn-secondary w-full py-3 mt-4">Ingresar al Sistema</button>
             </div>
         </div>
-    </header>
-
-    <!-- Loader Principal (Oculta contenido hasta cargar DB) -->
-    <div id="main-loader" class="fixed inset-0 bg-white/80 z-40 flex flex-col justify-center items-center backdrop-blur-sm">
-        <div class="loader mb-4"></div>
-        <p class="text-institucional-azul font-semibold">Cargando datos del torneo...</p>
     </div>
 
-    <!-- Navegación de Pestañas (Botones Tipo Pastilla) -->
-    <div class="container mx-auto px-4 mt-6 mb-6">
-        <nav class="flex justify-center gap-4 bg-white p-2 rounded-full shadow-sm max-w-fit mx-auto border border-gray-100">
-            <!-- Botón Partidos (Vista Inicial Activa) -->
-            <button class="nav-btn btn bg-institucional-amarillo text-institucional-azul font-bold shadow-md scale-105 px-6 py-2 rounded-full transition-all" 
-                    onclick="app.switchTab('vista-partidos', this)" 
-                    data-target="vista-partidos">Partidos</button>
-                        
-            <!-- Botón Posiciones -->
-            <button class="nav-btn btn bg-institucional-azul text-white opacity-90 px-6 py-2 rounded-full transition-all" 
-                    onclick="app.switchTab('vista-posiciones', this)" 
-                    data-target="vista-posiciones">Posiciones</button>
+    <div id="app-container" class="max-w-6xl mx-auto">
+        <header class="text-center mb-8 relative">
+            <button id="btn-top-auth" onclick="app.toggleAuth()" class="absolute top-0 right-0 btn border-2 border-institucional-azul text-institucional-azul bg-transparent hover:bg-institucional-azul hover:text-white px-4 py-2 mt-2 mr-2 text-sm rounded-full z-10">
+                Ingresar Admin
+            </button>
             
-            <!-- Botón Goleadores -->
-            <button class="nav-btn btn bg-institucional-azul text-white opacity-90 px-6 py-2 rounded-full transition-all" 
-                    onclick="app.switchTab('vista-goleadores', this)" 
-                    data-target="vista-goleadores">Goleadores</button>
-        </nav>
-    </div>
-
-    <!-- Contenedor Principal de Vistas -->
-    <main class="container mx-auto px-4 max-w-4xl relative min-h-[50vh]">
-        
-        <!-- ========================================== -->
-        <!-- VISTA DE PARTIDOS (FIXTURE) -->
-        <!-- ========================================== -->
-        <!-- Corrección: Comilla agregada al final de la clase -->
-        <section id="vista-partidos" class="vista-activa">
-            
-            <div class="flex justify-between items-end mb-4">
-                <h2 class="text-2xl font-bold text-institucional-azul flex items-center gap-2">
-                    <svg class="w-6 h-6 text-institucional-amarillo" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                    Calendario
-                </h2>
-                
-                <!-- Botón Generar Calendario (Solo Admin) -->
-                <button onclick="app.generateSchedule()" class="admin-only bg-institucional-azul text-white hover:bg-institucional-azulHover px-4 py-2 rounded-lg text-sm shadow flex items-center gap-2 transition">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                    Generar Fixture
-                </button>
-            </div>
-
-            <div id="schedule-section" class="space-y-8">
-                <!-- El calendario se inyecta por JS aquí -->
+          
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 pt-16 sm:pt-4">
+                <img src="./EscudoBS.png" alt="Escudo Beth Shalom" class="h-28 sm:h-36 md:h-44 w-auto object-contain drop-shadow-xl transition-transform hover:scale-105">
+                <div class="text-center sm:text-left">
+                    <h1 class="text-4xl sm:text-5xl font-extrabold text-institucional-azul uppercase tracking-wide leading-tight">
+                        Mundialito<br class="hidden sm:block"> BethShalom
+                    </h1>
+                    <p class="text-lg sm:text-xl text-gray-600 mt-2 font-medium">Torneo Oficial - Resultados en vivo</p>
+                </div>
             </div>
             
-        </section>
-
-        <!-- ========================================== -->
-        <!-- VISTA DE POSICIONES -->
-        <!-- ========================================== -->
-        <section id="vista-posiciones" class="vista-oculta">
-            <h2 class="text-2xl font-bold text-institucional-azul mb-4 flex items-center gap-2">
-                <svg class="w-6 h-6 text-institucional-amarillo" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-                Tabla de Posiciones
-            </h2>
+          <nav class="flex justify-center flex-wrap gap-3 mt-8">
+  <button class="nav-btn btn bg-institucional-amarillo text-institucional-azul font-bold shadow-md scale-105 px-6 py-2 rounded-full transition-all" 
+        onclick="app.switchTab('vista-partidos', this)" 
+        data-target="vista-partidos">Partidos</button>
             
-            <div class="card overflow-hidden">
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm text-left">
-                        <thead class="text-xs text-white uppercase bg-institucional-azul">
-                            <tr>
-                                <th class="px-4 py-3 w-12 text-center">Pos</th>
-                                <th class="px-4 py-3">Equipo</th>
-                                <th class="px-3 py-3 text-center" title="Partidos Jugados">PJ</th>
-                                <th class="px-3 py-3 text-center text-green-300" title="Ganados">G</th>
-                                <th class="px-3 py-3 text-center text-gray-300" title="Empatados">E</th>
-                                <th class="px-3 py-3 text-center text-red-300" title="Perdidos">P</th>
-                                <th class="px-3 py-3 text-center" title="Goles a Favor">GF</th>
-                                <th class="px-3 py-3 text-center" title="Goles en Contra">GC</th>
-                                <th class="px-3 py-3 text-center" title="Diferencia de Gol">DG</th>
-                                <th class="px-4 py-3 text-center font-bold text-institucional-amarillo text-base">PTS</th>
-                            </tr>
+<button class="nav-btn btn bg-institucional-azul text-white opacity-90 px-6 py-2 rounded-full transition-all" 
+        onclick="app.switchTab('vista-posiciones', this)" 
+        data-target="vista-posiciones">Posiciones</button>
+            
+    <button class="nav-btn btn bg-institucional-azul text-white opacity-90 px-6 py-2 rounded-full transition-all" 
+            onclick="app.switchTab('vista-goleadores', this)" 
+            data-target="vista-goleadores">Goleadores</button>
+            
+    <button id="nav-btn-admin" class="nav-btn btn bg-institucional-azul text-white opacity-90 px-6 py-2 rounded-full transition-all hidden" 
+            onclick="app.switchTab('vista-admin', this)" 
+            data-target="vista-admin">Panel Admin</button>
+</nav>
+        </header>
+
+        <main id="main-content">
+            <section id="vista-posiciones" class="vista-oculta">
+                <div class="card">
+                    <h2 class="text-2xl font-bold mb-4 flex items-center text-institucional-azul">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 mr-3 text-institucional-amarillo" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+                        Tabla de Posiciones
+                    </h2>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full text-sm text-left">
+                            <thead class="bg-gray-100 font-semibold border-b-2 border-institucional-azul">
+                                <tr>
+                                    <th class="p-3">Pos</th><th class="p-3">Equipo</th>
+                                    <th class="p-3 text-center">PJ</th><th class="p-3 text-center">G</th><th class="p-3 text-center">E</th><th class="p-3 text-center">P</th><th class="p-3 text-center">GF</th><th class="p-3 text-center">GC</th><th class="p-3 text-center">DG</th><th class="p-3 text-center">Pts</th>
+                                </tr>
+                            </thead>
+                            <tbody id="standings-body" class="divide-y divide-gray-200">
+                                <tr><td colspan="10" class="p-4 text-center text-gray-500">Aún no hay equipos registrados.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="vista-goleadores" class="vista-oculta">
+                <div class="card">
+                    <h2 class="text-2xl font-bold mb-4 flex items-center text-institucional-azul">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 mr-3 text-institucional-amarillo" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 14l9-5-9-5-9 5 9 5z" /><path stroke-linecap="round" stroke-linejoin="round" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-9.998 12.078 12.078 0 01.665-6.479L12 14z" /></svg>
+                        Goleadores del Torneo
+                    </h2>
+                    <table class="min-w-full text-sm text-left">
+                        <thead class="bg-gray-100 font-semibold border-b-2 border-institucional-azul">
+                            <tr><th class="p-3">Pos</th><th class="p-3">Jugador</th><th class="p-3">Equipo</th><th class="p-3 text-center">Goles</th></tr>
                         </thead>
-                        <tbody id="standings-body">
-                            <!-- JS Inyecta Filas -->
+                        <tbody id="top-scorers-body" class="divide-y divide-gray-200">
+                             <tr><td colspan="4" class="p-4 text-center text-gray-500">No hay goles registrados aún.</td></tr>
                         </tbody>
                     </table>
                 </div>
-                <div class="p-3 bg-gray-50 text-xs text-gray-500 border-t border-gray-200">
-                    <p><b>Criterios de desempate:</b> 1. Puntos, 2. Diferencia de Gol (DG), 3. Goles a Favor (GF).</p>
+            </section>
+
+            <section id="vista-partidos" class="vista-activa">
+                <div id="schedule-section">
+                    <div class="card bg-gray-50 text-center text-gray-500">El calendario aún no ha sido generado.</div>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <!-- ========================================== -->
-        <!-- VISTA DE GOLEADORES -->
-        <!-- ========================================== -->
-        <section id="vista-goleadores" class="vista-oculta">
-            <h2 class="text-2xl font-bold text-institucional-azul mb-4 flex items-center gap-2">
-                <span>⚽</span> Tabla de Goleadores
-            </h2>
-            
-            <div class="card overflow-hidden">
-                <ul id="scorers-list" class="divide-y divide-gray-200">
-                    <!-- JS Inyecta Goleadores -->
-                </ul>
-            </div>
-        </section>
+            <section id="vista-admin" class="vista-oculta">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div class="card" id="add-team-wrapper">
+                        <h2 class="text-xl font-bold mb-4 flex items-center text-institucional-azul">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-institucional-amarillo" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.653-.124-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.653.124-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                            1. Añadir/Editar Equipo
+                        </h2>
+                        
+                        <div class="flex flex-col sm:flex-row gap-3 mb-6">
+                            <input type="text" id="team-name" class="input-field flex-grow border-2" placeholder="Nombre del equipo (Ej: 11-A)" onkeypress="if(event.key === 'Enter') app.addTeam()">
+                            <button id="add-team-btn" onclick="app.addTeam()" class="btn btn-success py-3 px-6 whitespace-nowrap">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                                </svg>
+                                Añadir Equipo
+                            </button>
+                        </div>
+                        <div class="space-y-2" id="teams-list"></div>
+                    </div>
 
-        <!-- ========================================== -->
-        <!-- PANEL LATERAL / SECCIÓN EQUIPOS (Solo Admin)-->
-        <!-- ========================================== -->
-        <section id="admin-panel" class="mt-12 pt-8 border-t-2 border-dashed border-gray-300 admin-only">
-            <div class="card p-6 bg-orange-50 border-orange-200 border-2 relative overflow-hidden">
-                <div class="absolute -right-10 -top-10 text-orange-200 opacity-20">
-                    <svg class="w-40 h-40" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"></path></svg>
-                </div>
-                
-                <h3 class="text-xl font-bold text-orange-800 mb-4 flex items-center gap-2 relative z-10">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                    Gestión de Equipos (Zona Peligrosa)
-                </h3>
-                
-                <p class="text-sm text-orange-700 mb-4 relative z-10">Si añades o eliminas un equipo, deberás <b>volver a Generar el Fixture</b>. Los partidos que ya estén marcados como jugados <b>conservarán sus datos</b>.</p>
-
-                <div class="flex gap-2 mb-6 relative z-10">
-                    <input type="text" id="new-team-name" placeholder="Nombre del nuevo equipo..." class="flex-1 border border-orange-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500" onkeypress="if(event.key==='Enter') app.addTeam()">
-                    <button onclick="app.addTeam()" class="bg-orange-600 text-white font-bold px-6 py-2 rounded-lg hover:bg-orange-700 transition shadow">Agregar</button>
-                </div>
-
-                <div class="relative z-10">
-                    <h4 class="font-semibold text-gray-700 mb-2">Equipos Actuales:</h4>
-                    <div id="admin-team-list" class="flex flex-wrap gap-2">
-                        <!-- JS inyecta badges de equipos aquí -->
+                    <div class="card flex flex-col justify-between">
+                        <div>
+                            <h2 class="text-xl font-bold mb-4 flex items-center text-institucional-azul">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-institucional-amarillo" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                                2. Generar Partidos
+                            </h2>
+                            <p class="text-sm text-gray-600 mb-4">El sistema asignará una jornada cada Lunes, Martes y Jueves. (El 10 de Abril se fuerza como el primer partido).</p>
+                            
+                            <div class="flex flex-col sm:flex-row gap-3 mb-4 border-l-4 border-institucional-amarillo pl-3">
+                                <div class="w-full sm:w-1/2">
+                                    <label class="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wide">Inicio de Temporada</label>
+                                    <input type="date" id="tournament-start" class="input-field border-gray-300">
+                                </div>
+                                <div class="w-full sm:w-1/2">
+                                    <label class="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wide">Fin de Temporada</label>
+                                    <input type="date" id="tournament-end" class="input-field border-gray-300">
+                                </div>
+                            </div>
+                            <button id="generate-schedule-btn" onclick="app.generateSchedule()" class="btn btn-secondary w-full py-3 mb-4" disabled>Generar Calendario</button>
+                        </div>
+                        
+                        <div class="pt-4 border-t border-gray-200">
+                            <button id="reset-tournament-btn" onclick="app.resetTournament()" class="btn btn-danger w-full py-3 hidden">Reiniciar Todo el Torneo</button>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </section>
 
-    </main>
+                <div class="card mt-6 hidden" id="fase-final-admin">
+                    <h2 class="text-xl font-bold mb-4 flex items-center text-institucional-azul">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-institucional-amarillo" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>
+                        3. Gestión de Fase Final (Knockout)
+                    </h2>
+                    <p class="text-sm text-gray-600 mb-6">Genera las llaves finales una vez termine el 'Todos contra Todos'. Las fechas se deben asignar manualmente.</p>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <button onclick="app.generateSemifinals()" class="btn btn-primary flex-1 py-3" id="btn-gen-semi">Generar Semifinales (Top 4)</button>
+                        <button onclick="app.generateFinal()" class="btn btn-secondary flex-1 py-3" id="btn-gen-final">Generar Gran Final</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    <footer class="bg-institucional-azul text-white py-8 mt-12 border-t-4 border-institucional-amarillo shadow-[0_-10px_20px_rgba(0,0,0,0.1)]">
+    <div class="max-w-6xl mx-auto px-6">
+        <div class="flex flex-col md:flex-row justify-between items-center gap-8 text-center md:text-left">
+            
+            <div class="flex flex-col group">
+                <span class="text-[10px] uppercase tracking-[0.2em] text-institucional-amarillo font-bold mb-1">Desarrollado por</span>
+                <span class="text-lg font-bold">Chrisayuron <span class="text-gray-400 font-light mx-1">|</span> <span class="font-medium opacity-90">Ronald Rojas Newball</span></span>
+                <p class="text-[11px] text-blue-300/60 mt-1">&copy; 2026 • Todos los derechos reservados</p>
+            </div>
 
-    <!-- ========================================== -->
-    <!-- MODAL GENÉRICO (Reutilizable) -->
-    <!-- ========================================== -->
-    <div id="modal-backdrop" class="fixed inset-0 bg-institucional-azul/80 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4 transition-opacity duration-300 opacity-0">
-        <div id="modal-content" class="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden transform scale-95 transition-transform duration-300 flex flex-col max-h-[90vh]">
-            
-            <!-- Modal Header -->
-            <div class="bg-institucional-azul text-white px-6 py-4 flex justify-between items-center">
-                <h3 id="modal-title" class="font-bold text-lg">Título</h3>
-                <button onclick="app.closeModal()" class="text-white/70 hover:text-white transition">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
+            <div class="flex flex-col items-center">
+                <p class="text-sm italic text-gray-300">
+                    Una idea de: <span class="text-white font-semibold not-italic">Juan Pablo Mendoza Villamizar</span>
+                </p>
+                <div class="mt-3 bg-white/5 px-5 py-1.5 rounded-full border border-white/10 backdrop-blur-sm">
+                    <span class="text-sm font-black text-institucional-amarillo italic tracking-wide">Promoción 2026 INVICTUS</span>
+                </div>
             </div>
-            
-            <!-- Modal Body (Scrollable) -->
-            <div id="modal-body" class="p-6 overflow-y-auto">
-                <p id="modal-message" class="text-gray-600 mb-4"></p>
-                <div id="modal-inputs" class="space-y-4"></div>
+
+            <div class="flex flex-col items-center">
+                <a href="https://www.bethshalom.edu.co/" target="_blank" rel="noopener noreferrer" 
+                   class="animate-shine group flex items-center justify-center gap-3 bg-institucional-amarillo text-institucional-azul px-8 py-3 rounded-xl font-black uppercase text-sm tracking-tight hover:bg-white hover:scale-105 transition-all duration-300 shadow-[0_4px_15px_rgba(255,209,102,0.3)]">
+                    <span class="text-center">Visitar Colegio</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                </a>
             </div>
-            
-            <!-- Modal Footer -->
-            <div class="bg-gray-50 px-6 py-4 border-t border-gray-100 flex justify-end gap-3">
-                <button id="modal-cancel-btn" onclick="app.closeModal()" class="px-4 py-2 text-gray-600 font-medium hover:bg-gray-200 rounded-lg transition">Cancelar</button>
-                <button id="modal-confirm-btn" class="px-4 py-2 bg-institucional-azul text-white font-bold rounded-lg shadow hover:bg-institucional-azulHover transition">Confirmar</button>
-            </div>
+
         </div>
     </div>
-
-
-    <!-- ========================================== -->
-    <!-- SCRIPTS CORE Y FIREBASE -->
-    <!-- ========================================== -->
+</footer>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, onSnapshot, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // CONFIGURACIÓN DE FIREBASE (Usa la tuya original o la que provee el entorno inmersivo)
-        const firebaseConfigStr = typeof __firebase_config !== 'undefined' ? __firebase_config : null;
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'mundialito_beta';
+        // ==========================================
+        // UTILIDADES DE CALENDARIO DEPORTIVO
+        // ==========================================
+        function calcularPascua(year) {
+            const a = year % 19; const b = Math.floor(year / 100); const c = year % 100;
+            const d = Math.floor(b / 4); const e = b % 4; const f = Math.floor((b + 8) / 25);
+            const g = Math.floor((b - f + 1) / 3); const h = (19 * a + b - d - g + 15) % 30;
+            const i = Math.floor(c / 4); const k = c % 4; const l = (32 + 2 * e + 2 * i - h - k) % 7;
+            const m = Math.floor((a + 11 * h + 22 * l) / 451);
+            const month = Math.floor((h + l - 7 * m + 114) / 31) - 1; 
+            const day = ((h + l - 7 * m + 114) % 31) + 1;
+            return new Date(year, month, day);
+        }
+
+        function moverALunes(fecha) {
+            const d = new Date(fecha);
+            if (d.getDay() !== 1) d.setDate(d.getDate() + (d.getDay() === 0 ? 1 : 8 - d.getDay()));
+            return d;
+        }
+
+        function obtenerFestivosColombia(year) {
+            const pascua = calcularPascua(year);
+            const addDays = (date, days) => new Date(date.getFullYear(), date.getMonth(), date.getDate() + days);
+            const toISO = (d) => { const z = n => ('0' + n).slice(-2); return `${d.getFullYear()}-${z(d.getMonth() + 1)}-${z(d.getDate())}`; };
+
+            const festivos = [
+                new Date(year, 0, 1), new Date(year, 4, 1), new Date(year, 6, 20), new Date(year, 7, 7), new Date(year, 11, 8), new Date(year, 11, 25),
+                moverALunes(new Date(year, 0, 6)), moverALunes(new Date(year, 2, 19)), moverALunes(new Date(year, 5, 29)), moverALunes(new Date(year, 7, 15)), moverALunes(new Date(year, 9, 12)), moverALunes(new Date(year, 10, 1)), moverALunes(new Date(year, 10, 11)),
+                addDays(pascua, -3), addDays(pascua, -2), moverALunes(addDays(pascua, 39)), moverALunes(addDays(pascua, 60)), moverALunes(addDays(pascua, 68))
+            ];
+            return new Set(festivos.map(toISO));
+        }
+
+        function generarCalendarioPartidos(fechaInicioStr, fechaFinStr) {
+            const startDate = new Date(fechaInicioStr + "T12:00:00");
+            const endDate = new Date(fechaFinStr + "T12:00:00");
+            if (startDate > endDate) return [];
+
+            let festivos = new Set();
+            for (let y = startDate.getFullYear(); y <= endDate.getFullYear(); y++) {
+                obtenerFestivosColombia(y).forEach(f => festivos.add(f));
+            }
+
+            const fechasValidas = [];
+            let currentDate = new Date(startDate);
+            const toISO = (d) => { const z = n => ('0' + n).slice(-2); return `${d.getFullYear()}-${z(d.getMonth() + 1)}-${z(d.getDate())}`; };
+
+            while (currentDate <= endDate) {
+                const diaSemana = currentDate.getDay(); // 1: Lun, 2: Mar, 4: Jue
+                const isoDate = toISO(currentDate);
+                const m = currentDate.getMonth();
+                const d = currentDate.getDate();
+
+                // Regla especial: Restringir cualquier día entre el 6 y el 10 de abril
+                const isRestrictedWeek = (m === 3 && d >= 6 && d <= 10);
+
+                if (!isRestrictedWeek) {
+                    if ((diaSemana === 1 || diaSemana === 2 || diaSemana === 4) && !festivos.has(isoDate)) {
+                        fechasValidas.push(isoDate);
+                    }
+                }
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+
+            // Agregar el Viernes 10 de Abril obligatoriamente como el PRIMER partido 
+            const startYear = startDate.getFullYear();
+            const fechaEspecial = new Date(startYear, 3, 10, 12, 0, 0); // Mes 3 = Abril
+            if (fechaEspecial >= startDate && fechaEspecial <= endDate) {
+                fechasValidas.unshift(toISO(fechaEspecial));
+            }
+
+            return fechasValidas;
+        }
+
+        // ==========================================
+        // CONFIGURACIÓN E INICIO DE APP MAIN
+        // ==========================================
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+            apiKey: "AIzaSyDr1W6YktGX9lV-9qVpSP-PJC2Js0cMwgo",
+            authDomain: "mundialito-7ed91.firebaseapp.com",
+            projectId: "mundialito-7ed91"
+        };
 
         class TournamentApp {
             constructor() {
                 this.teams = [];
                 this.schedule = [];
-                
-                // AUTH Y ROLES
-                this.isAuthenticated = false;
-                this.isAdmin = false;
-                this.currentUser = null;
-                // Lista blanca de correos administradores
-                this.ALLOWED_ADMIN_EMAILS = [
-                    'admin@bethshalom.edu.co',
-                    'coordinacion@bethshalom.edu.co',
-                    'deportes@bethshalom.edu.co' // Añade aquí tu correo de gmail que uses para testear
-                ];
-
-                this.modalCallback = null;
-
-                // Inicializar Firebase si hay config
-                if (firebaseConfigStr) {
-                    try {
-                        const firebaseConfig = JSON.parse(firebaseConfigStr);
-                        this.firebaseApp = initializeApp(firebaseConfig);
-                        this.auth = getAuth(this.firebaseApp);
-                        this.db = getFirestore(this.firebaseApp);
-                        this.provider = new GoogleAuthProvider();
-                        console.log("Firebase inicializado correctamente");
-                    } catch (e) {
-                        console.error("Error parseando firebase config:", e);
-                        this.initLocalMode();
-                    }
-                } else {
-                    console.warn("No se encontró configuración de Firebase. Funcionando en modo local.");
-                    this.initLocalMode();
-                }
-            }
-
-            // ==========================================
-            // INICIALIZACIÓN
-            // ==========================================
-            async init() {
-                if (this.auth && this.db) {
-                    // Configurar listener de Auth
-                    onAuthStateChanged(this.auth, (user) => {
-                        if (user) {
-                            this.currentUser = user;
-                            this.isAuthenticated = true;
-                            this.checkAdminRole(user.email);
-                        } else {
-                            this.currentUser = null;
-                            this.isAuthenticated = false;
-                            this.isAdmin = false;
-                            this.updateUIForRole();
-                        }
-                    });
-
-                    // Configurar escucha en tiempo real de la base de datos pública
-                    this.setupDatabaseListener();
-                } else {
-                    // Modo local: Cargar de localStorage
-                    this.loadLocalData();
-                    this.renderAll();
-                    document.getElementById('main-loader').classList.add('hidden');
-                }
-            }
-
-            initLocalMode() {
+                this.knockout = null; 
+                this.isAuthenticated = false; 
                 this.db = null;
                 this.auth = null;
-                // En modo local para pruebas, forzamos ser admin si queremos testear
-                this.isAdmin = true;
-                this.isAuthenticated = true;
-                this.updateUIForRole();
+                this.appId = typeof __app_id !== 'undefined' ? __app_id : 'mundialito-app';
+                this.unsubscribe = null;
             }
 
-            // ==========================================
-            // BASE DE DATOS Y SINCRONIZACIÓN
-            // ==========================================
-            setupDatabaseListener() {
-                // RUTA ESTRICTA REQUERIDA: /artifacts/{appId}/public/data/tournament/main
-                const docRef = doc(this.db, 'artifacts', appId, 'public', 'data', 'tournament', 'main');
-                
-                onSnapshot(docRef, (docSnap) => {
-                    if (docSnap.exists()) {
-                        const data = docSnap.data();
-                        this.teams = data.teams || [];
-                        this.schedule = data.schedule || [];
-                        console.log("Datos actualizados desde Firestore");
-                    } else {
-                        console.log("Documento no existe, inicializando vacío");
-                        if(this.isAdmin) this.saveDataToFirebase();
+            // ---------------- UI & Modales ----------------
+            showNotification(msg, isError = false) {
+                const toast = document.getElementById('notification-toast');
+                document.getElementById('notification-msg').textContent = msg;
+                toast.classList.remove('bg-institucional-azul', 'bg-red-600');
+                toast.classList.add(isError ? 'bg-red-600' : 'bg-institucional-azul');
+                toast.classList.remove('opacity-0', 'translate-y-[-20px]', 'pointer-events-none');
+                toast.classList.add('opacity-100', 'translate-y-0');
+                setTimeout(() => {
+                    toast.classList.remove('opacity-100', 'translate-y-0');
+                    toast.classList.add('opacity-0', 'translate-y-[-20px]', 'pointer-events-none');
+                }, 3000);
+            }
+
+            showAlert(message) {
+                const modal = document.getElementById('modal');
+                document.getElementById('modal-message').innerHTML = `<p class="text-lg">${message}</p>`;
+                document.getElementById('modal-buttons').innerHTML = `<button onclick="app.hideModal()" class="btn btn-primary py-2 px-6">Entendido</button>`;
+                modal.classList.remove('hidden');
+            }
+
+            showConfirm(message, onConfirm) {
+                const modal = document.getElementById('modal');
+                document.getElementById('modal-message').innerHTML = `<p class="text-lg text-gray-700">${message}</p>`;
+                document.getElementById('modal-buttons').innerHTML = `
+                    <button onclick="app.hideModal()" class="btn btn-secondary py-2 px-4">Cancelar</button>
+                    <button id="confirm-btn" class="btn btn-primary py-2 px-4">Confirmar</button>`;
+                modal.classList.remove('hidden');
+                document.getElementById('confirm-btn').onclick = () => { this.hideModal(); onConfirm(); };
+            }
+
+            hideModal() { document.getElementById('modal').classList.add('hidden'); }
+            showLoginModal() { document.getElementById('login-screen').classList.remove('hidden'); document.getElementById('email-input').focus(); }
+            hideLoginModal() { document.getElementById('login-screen').classList.add('hidden'); }
+
+            switchTab(targetId, btnElement) {
+                const navBtns = document.querySelectorAll('.nav-btn');
+                navBtns.forEach(b => {
+                    b.classList.remove('bg-institucional-amarillo', 'text-institucional-azul', 'font-bold', 'shadow-md', 'scale-105');
+                    b.classList.add('bg-institucional-azul', 'text-white', 'opacity-90');
+                });
+                btnElement.classList.remove('bg-institucional-azul', 'text-white', 'opacity-90');
+                btnElement.classList.add('bg-institucional-amarillo', 'text-institucional-azul', 'font-bold', 'shadow-md', 'scale-105');
+
+                const vistas = ['vista-posiciones', 'vista-goleadores', 'vista-partidos', 'vista-admin'];
+                vistas.forEach(id => {
+                    const vista = document.getElementById(id);
+                    if (vista) {
+                        vista.classList.toggle('vista-activa', id === targetId);
+                        vista.classList.toggle('vista-oculta', id !== targetId);
                     }
-                    this.renderAll();
-                    
-                    // Ocultar loader inicial
-                    const loader = document.getElementById('main-loader');
-                    if(loader) loader.classList.add('hidden');
-                }, (error) => {
-                    console.error("Error en onSnapshot:", error);
-                    // Ocultar loader en caso de error
-                    const loader = document.getElementById('main-loader');
-                    if(loader) loader.classList.add('hidden');
-                    alert("Error al cargar los datos en vivo. Verifica consola.");
                 });
             }
 
-            async saveDataToFirebase() {
-                if (!this.db || !this.isAdmin) return;
+            // ---------------- Inicialización & Auth ----------------
+            async init() {
+                const firebaseApp = initializeApp(firebaseConfig);
+                this.db = getFirestore(firebaseApp);
+                this.auth = getAuth(firebaseApp);
+
                 try {
-                    const docRef = doc(this.db, 'artifacts', appId, 'public', 'data', 'tournament', 'main');
-                    await setDoc(docRef, {
-                        teams: this.teams,
-                        schedule: this.schedule,
-                        lastUpdate: new Date().toISOString(),
-                        updatedBy: this.currentUser ? this.currentUser.email : 'local_admin'
-                    });
-                    console.log("Datos guardados exitosamente");
-                } catch (error) {
-                    console.error("Error guardando datos:", error);
-                    alert("Error al guardar: " + error.message);
-                }
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        await signInWithCustomToken(this.auth, __initial_auth_token);
+                    } else { await signInAnonymously(this.auth); }
+                } catch (e) { console.error("Error Auth Inicial:", e); }
+
+                onAuthStateChanged(this.auth, (user) => {
+                    this.isAuthenticated = user && !user.isAnonymous && user.email;
+                    this.updateUIForRole();
+                    this.setupFirestoreListener();
+                });
+
+                document.getElementById('toggle-password-btn').addEventListener('click', () => {
+                    const pwd = document.getElementById('password-input');
+                    const isPwd = pwd.type === 'password';
+                    pwd.type = isPwd ? 'text' : 'password';
+                    document.getElementById('eye-icon').classList.toggle('hidden', isPwd);
+                    document.getElementById('eye-slash-icon').classList.toggle('hidden', !isPwd);
+                });
+                document.getElementById('password-input').addEventListener('keypress', (e) => { if (e.key === 'Enter') this.login(); });
             }
 
-            loadLocalData() {
-                const data = localStorage.getItem('mundialito_local_data');
-                if (data) {
-                    const parsed = JSON.parse(data);
-                    this.teams = parsed.teams || [];
-                    this.schedule = parsed.schedule || [];
-                }
-            }
-
-            saveLocalData() {
-                localStorage.setItem('mundialito_local_data', JSON.stringify({
-                    teams: this.teams,
-                    schedule: this.schedule
-                }));
-            }
-
-            triggerSave() {
-                if (this.db && this.isAdmin) {
-                    this.saveDataToFirebase();
-                } else if (!this.db) {
-                    this.saveLocalData();
-                    this.renderAll(); // En modo local forzamos render
-                }
-            }
-
-            // ==========================================
-            // AUTENTICACIÓN
-            // ==========================================
-            async login() {
-                if (!this.auth) {
-                    alert("Modo local activo. Ya eres admin para pruebas.");
-                    return;
-                }
-                try {
-                    await signInWithPopup(this.auth, this.provider);
-                } catch (error) {
-                    console.error("Error en login:", error);
-                    alert("Error al iniciar sesión.");
-                }
-            }
-
-            async logout() {
-                if (!this.auth) return;
-                try {
+            async toggleAuth() {
+                if (this.isAuthenticated) {
                     await signOut(this.auth);
-                } catch (error) {
-                    console.error("Error en logout:", error);
+                    await signInAnonymously(this.auth);
+                    this.showNotification("Sesión cerrada. Estás en modo visitante.");
+                } else {
+                    document.getElementById('login-error').textContent = '';
+                    this.showLoginModal();
                 }
             }
 
-            checkAdminRole(email) {
-                // Verificar si el email está en la lista blanca
-                if (this.ALLOWED_ADMIN_EMAILS.includes(email.toLowerCase())) {
-                    this.isAdmin = true;
-                    console.log("Acceso de Administrador Concedido:", email);
-                } else {
-                    this.isAdmin = false;
-                    console.log("Acceso de Usuario Regular:", email);
-                    // Opcional: Mostrar mensaje de que no es admin
-                    this.showModal("Aviso", "Has iniciado sesión, pero tu correo no tiene permisos de Coordinador para editar el torneo.", false);
+            async login() {
+                const email = document.getElementById('email-input').value;
+                const password = document.getElementById('password-input').value;
+                const btn = document.getElementById('btn-ingresar');
+                const errorMsg = document.getElementById('login-error');
+
+                if (!email || !password) return errorMsg.textContent = "Llena ambos campos.";
+                btn.textContent = "Verificando..."; btn.disabled = true;
+
+                try {
+                    await signInWithEmailAndPassword(this.auth, email, password);
+                    document.getElementById('email-input').value = ''; document.getElementById('password-input').value = '';
+                    this.hideLoginModal(); document.getElementById('nav-btn-admin').click(); 
+                    this.showNotification("Bienvenido al panel de administración.");
+                } catch (error) {
+                    errorMsg.textContent = error.code === 'auth/invalid-credential' ? "Correo o contraseña incorrectos." : "Error al conectar.";
+                } finally {
+                    btn.textContent = "Ingresar al Sistema"; btn.disabled = false;
                 }
-                this.updateUIForRole();
-                this.renderAll(); // Re-render para mostrar/ocultar botones
             }
 
             updateUIForRole() {
-                const body = document.body;
-                const loginBtn = document.getElementById('login-btn');
-                const logoutBtn = document.getElementById('logout-btn');
-                const statusInd = document.getElementById('auth-status-indicator');
-
-                if (this.isAdmin) {
-                    body.classList.add('is-admin');
-                    loginBtn.classList.add('hidden');
-                    logoutBtn.classList.remove('hidden');
-                    statusInd.classList.remove('hidden');
-                    statusInd.innerHTML = '<span class="w-2 h-2 rounded-full bg-green-400"></span> Admin';
-                } else if (this.isAuthenticated) {
-                    body.classList.remove('is-admin');
-                    loginBtn.classList.add('hidden');
-                    logoutBtn.classList.remove('hidden');
-                    statusInd.classList.remove('hidden');
-                    statusInd.innerHTML = '<span class="w-2 h-2 rounded-full bg-gray-400"></span> Lector';
+                const btnTopAuth = document.getElementById('btn-top-auth');
+                const navBtnAdmin = document.getElementById('nav-btn-admin');
+                
+                if (this.isAuthenticated) {
+                    btnTopAuth.textContent = "Cerrar Sesión";
+                    btnTopAuth.classList.remove('border-institucional-azul', 'text-institucional-azul');
+                    btnTopAuth.classList.add('bg-red-600', 'text-white', 'border-red-600');
+                    navBtnAdmin.classList.remove('hidden');
                 } else {
-                    body.classList.remove('is-admin');
-                    loginBtn.classList.remove('hidden');
-                    logoutBtn.classList.add('hidden');
-                    statusInd.classList.add('hidden');
-                }
-            }
-
-            // ==========================================
-            // NAVEGACIÓN UI
-            // ==========================================
-            switchTab(targetId, btnElement) {
-                // Ocultar todas las vistas
-                ['vista-partidos', 'vista-posiciones', 'vista-goleadores'].forEach(id => {
-                    const el = document.getElementById(id);
-                    if(el) {
-                        el.classList.remove('vista-activa');
-                        el.classList.add('vista-oculta');
+                    btnTopAuth.textContent = "Ingresar Admin";
+                    btnTopAuth.classList.remove('bg-red-600', 'text-white', 'border-red-600');
+                    btnTopAuth.classList.add('border-institucional-azul', 'text-institucional-azul');
+                    navBtnAdmin.classList.add('hidden');
+                    
+                    if (!document.getElementById('vista-admin').classList.contains('vista-oculta')) {
+                        document.querySelector('[data-target="vista-posiciones"]')?.click();
                     }
-                });
-
-                // Mostrar la elegida
-                const target = document.getElementById(targetId);
-                if(target) {
-                    target.classList.remove('vista-oculta');
-                    target.classList.add('vista-activa');
                 }
-
-                // Estilar botones
-                document.querySelectorAll('.nav-btn').forEach(btn => {
-                    btn.classList.remove('bg-institucional-amarillo', 'text-institucional-azul', 'font-bold', 'scale-105');
-                    btn.classList.add('bg-institucional-azul', 'text-white', 'opacity-90');
-                });
-
-                // Activar el botón presionado
-                if(btnElement) {
-                    btnElement.classList.remove('bg-institucional-azul', 'text-white', 'opacity-90');
-                    btnElement.classList.add('bg-institucional-amarillo', 'text-institucional-azul', 'font-bold', 'scale-105');
-                }
+                this.renderAll(); 
             }
 
-            // ==========================================
-            // LÓGICA DE TORNEO (CON MEMORIA INTELIGENTE)
-            // ==========================================
+            // ---------------- Datos & Lógica del Torneo ----------------
+            setupFirestoreListener() {
+                if (this.unsubscribe) this.unsubscribe();
+                
+                const mainStateRef = doc(this.db, 'artifacts', this.appId, 'public', 'data', 'torneo', 'mainState');
+                
+                this.unsubscribe = onSnapshot(mainStateRef, (docSnap) => {
+                    if (docSnap.exists()) {
+                        const state = docSnap.data();
+                        this.teams = state.teams || [];
+                        this.schedule = state.schedule || [];
+                        this.knockout = state.knockout || null; 
+                    } else {
+                        this.teams = []; this.schedule = []; this.knockout = null;
+                    }
+                    this.renderAll();
+                });
+            }
+
+            async saveStateToFirestore() {
+                if (!this.isAuthenticated) return;
+                const mainStateRef = doc(this.db, 'artifacts', this.appId, 'public', 'data', 'torneo', 'mainState');
+                await setDoc(mainStateRef, {
+                    teams: JSON.parse(JSON.stringify(this.teams)), 
+                    schedule: JSON.parse(JSON.stringify(this.schedule)),
+                    knockout: this.knockout ? JSON.parse(JSON.stringify(this.knockout)) : null
+                });
+            }
+
             addTeam() {
-                if (!this.isAdmin) return;
-                const input = document.getElementById('new-team-name');
-                const name = input.value.trim().toUpperCase();
+                if (this.schedule.length > 0) return this.showNotification("No puedes añadir equipos si el torneo ya empezó.", true);
+                const input = document.getElementById('team-name');
+                const name = input.value.trim();
                 
-                if (!name) return;
-                
-                if (this.teams.includes(name)) {
-                    this.showModal("Error", `El equipo "${name}" ya existe.`, false);
-                    return;
+                if (name && !this.teams.some(t => t.name === name)) {
+                    this.teams.push({ name, pj: 0, g: 0, e: 0, p: 0, gf: 0, gc: 0, dg: 0, pts: 0 });
+                    input.value = '';
+                    this.saveStateToFirestore();
+                } else if (name) {
+                    this.showNotification("El equipo ya existe.", true);
                 }
-
-                this.teams.push(name);
-                input.value = '';
-                this.triggerSave();
             }
 
-            removeTeam(teamName) {
-                if (!this.isAdmin) return;
-                
-                this.showModal("Confirmar Eliminación", 
-                    `<p>¿Estás seguro de eliminar el equipo <b>${teamName}</b>?</p>
-                     <p class="text-xs text-red-600 mt-2">Atención: Deberás volver a "Generar Fixture". Los partidos jugados entre otros equipos se conservarán.</p>`, 
-                    true, 
-                    () => {
-                        this.teams = this.teams.filter(t => t !== teamName);
-                        this.triggerSave();
-                    }
-                );
+            removeTeam(index) {
+                if (this.schedule.length > 0) return;
+                this.teams.splice(index, 1);
+                this.saveStateToFirestore();
             }
 
-            generateSchedule() {
-                if (!this.isAdmin) return;
-                if (this.teams.length < 2) {
-                    this.showModal("Aviso", "Necesitas al menos 2 equipos registrados para generar el fixture.", false);
-                    return;
+            // --- LÓGICA DE EDICIÓN PROFUNDA DE EQUIPO ---
+            editTeam(index) {
+                const oldName = this.teams[index].name;
+                const newName = prompt(`Editar nombre del equipo "${oldName}":\n\nSi el torneo ya empezó, el sistema actualizará este nombre en el calendario, fase final y tabla de goleadores.`, oldName);
+                
+                if (!newName || newName.trim() === "" || newName.trim() === oldName) return;
+
+                const finalName = newName.trim();
+                
+                // Verificar que no se duplique
+                if (this.teams.some((t, i) => i !== index && t.name === finalName)) {
+                    return this.showNotification("Ya existe otro equipo con ese nombre.", true);
                 }
 
-                // --- 1. MEMORIA INTELIGENTE: RESPALDAR DATOS ---
-                const partidosJugados = [];
-                if (this.schedule && this.schedule.length > 0) {
-                    this.schedule.forEach(ronda => {
-                        ronda.forEach(partido => {
-                            // Si el partido está jugado, o tiene goles o anotadores, lo respaldamos
-                            if (partido.played || partido.goalsA !== null || (partido.scorers && partido.scorers.length > 0)) {
-                                partidosJugados.push(JSON.parse(JSON.stringify(partido))); // Clon profundo
+                // Actualizar nombre base en el arreglo de equipos
+                this.teams[index].name = finalName;
+
+                // Propagar cambio en Fase Regular (Partidos y Goleadores)
+                if (this.schedule.length > 0) {
+                    this.schedule.forEach(round => {
+                        round.matches.forEach(match => {
+                            if (match.team1 === oldName) match.team1 = finalName;
+                            if (match.team2 === oldName) match.team2 = finalName;
+                            if (match.scorers) {
+                                match.scorers.forEach(s => {
+                                    if (s.team === oldName) s.team = finalName;
+                                });
                             }
                         });
                     });
                 }
 
-                // --- 2. GENERAR NUEVO CALENDARIO (Round Robin) ---
-                // Algoritmo Round-Robin
-                let participants = [...this.teams];
-                if (participants.length % 2 !== 0) {
-                    participants.push(null); // Dummy para descansos
+                // Propagar cambio en Fase Final (Knockout)
+                if (this.knockout) {
+                    if (this.knockout.semifinals) {
+                        this.knockout.semifinals.forEach(match => {
+                            if (match.team1 === oldName) match.team1 = finalName;
+                            if (match.team2 === oldName) match.team2 = finalName;
+                            if (match.scorers) {
+                                match.scorers.forEach(s => {
+                                    if (s.team === oldName) s.team = finalName;
+                                });
+                            }
+                        });
+                    }
+                    if (this.knockout.final) {
+                        this.knockout.final.forEach(match => {
+                            if (match.team1 === oldName) match.team1 = finalName;
+                            if (match.team2 === oldName) match.team2 = finalName;
+                            if (match.scorers) {
+                                match.scorers.forEach(s => {
+                                    if (s.team === oldName) s.team = finalName;
+                                });
+                            }
+                        });
+                    }
                 }
 
-                const totalRounds = participants.length - 1;
-                const half = participants.length / 2;
-                const newSchedule = [];
+                this.saveStateToFirestore();
+                this.showNotification(`El equipo ${oldName} ahora se llama ${finalName}`);
+            }
 
-                // Copia para rotar
-                let teamIndices = Array.from({length: participants.length}, (_, i) => i);
-                teamIndices.shift(); // Quitar el primer elemento (índice 0) que queda fijo
+            generateSchedule() {
+                if (this.teams.length < 2) return this.showAlert("Necesitas al menos 2 equipos para armar un torneo.");
+                const startStr = document.getElementById('tournament-start').value;
+                const endStr = document.getElementById('tournament-end').value;
 
-                for (let round = 0; round < totalRounds; round++) {
-                    let roundMatches = [];
-                    
-                    // Emparejamiento 1: El equipo fijo vs el que toque rotar a esa posición
-                    let teamA = participants[0];
-                    let teamB = participants[teamIndices[round % teamIndices.length]];
-                    
-                    if (teamA !== null && teamB !== null) {
-                        roundMatches.push(this._crearORestaurarPartido(teamA, teamB, partidosJugados));
-                    }
+                if (!startStr || !endStr) return this.showAlert("¡Faltan las fechas! Por favor indica cuándo inicia y cuándo termina la temporada.");
 
-                    // Emparejamientos restantes
-                    for (let i = 1; i < half; i++) {
-                        let firstIndex = (round + i) % teamIndices.length;
-                        let secondIndex = (round + teamIndices.length - i) % teamIndices.length;
-                        
-                        let tA = participants[teamIndices[firstIndex]];
-                        let tB = participants[teamIndices[secondIndex]];
-                        
-                        if (tA !== null && tB !== null) {
-                            roundMatches.push(this._crearORestaurarPartido(tA, tB, partidosJugados));
+                let teams = [...this.teams.map(t => t.name)];
+                if (teams.length % 2 !== 0) teams.push("descanso");
+                
+                const numTeams = teams.length;
+                const numRounds = numTeams - 1; 
+
+                const allMatches = [];
+                for (let round = 0; round < numRounds; round++) {
+                    for (let i = 0; i < numTeams / 2; i++) {
+                        const t1 = teams[i];
+                        const t2 = teams[numTeams - 1 - i];
+                        if (t1 !== "descanso" && t2 !== "descanso") {
+                            const match = (round % 2 === 1) ? { team1: t1, team2: t2 } : { team1: t2, team2: t1 };
+                            allMatches.push({ ...match, score1: null, score2: null, played: false, scorers: [] });
                         }
                     }
-                    newSchedule.push(roundMatches);
+                    teams.splice(1, 0, teams.pop());
                 }
 
-                this.schedule = newSchedule;
-                this.triggerSave();
-                this.showModal("Éxito", "Fixture generado/actualizado correctamente. Los partidos ya jugados han sido restaurados.", false);
-            }
+                const fechasValidas = generarCalendarioPartidos(startStr, endStr);
 
-            // Función auxiliar para buscar si un enfrentamiento ya existía y restaurarlo
-            _crearORestaurarPartido(teamA, teamB, partidosJugados) {
-                // Buscamos si este mismo enfrentamiento ya ocurrió en el respaldo (sin importar el orden Local/Visitante)
-                const partidoAnterior = partidosJugados.find(pj => 
-                    (pj.teamA === teamA && pj.teamB === teamB) ||
-                    (pj.teamA === teamB && pj.teamB === teamA)
-                );
-
-                if (partidoAnterior) {
-                    // Cuidado: Si en el calendario viejo era B vs A, y ahora es A vs B, debemos invertir los datos
-                    if (partidoAnterior.teamA === teamB && partidoAnterior.teamB === teamA) {
-                        return {
-                            teamA: teamA,
-                            teamB: teamB,
-                            goalsA: partidoAnterior.goalsB, // Invertido
-                            goalsB: partidoAnterior.goalsA, // Invertido
-                            played: partidoAnterior.played,
-                            scorers: partidoAnterior.scorers ? partidoAnterior.scorers : []
-                            // Nota: Los goleadores ya tienen la propiedad 'team' adentro, no es necesario invertirlos
-                        };
-                    }
-                    // Si el orden es el mismo, lo devolvemos tal cual
-                    return partidoAnterior;
+                if (fechasValidas.length < allMatches.length) {
+                    return this.showAlert(`<strong>Faltan días en el calendario.</strong><br><br>El torneo consta de ${allMatches.length} partidos (1 por fecha), pero entre ese rango solo hay ${fechasValidas.length} días habilitados (Lunes, Martes y Jueves). Recordar que la semana del 6 al 10 de abril está restringida. Amplía la fecha de fin.`);
                 }
 
-                // Si es un partido nuevo sin historia, retorna un objeto limpio
-                return {
-                    teamA: teamA,
-                    teamB: teamB,
-                    goalsA: null,
-                    goalsB: null,
-                    played: false,
-                    scorers: []
-                };
-            }
-
-            // ==========================================
-            // GESTIÓN DE MARCADORES Y GOLES (ADMIN)
-            // ==========================================
-            promptEditScore(rIdx, mIdx) {
-                if (!this.isAdmin) return;
-                const match = this.schedule[rIdx][mIdx];
-                
-                const inputsHtml = `
-                    <div class="flex items-center justify-between gap-4 mb-4">
-                        <div class="flex-1 text-center">
-                            <label class="block font-bold text-sm text-institucional-azul mb-1 truncate" title="${match.teamA}">${match.teamA}</label>
-                            <input type="number" id="input-scoreA" class="w-20 text-center text-2xl font-bold p-2 border rounded-lg focus:ring-2 focus:ring-institucional-amarillo" min="0" value="${match.goalsA !== null ? match.goalsA : 0}">
-                        </div>
-                        <div class="text-gray-400 font-bold text-xl">-</div>
-                        <div class="flex-1 text-center">
-                            <label class="block font-bold text-sm text-institucional-azul mb-1 truncate" title="${match.teamB}">${match.teamB}</label>
-                            <input type="number" id="input-scoreB" class="w-20 text-center text-2xl font-bold p-2 border rounded-lg focus:ring-2 focus:ring-institucional-amarillo" min="0" value="${match.goalsB !== null ? match.goalsB : 0}">
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-2 p-3 bg-gray-50 rounded border border-gray-200">
-                        <input type="checkbox" id="input-played" class="w-5 h-5 accent-institucional-azul" ${match.played ? 'checked' : ''}>
-                        <label for="input-played" class="font-semibold text-gray-700 cursor-pointer">Marcar partido como Finalizado</label>
-                    </div>
-                    <p class="text-xs text-gray-500 mt-2">Nota: Al marcar como finalizado, los puntos se reflejarán en la tabla de posiciones.</p>
-                `;
-
-                this.showModal("Editar Marcador", inputsHtml, true, () => {
-                    const gA = parseInt(document.getElementById('input-scoreA').value) || 0;
-                    const gB = parseInt(document.getElementById('input-scoreB').value) || 0;
-                    const played = document.getElementById('input-played').checked;
-
-                    this.schedule[rIdx][mIdx].goalsA = gA;
-                    this.schedule[rIdx][mIdx].goalsB = gB;
-                    this.schedule[rIdx][mIdx].played = played;
-                    
-                    this.triggerSave();
+                this.showConfirm(`Se programarán <strong>${allMatches.length} Partidos individuales</strong>.<br>El 10 de Abril se ha reservado como el primer encuentro.<br><br>A partir de aquí, usa el botón "Editar" de los equipos en caso de correcciones. ¿Confirmas la generación?`, () => {
+                    this.schedule = allMatches.map((match, index) => ({ 
+                        round: index + 1, 
+                        date: fechasValidas[index], 
+                        matches: [match] 
+                    }));
+                    this.saveStateToFirestore();
+                    this.showNotification("¡Calendario oficial generado!");
+                    document.querySelector('[data-target="vista-partidos"]')?.click();
                 });
             }
 
-            promptAddScorer(rIdx, mIdx) {
-                if (!this.isAdmin) return;
-                const match = this.schedule[rIdx][mIdx];
+            // --- LÓGICA FASE FINAL ---
+            generateSemifinals() {
+                if (this.teams.length < 4) return this.showAlert("Se necesitan al menos 4 equipos para hacer semifinales.");
+                this.calculateTeamStats(); // Asegurar tabla actualizada
                 
-                const inputsHtml = `
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-1">Seleccionar Equipo</label>
-                            <select id="input-scorer-team" class="w-full p-2 border rounded-lg">
-                                <option value="${match.teamA}">${match.teamA}</option>
-                                <option value="${match.teamB}">${match.teamB}</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-1">Nombre del Jugador</label>
-                            <input type="text" id="input-scorer-name" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-institucional-amarillo" placeholder="Ej: Juan Pérez">
-                        </div>
-                    </div>
-                `;
+                this.showConfirm("Se generarán las Semifinales con los 4 mejores equipos de la tabla actual. Las fechas deberás asignarlas manualmente. ¿Continuar?", () => {
+                    const top4 = this.teams.slice(0, 4);
+                    this.knockout = {
+                        semifinals: [
+                            { team1: top4[0].name, team2: top4[3].name, score1: null, score2: null, played: false, scorers: [], date: '' },
+                            { team1: top4[1].name, team2: top4[2].name, score1: null, score2: null, played: false, scorers: [], date: '' }
+                        ],
+                        final: null
+                    };
+                    this.saveStateToFirestore();
+                    this.showNotification("Semifinales generadas. Ve a la pestaña 'Partidos'.");
+                });
+            }
 
-                this.showModal("Registrar Gol", inputsHtml, true, () => {
-                    const team = document.getElementById('input-scorer-team').value;
-                    const player = document.getElementById('input-scorer-name').value.trim();
+            generateFinal() {
+                if (!this.knockout || !this.knockout.semifinals) return this.showAlert("Primero debes generar y jugar las semifinales.");
+                const sf1 = this.knockout.semifinals[0];
+                const sf2 = this.knockout.semifinals[1];
+
+                if (!sf1.played || !sf2.played) return this.showAlert("Aún faltan por jugar partidos de semifinales.");
+                if (sf1.score1 === sf1.score2 || sf2.score1 === sf2.score2) return this.showAlert("¡Las semifinales no pueden terminar en empate! Por favor, define el ganador ajustando los goles (incluyendo penales si es necesario).");
+
+                this.showConfirm("Se generará la Gran Final con los ganadores. ¿Continuar?", () => {
+                    const winner1 = sf1.score1 > sf1.score2 ? sf1.team1 : sf1.team2;
+                    const winner2 = sf2.score1 > sf2.score2 ? sf2.team1 : sf2.team2;
                     
-                    if (!player) {
-                        alert("Debes ingresar el nombre del jugador.");
-                        return; // No cierra el modal idealmente, pero por simpleza abortamos
-                    }
+                    this.knockout.final = [
+                        { team1: winner1, team2: winner2, score1: null, score2: null, played: false, scorers: [], date: '' }
+                    ];
+                    this.saveStateToFirestore();
+                    this.showNotification("¡La Gran Final está servida!");
+                });
+            }
 
+            // Obtenedor dinámico para soportar Fase Regular y Knockout
+            getMatchObj(rIdx, mIdx) {
+                if (rIdx === 'semi') return this.knockout.semifinals[mIdx];
+                if (rIdx === 'final') return this.knockout.final[mIdx];
+                return this.schedule[rIdx].matches[mIdx];
+            }
+
+            toggleEditDate(rIdx, mIdx = null) {
+                const id = mIdx !== null ? `${rIdx}-${mIdx}` : rIdx;
+                const editor = document.getElementById(`date-editor-${id}`);
+                if (editor) editor.classList.toggle('hidden');
+            }
+
+            saveMatchDate(rIdx, mIdx = null) {
+                const id = mIdx !== null ? `${rIdx}-${mIdx}` : rIdx;
+                const newDate = document.getElementById(`new-date-${id}`).value;
+                if (newDate) {
+                    if (rIdx === 'semi') this.knockout.semifinals[mIdx].date = newDate;
+                    else if (rIdx === 'final') this.knockout.final[mIdx].date = newDate;
+                    else this.schedule[rIdx].date = newDate;
+                    
+                    this.saveStateToFirestore();
+                    this.showNotification("Fecha actualizada correctamente.");
+                    this.toggleEditDate(rIdx, mIdx);
+                } else {
+                    this.showNotification("Selecciona una fecha válida", true);
+                }
+            }
+
+            updateScore(rIdx, mIdx) {
+                const match = this.getMatchObj(rIdx, mIdx);
+                const id = `${rIdx}-${mIdx}`;
+                const s1 = parseInt(document.getElementById(`score1-${id}`).value);
+                const s2 = parseInt(document.getElementById(`score2-${id}`).value);
+
+                if (!isNaN(s1) && !isNaN(s2) && s1 >= 0 && s2 >= 0) {
+                    match.score1 = s1; match.score2 = s2; match.played = true;
+                    this.saveStateToFirestore();
+                    this.showNotification("Marcador actualizado.");
+                } else {
+                    this.showAlert("Por favor ingresa números válidos.");
+                }
+            }
+
+            requestEditMatch(rIdx, mIdx) {
+                this.showConfirm("¿Habilitar edición para este partido?", () => {
+                    const id = `${rIdx}-${mIdx}`;
+                    document.getElementById(`score1-${id}`).readOnly = false;
+                    document.getElementById(`score2-${id}`).readOnly = false;
+                    document.getElementById(`edit-btn-${id}`).classList.add('hidden');
+                    document.getElementById(`save-btn-${id}`).classList.remove('hidden');
+                });
+            }
+
+            addScorer(rIdx, mIdx) {
+                const match = this.getMatchObj(rIdx, mIdx);
+                const id = `${rIdx}-${mIdx}`;
+                const playerName = document.getElementById(`scorer-name-${id}`).value.trim();
+                const teamName = document.getElementById(`scorer-team-${id}`).value;
+
+                if (playerName && teamName) {
                     if (!match.scorers) match.scorers = [];
-                    match.scorers.push({ team: team, player: player });
-                    
-                    this.triggerSave();
-                });
+                    match.scorers.push({ player: playerName, team: teamName });
+                    document.getElementById(`scorer-name-${id}`).value = '';
+                    this.saveStateToFirestore();
+                }
             }
 
             removeScorer(rIdx, mIdx, sIdx) {
-                if (!this.isAdmin) return;
-                
-                this.showModal("Confirmar", "¿Eliminar este registro de gol?", true, () => {
-                    this.schedule[rIdx][mIdx].scorers.splice(sIdx, 1);
-                    this.triggerSave();
-                });
+                const match = this.getMatchObj(rIdx, mIdx);
+                match.scorers.splice(sIdx, 1);
+                this.saveStateToFirestore();
             }
 
-
-            // ==========================================
-            // CÁLCULOS ESTADÍSTICOS
-            // ==========================================
-            calculateStandings() {
-                // Objeto para acumular stats
-                const stats = {};
+            calculateTeamStats() {
+                this.teams.forEach(t => { t.pj=0; t.g=0; t.e=0; t.p=0; t.gf=0; t.gc=0; t.dg=0; t.pts=0; });
                 
-                // Inicializar todos los equipos
-                this.teams.forEach(team => {
-                    stats[team] = {
-                        name: team, played: 0, won: 0, drawn: 0, lost: 0, 
-                        goalsFor: 0, goalsAgainst: 0, points: 0
-                    };
-                });
-
-                // Recorrer calendario
+                // Las estadísticas SOLO se calculan con el Round Robin (Fase Regular)
                 this.schedule.forEach(round => {
-                    round.forEach(match => {
+                    round.matches.forEach(match => {
                         if (match.played) {
-                            // Asegurar que los equipos existan en stats (por si se borró un equipo y quedó en la historia)
-                            if (!stats[match.teamA]) stats[match.teamA] = {name: match.teamA, played:0, won:0, drawn:0, lost:0, goalsFor:0, goalsAgainst:0, points:0};
-                            if (!stats[match.teamB]) stats[match.teamB] = {name: match.teamB, played:0, won:0, drawn:0, lost:0, goalsFor:0, goalsAgainst:0, points:0};
-
-                            let stA = stats[match.teamA];
-                            let stB = stats[match.teamB];
-
-                            stA.played++;
-                            stB.played++;
+                            const t1 = this.teams.find(t => t.name === match.team1);
+                            const t2 = this.teams.find(t => t.name === match.team2);
+                            if (!t1 || !t2) return;
                             
-                            stA.goalsFor += match.goalsA;
-                            stA.goalsAgainst += match.goalsB;
-                            stB.goalsFor += match.goalsB;
-                            stB.goalsAgainst += match.goalsA;
-
-                            if (match.goalsA > match.goalsB) {
-                                stA.won++; stA.points += 3;
-                                stB.lost++;
-                            } else if (match.goalsA < match.goalsB) {
-                                stB.won++; stB.points += 3;
-                                stA.lost++;
-                            } else {
-                                stA.drawn++; stB.drawn++;
-                                stA.points += 1; stB.points += 1;
-                            }
+                            t1.pj++; t2.pj++;
+                            t1.gf += match.score1; t1.gc += match.score2;
+                            t2.gf += match.score2; t2.gc += match.score1;
+                            
+                            if (match.score1 > match.score2) { t1.g++; t2.p++; t1.pts += 3; }
+                            else if (match.score2 > match.score1) { t2.g++; t1.p++; t2.pts += 3; }
+                            else { t1.e++; t2.e++; t1.pts += 1; t2.pts += 1; }
                         }
                     });
                 });
 
-                // Convertir a Array y ordenar
-                return Object.values(stats).sort((a, b) => {
-                    // 1. Puntos
-                    if (b.points !== a.points) return b.points - a.points;
-                    
-                    // 2. Diferencia de gol
-                    let diffA = a.goalsFor - a.goalsAgainst;
-                    let diffB = b.goalsFor - b.goalsAgainst;
-                    if (diffB !== diffA) return diffB - diffA;
-                    
-                    // 3. Goles a favor
-                    if (b.goalsFor !== a.goalsFor) return b.goalsFor - a.goalsFor;
-                    
-                    // 4. Alfabético
-                    return a.name.localeCompare(b.name);
+                this.teams.forEach(t => t.dg = t.gf - t.gc);
+                this.teams.sort((a, b) => b.pts - a.pts || b.dg - a.dg || b.gf - a.gf || a.name.localeCompare(b.name));
+            }
+
+            resetTournament() {
+                this.showConfirm("¿Estás 100% seguro? Se borrarán todos los equipos, partidos y fases finales.", async () => {
+                    if(this.isAuthenticated) {
+                        const mainStateRef = doc(this.db, 'artifacts', this.appId, 'public', 'data', 'torneo', 'mainState');
+                        await deleteDoc(mainStateRef);
+                        this.showNotification("Torneo reiniciado exitosamente.");
+                    }
                 });
             }
 
-
-            // ==========================================
-            // SISTEMA DE MODALES REUTILIZABLE
-            // ==========================================
-            showModal(title, messageHtml, isConfirm = false, onConfirmCallback = null) {
-                document.getElementById('modal-title').innerText = title;
-                document.getElementById('modal-message').innerHTML = messageHtml;
-                document.getElementById('modal-inputs').innerHTML = ''; // Limpiar inputs inyectados por messageHtml
-
-                const cancelBtn = document.getElementById('modal-cancel-btn');
-                const confirmBtn = document.getElementById('modal-confirm-btn');
-
-                if (isConfirm) {
-                    cancelBtn.classList.remove('hidden');
-                    confirmBtn.innerText = 'Confirmar';
-                } else {
-                    cancelBtn.classList.add('hidden');
-                    confirmBtn.innerText = 'Aceptar';
-                }
-
-                this.modalCallback = onConfirmCallback;
-
-                // Bindear evento
-                confirmBtn.onclick = () => {
-                    if (this.modalCallback) this.modalCallback();
-                    this.closeModal();
-                };
-
-                // Mostrar
-                const backdrop = document.getElementById('modal-backdrop');
-                const content = document.getElementById('modal-content');
-                
-                backdrop.classList.remove('hidden');
-                // Timeout pequeñito para activar la transición de opacidad/escala
-                setTimeout(() => {
-                    backdrop.classList.remove('opacity-0');
-                    content.classList.remove('scale-95');
-                }, 10);
-            }
-
-            closeModal() {
-                const backdrop = document.getElementById('modal-backdrop');
-                const content = document.getElementById('modal-content');
-                
-                backdrop.classList.add('opacity-0');
-                content.classList.add('scale-95');
-                
-                setTimeout(() => {
-                    backdrop.classList.add('hidden');
-                    this.modalCallback = null;
-                }, 300); // Tiempo de la transición CSS
-            }
-
-
-            // ==========================================
-            // RENDERIZADO VISUAL
-            // ==========================================
+            // ---------------- Renderizado ----------------
             renderAll() {
-                this.renderAdminPanel();
-                this.renderSchedule();
+                this.calculateTeamStats(); 
+                
+                const started = this.schedule.length > 0;
+                
+                // Panel Admin UI
+                document.getElementById('add-team-wrapper').classList.toggle('opacity-50', started);
+                // NOTA: Se habilitó el input y el botón de añadir equipo aunque el torneo haya empezado
+                // para que visualmente siga activo, pero la función addTeam bloquea internamente añadir nuevos equipos.
+                document.getElementById('team-name').disabled = started;
+                document.getElementById('add-team-btn').disabled = started;
+                document.getElementById('tournament-start').disabled = started;
+                document.getElementById('tournament-end').disabled = started;
+                document.getElementById('generate-schedule-btn').disabled = this.teams.length < 2 || started;
+                document.getElementById('reset-tournament-btn').classList.toggle('hidden', !started && this.teams.length === 0);
+                
+                // Panel Fase Final UI
+                const faseFinalPanel = document.getElementById('fase-final-admin');
+                if (started) faseFinalPanel.classList.remove('hidden');
+                else faseFinalPanel.classList.add('hidden');
+
+                this.renderTeamsAdmin();
                 this.renderStandings();
-                this.renderScorers();
+                this.renderSchedule();
+                this.renderTopScorers();
             }
 
-            renderAdminPanel() {
-                const list = document.getElementById('admin-team-list');
-                if(!list) return;
-                
-                if (this.teams.length === 0) {
-                    list.innerHTML = '<span class="text-sm text-gray-400 italic">No hay equipos registrados.</span>';
-                    return;
-                }
+            renderTeamsAdmin() {
+                document.getElementById('teams-list').innerHTML = this.teams.map((t, i) => `
+                    <div class="flex justify-between items-center bg-gray-50 p-3 rounded shadow-sm border border-gray-200 mb-2">
+                        <span class="font-semibold text-institucional-azul text-lg">${t.name}</span>
+                        <div class="flex gap-2">
+                            <button onclick="app.editTeam(${i})" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm font-bold shadow transition-colors">Editar</button>
+                            <button onclick="app.removeTeam(${i})" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm font-bold shadow transition-colors ${this.schedule.length > 0 ? 'hidden' : ''}">Eliminar</button>
+                        </div>
+                    </div>`).join('');
+            }
 
-                list.innerHTML = this.teams.map(team => `
-                    <span class="inline-flex items-center gap-1 bg-white border border-orange-200 px-3 py-1 rounded-full text-sm font-semibold text-institucional-azul shadow-sm">
-                        ${team}
-                        <button onclick="app.removeTeam('${team}')" class="text-orange-400 hover:text-red-500 hover:bg-red-50 rounded-full w-5 h-5 flex items-center justify-center transition" title="Eliminar equipo">&times;</button>
-                    </span>
-                `).join('');
+            renderStandings() {
+                const body = document.getElementById('standings-body');
+                if(this.teams.length === 0) return body.innerHTML = '<tr><td colspan="10" class="p-4 text-center text-gray-500">Aún no hay equipos registrados.</td></tr>';
+                
+                body.innerHTML = this.teams.map((t, i) => `
+                    <tr class="${i < 4 ? 'bg-green-50' : 'hover:bg-gray-50'} border-b border-gray-100 transition">
+                        <td class="p-3 font-bold text-institucional-azul">${i + 1}</td>
+                        <td class="p-3 font-semibold">${t.name}</td>
+                        <td class="p-3 text-center">${t.pj}</td>
+                        <td class="p-3 text-center">${t.g}</td><td class="p-3 text-center">${t.e}</td><td class="p-3 text-center">${t.p}</td>
+                        <td class="p-3 text-center">${t.gf}</td><td class="p-3 text-center">${t.gc}</td>
+                        <td class="p-3 text-center font-semibold">${t.dg}</td>
+                        <td class="p-3 text-center font-bold text-institucional-azul text-lg">${t.pts}</td>
+                    </tr>`).join('');
+            }
+
+            renderTopScorers() {
+                const map = new Map();
+                // Combinar goles de fase regular y knockout
+                const processScorers = (matches) => {
+                    matches.forEach(m => {
+                        if(m.scorers) m.scorers.forEach(s => {
+                            const key = `${s.player}-${s.team}`;
+                            if (!map.has(key)) map.set(key, { player: s.player, team: s.team, goals: 0 });
+                            map.get(key).goals++;
+                        });
+                    });
+                };
+                
+                this.schedule.forEach(r => processScorers(r.matches));
+                if (this.knockout && this.knockout.semifinals) processScorers(this.knockout.semifinals);
+                if (this.knockout && this.knockout.final) processScorers(this.knockout.final);
+
+                const sorted = Array.from(map.values()).sort((a, b) => b.goals - a.goals);
+                const body = document.getElementById('top-scorers-body');
+                
+                if(sorted.length === 0) return body.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-gray-500">No hay goles registrados aún.</td></tr>';
+                
+                body.innerHTML = sorted.map((s, i) => `
+                    <tr class="border-b border-gray-100">
+                        <td class="p-3 font-bold text-institucional-azul">${i+1}</td>
+                        <td class="p-3 font-semibold">${s.player}</td>
+                        <td class="p-3 text-gray-500">${s.team}</td>
+                        <td class="p-3 text-center font-bold text-lg">${s.goals}</td>
+                    </tr>`).join('');
             }
 
             renderSchedule() {
-                const container = document.getElementById('schedule-section');
-                if(!container) return;
+                const section = document.getElementById('schedule-section');
+                if (this.schedule.length === 0) return section.innerHTML = '<div class="card bg-gray-50 text-center text-gray-500">El calendario aún no ha sido generado.</div>';
+                
+                const formatter = new Intl.DateTimeFormat('es-CO', { weekday: 'long', month: 'long', day: 'numeric' });
 
-                if (this.schedule.length === 0) {
-                    container.innerHTML = `
-                        <div class="card p-10 text-center flex flex-col items-center justify-center text-gray-500 border-dashed border-2 border-gray-300">
-                            <svg class="w-16 h-16 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                            <p class="text-lg">El calendario aún no ha sido generado.</p>
-                            <p class="text-sm mt-1">El coordinador debe añadir equipos y generar el fixture.</p>
+                const getMondayTimestamp = (dateString) => {
+                    if (!dateString) return 0;
+                    const d = new Date(dateString + "T12:00:00");
+                    const day = d.getDay(); 
+                    const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+                    return new Date(d.getFullYear(), d.getMonth(), diff).getTime();
+                };
+
+                const weeksMap = new Map();
+                
+                this.schedule.forEach((r, rIdx) => {
+                    const ts = getMondayTimestamp(r.date);
+                    if (!weeksMap.has(ts)) weeksMap.set(ts, []);
+                    weeksMap.get(ts).push({ r, rIdx });
+                });
+
+                const sortedWeekTimestamps = Array.from(weeksMap.keys()).sort((a, b) => a - b);
+                
+                let html = '';
+                let weekNumber = 1;
+
+                // 1. Renderizar Fase Regular (Round Robin)
+                for (const ts of sortedWeekTimestamps) {
+                    const matchesInWeek = weeksMap.get(ts);
+                    html += `
+                    <div class="mb-12">
+                        <div class="flex items-center mb-6">
+                            <h2 class="text-3xl font-extrabold text-institucional-azul uppercase tracking-wider">Semana ${weekNumber}</h2>
+                            <div class="flex-grow h-1 bg-institucional-amarillo ml-4 rounded-full"></div>
                         </div>
+                        <div class="grid grid-cols-1 gap-6">
                     `;
-                    return;
+                    
+                    matchesInWeek.forEach(item => {
+                        const r = item.r;
+                        const rIdx = item.rIdx;
+                        let fechaText = "Fecha no asignada";
+                        if (r.date) {
+                            const d = new Date(r.date + "T12:00:00");
+                            fechaText = formatter.format(d).charAt(0).toUpperCase() + formatter.format(d).slice(1);
+                        }
+
+                        html += `
+                        <div class="card !bg-white border-l-4 border-l-institucional-azul !border-t-0 rounded-l-none relative shadow-sm hover:shadow-md transition-shadow">
+                            <div class="flex flex-col sm:flex-row justify-between items-center mb-4 pb-4 border-b border-gray-100">
+                                <h3 class="text-xl font-black text-institucional-azul uppercase tracking-wider mb-2 sm:mb-0">Jornada ${r.round}</h3>
+                                <div class="flex flex-col items-center sm:items-end text-gray-600 font-medium">
+                                    <div class="flex items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1 text-institucional-amarillo" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                                        <span>${fechaText}</span>
+                                        ${this.isAuthenticated ? `
+                                            <button onclick="app.toggleEditDate(${rIdx})" class="ml-2 text-institucional-azul hover:text-institucional-amarilloHover transition-colors" title="Modificar fecha">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+                                            </button>
+                                        ` : ''}
+                                    </div>
+                                    ${this.isAuthenticated ? `
+                                    <div id="date-editor-${rIdx}" class="hidden mt-2 flex gap-2 items-center bg-gray-50 p-2 rounded border border-gray-200 shadow-inner">
+                                        <input type="date" id="new-date-${rIdx}" value="${r.date}" class="input-field text-sm py-1.5 w-auto border-gray-300">
+                                        <button onclick="app.saveMatchDate(${rIdx})" class="bg-green-600 hover:bg-green-700 text-white p-2 rounded transition shadow-sm" title="Guardar"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg></button>
+                                        <button onclick="app.toggleEditDate(${rIdx})" class="bg-red-500 hover:bg-red-600 text-white p-2 rounded transition shadow-sm" title="Cancelar"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg></button>
+                                    </div>
+                                    ` : ''}
+                                </div>
+                            </div>
+                            <div class="space-y-4">
+                                ${r.matches.map((m, mIdx) => this.renderMatchCard(m, rIdx, mIdx)).join('')}
+                            </div>
+                        </div>`;
+                    });
+                    html += `</div></div>`;
+                    weekNumber++;
                 }
 
-                let html = '';
-                this.schedule.forEach((round, rIdx) => {
+                // 2. Renderizar Fase Final (Si Existe)
+                if (this.knockout && this.knockout.semifinals) {
                     html += `
-                        <div class="mb-8">
-                            <h3 class="bg-institucional-azul text-white font-bold py-2 px-4 rounded-t-lg shadow-sm flex items-center gap-2">
-                                <span class="bg-institucional-amarillo text-institucional-azul w-6 h-6 rounded-full flex items-center justify-center text-xs">F</span>
-                                Fecha ${rIdx + 1}
-                            </h3>
-                            <div class="bg-white border border-t-0 border-gray-200 rounded-b-lg shadow-sm p-4 space-y-4">
-                                ${round.map((match, mIdx) => this.renderMatchCard(match, rIdx, mIdx)).join('')}
-                            </div>
+                    <div class="mb-12 border-t-4 border-institucional-amarillo pt-8 mt-12">
+                        <div class="flex items-center justify-center mb-8">
+                            <h2 class="text-4xl font-extrabold text-institucional-azul uppercase tracking-wider text-center flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mr-3 text-institucional-amarillo" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1.323l3.954 1.582 1.599-.8a1 1 0 01.894 1.79l-1.233.616 1.738 5.42a1 1 0 01-.285 1.05A3.989 3.989 0 0115 15a3.989 3.989 0 01-2.667-1.019 1 1 0 01-.285-1.05l1.715-5.349L11 6.477V16h2a1 1 0 110 2H7a1 1 0 110-2h2V6.477L6.237 7.582l1.715 5.349a1 1 0 01-.285 1.05A3.989 3.989 0 015 15a3.989 3.989 0 01-2.667-1.019 1 1 0 01-.285-1.05l1.738-5.42-1.233-.617a1 1 0 01.894-1.788l1.599.799L9 4.323V3a1 1 0 011-1z" clip-rule="evenodd" /></svg>
+                                Semifinales
+                            </h2>
                         </div>
-                    `;
-                });
-                container.innerHTML = html;
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            ${this.knockout.semifinals.map((m, mIdx) => this.renderKnockoutCard(m, 'semi', mIdx, `Semifinal ${mIdx + 1}`)).join('')}
+                        </div>
+                    </div>`;
+                }
+
+                if (this.knockout && this.knockout.final) {
+                    html += `
+                    <div class="mb-12">
+                        <div class="flex items-center justify-center mb-8">
+                            <h2 class="text-4xl font-extrabold text-institucional-azul uppercase tracking-wider text-center flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mr-3 text-yellow-500" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd" /></svg>
+                                Gran Final
+                            </h2>
+                        </div>
+                        <div class="max-w-3xl mx-auto">
+                            ${this.knockout.final.map((m, mIdx) => this.renderKnockoutCard(m, 'final', mIdx, `Final por el Título`)).join('')}
+                        </div>
+                    </div>`;
+                }
+
+                section.innerHTML = html;
             }
 
-            // Función modularizada que usabas en tu código original
-            renderMatchCard(match, rIdxParam, mIdx) {
-                const isPlayed = match.played;
-                const statusColor = isPlayed ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600';
-                const statusText = isPlayed ? 'FINALIZADO' : 'PENDIENTE';
+            // Nueva Tarjeta de Partido Específica para la Fase Final (Knockout)
+            renderKnockoutCard(match, rIdx, mIdx, title) {
+                const id = `${rIdx}-${mIdx}`;
+                const formatter = new Intl.DateTimeFormat('es-CO', { weekday: 'long', month: 'long', day: 'numeric' });
+                let fechaText = "Fecha por definir";
+                if (match.date) {
+                    const d = new Date(match.date + "T12:00:00");
+                    fechaText = formatter.format(d).charAt(0).toUpperCase() + formatter.format(d).slice(1);
+                }
 
                 return `
-                    <div class="border border-gray-100 rounded-lg p-4 hover:shadow-md transition bg-gray-50/30">
-                        
-                        <!-- Header de tarjeta -->
-                        <div class="flex justify-between items-center mb-3">
-                            <span class="text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider ${statusColor}">
-                                ${statusText}
-                            </span>
-                            
-                            ${this.isAdmin ? `
-                                <button onclick="app.promptEditScore(${rIdxParam}, ${mIdx})" class="text-xs bg-white border border-institucional-azul text-institucional-azul hover:bg-institucional-azul hover:text-white px-3 py-1 rounded transition flex items-center gap-1 shadow-sm">
-                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-                                    Editar
-                                </button>
+                <div class="card !bg-white border-4 border-institucional-amarillo shadow-lg">
+                    <div class="text-center pb-4 border-b border-gray-100 mb-4 relative">
+                        <h3 class="text-lg font-black text-institucional-azul uppercase tracking-widest">${title}</h3>
+                        <div class="flex items-center justify-center mt-1 text-sm text-gray-500 font-medium">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 text-institucional-amarillo" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                            ${fechaText}
+                            ${this.isAuthenticated ? `
+                                <button onclick="app.toggleEditDate('${rIdx}', ${mIdx})" class="ml-2 text-institucional-azul hover:text-institucional-amarilloHover transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg></button>
                             ` : ''}
                         </div>
+                        ${this.isAuthenticated ? `
+                        <div id="date-editor-${id}" class="hidden mt-2 flex justify-center gap-2 items-center bg-gray-50 p-2 rounded border border-gray-200">
+                            <input type="date" id="new-date-${id}" value="${match.date}" class="input-field text-sm py-1 w-auto">
+                            <button onclick="app.saveMatchDate('${rIdx}', ${mIdx})" class="bg-green-600 text-white p-1 rounded"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg></button>
+                            <button onclick="app.toggleEditDate('${rIdx}', ${mIdx})" class="bg-red-500 text-white p-1 rounded"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg></button>
+                        </div>
+                        ` : ''}
+                    </div>
+                    ${this.renderMatchCard(match, rIdx, mIdx)}
+                </div>`;
+            }
 
-                        <!-- Marcador Principal -->
-                        <div class="flex justify-center items-center gap-2 sm:gap-6 mb-4">
-                            <div class="flex-1 text-right font-bold text-sm sm:text-lg text-institucional-azul truncate" title="${match.teamA}">${match.teamA}</div>
-                            
-                            <div class="flex-shrink-0 bg-gray-900 text-institucional-amarillo rounded-lg shadow-inner px-4 py-2 flex items-center justify-center min-w-[80px]">
-                                <span class="text-2xl font-black font-mono tracking-widest">
-                                    ${match.goalsA !== null ? match.goalsA : '-'}:${match.goalsB !== null ? match.goalsB : '-'}
-                                </span>
+            // Tarjeta Base (Reutilizada)
+            renderMatchCard(match, rIdx, mIdx) {
+                 const id = `${rIdx}-${mIdx}`;
+                 const ro = (match.played || !this.isAuthenticated) ? 'readonly' : '';
+                 
+                 // Para que los inputs en Fase Final se diferencien de Fase Regular string params
+                 const rIdxParam = typeof rIdx === 'string' ? `'${rIdx}'` : rIdx; 
+
+                 return `
+                    <div class="bg-gray-50 border p-4 rounded-lg shadow-sm ${match.played ? 'border-l-4 border-l-institucional-amarillo' : ''}">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                            <div class="sm:w-1/3 text-center sm:text-right font-bold text-xl text-institucional-azul">${match.team1}</div>
+                            <div class="flex items-center justify-center gap-2">
+                                <input type="number" min="0" id="score1-${id}" class="input-field text-center w-16 text-xl font-bold bg-white" value="${match.score1 ?? ''}" ${ro}>
+                                <span class="font-bold text-gray-400">vs</span>
+                                <input type="number" min="0" id="score2-${id}" class="input-field text-center w-16 text-xl font-bold bg-white" value="${match.score2 ?? ''}" ${ro}>
                             </div>
-                            
-                            <div class="flex-1 text-left font-bold text-sm sm:text-lg text-institucional-azul truncate" title="${match.teamB}">${match.teamB}</div>
+                            <div class="sm:w-1/3 text-center sm:text-left font-bold text-xl text-institucional-azul">${match.team2}</div>
                         </div>
 
-                        <!-- Sección de Goleadores -->
-                        ${(isPlayed || (match.scorers && match.scorers.length > 0)) ? `
-                            <div class="mt-4 pt-3 border-t border-dashed border-gray-200">
+                        ${this.isAuthenticated ? `
+                            <div class="mt-4 flex justify-center gap-2">
+                                <button id="save-btn-${id}" onclick="app.updateScore(${rIdxParam}, ${mIdx})" class="btn btn-primary py-1.5 px-4 text-sm ${match.played ? 'hidden' : ''}">Guardar Marcador</button>
+                                <button id="edit-btn-${id}" onclick="app.requestEditMatch(${rIdxParam}, ${mIdx})" class="btn btn-secondary py-1.5 px-4 text-sm ${!match.played ? 'hidden' : ''}">Editar Marcador</button>
+                            </div>
+                        ` : ''}
+                        
+                        ${(match.played || this.isAuthenticated) ? `
+                            <hr class="my-4 border-gray-200">
+                            <div class="text-sm">
+                                <h4 class="font-semibold mb-2 text-center text-gray-500 uppercase tracking-wide text-xs">Goles del Partido</h4>
                                 
-                                ${this.isAdmin ? `
-                                    <div class="flex justify-end mb-2">
-                                        <button onclick="app.promptAddScorer(${rIdxParam}, ${mIdx})" class="text-xs text-institucional-azul hover:text-institucional-azulHover font-semibold flex items-center gap-1 bg-white border border-gray-200 px-2 py-1 rounded shadow-sm">
-                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-                                            Añadir Gol
-                                        </button>
+                                ${this.isAuthenticated ? `
+                                    <div class="flex flex-col sm:flex-row gap-2 items-center mb-3 max-w-lg mx-auto bg-white p-2 rounded border border-gray-200 shadow-sm">
+                                        <input type="text" id="scorer-name-${id}" class="input-field text-sm py-1 border-none bg-transparent" placeholder="Nombre goleador">
+                                        <div class="h-6 border-r border-gray-300 mx-1"></div>
+                                        <select id="scorer-team-${id}" class="input-field text-sm py-1 border-none bg-transparent font-medium">
+                                            <option value="${match.team1}">${match.team1}</option>
+                                            <option value="${match.team2}">${match.team2}</option>
+                                        </select>
+                                        <button onclick="app.addScorer(${rIdxParam}, ${mIdx})" class="btn btn-primary py-1.5 px-3 text-xs whitespace-nowrap">Añadir Gol</button>
                                     </div>
                                 ` : ''}
 
@@ -989,7 +1165,7 @@
                                     ${ (match.scorers || []).map((scorer, s_index) => `
                                         <li class="flex justify-between items-center bg-white p-2 rounded border border-gray-200 shadow-sm">
                                             <span>⚽ <span class="font-semibold text-institucional-azul">${scorer.player}</span> <span class="text-xs text-gray-500">(${scorer.team})</span></span>
-                                            ${this.isAdmin ? `<button onclick="app.removeScorer(${rIdxParam}, ${mIdx}, ${s_index})" class="text-red-500 font-bold text-lg leading-none hover:text-red-700 p-1" title="Borrar gol">&times;</button>` : ''}
+                                            ${this.isAuthenticated ? `<button onclick="app.removeScorer(${rIdxParam}, ${mIdx}, ${s_index})" class="text-red-500 font-bold text-lg leading-none hover:text-red-700 p-1">&times;</button>` : ''}
                                         </li>
                                     `).join('')}
                                     ${(match.scorers || []).length === 0 ? '<li class="text-center text-gray-400 italic text-xs mt-2">Sin goles registrados</li>' : ''}
@@ -999,101 +1175,11 @@
                     </div>
                 `;
             }
-
-            renderStandings() {
-                const tbody = document.getElementById('standings-body');
-                if(!tbody) return;
-
-                const standings = this.calculateStandings();
-
-                if (standings.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="10" class="text-center p-6 italic text-gray-500">Agrega equipos para ver la tabla</td></tr>`;
-                    return;
-                }
-
-                tbody.innerHTML = standings.map((st, index) => {
-                    // Estilos para los primeros puestos (ej. Zona de clasificación)
-                    let rowClass = "border-b hover:bg-gray-50 transition bg-white";
-                    let posStyle = "text-gray-500";
-                    
-                    if (index === 0) { rowClass = "border-b bg-yellow-50/50 hover:bg-yellow-50"; posStyle = "text-yellow-600 font-black"; }
-                    else if (index < 4) { rowClass = "border-b bg-blue-50/30 hover:bg-blue-50"; posStyle = "text-institucional-azul font-bold"; }
-
-                    const diffGoles = st.goalsFor - st.goalsAgainst;
-                    const diffColor = diffGoles > 0 ? 'text-green-600' : (diffGoles < 0 ? 'text-red-500' : 'text-gray-500');
-
-                    return `
-                        <tr class="${rowClass}">
-                            <td class="px-4 py-3 text-center ${posStyle}">${index + 1}</td>
-                            <td class="px-4 py-3 font-bold text-institucional-azul whitespace-nowrap">${st.name}</td>
-                            <td class="px-3 py-3 text-center font-medium">${st.played}</td>
-                            <td class="px-3 py-3 text-center text-green-600">${st.won}</td>
-                            <td class="px-3 py-3 text-center text-gray-500">${st.drawn}</td>
-                            <td class="px-3 py-3 text-center text-red-500">${st.lost}</td>
-                            <td class="px-3 py-3 text-center">${st.goalsFor}</td>
-                            <td class="px-3 py-3 text-center">${st.goalsAgainst}</td>
-                            <td class="px-3 py-3 text-center font-semibold ${diffColor}">${diffGoles > 0 ? '+'+diffGoles : diffGoles}</td>
-                            <td class="px-4 py-3 text-center font-black text-institucional-azul text-lg">${st.points}</td>
-                        </tr>
-                    `;
-                }).join('');
-            }
-
-            renderScorers() {
-                const list = document.getElementById('scorers-list');
-                if(!list) return;
-
-                // Extraer y contar goleadores
-                const scorerCounts = {};
-                this.schedule.forEach(round => {
-                    round.forEach(match => {
-                        (match.scorers || []).forEach(s => {
-                            const key = `${s.player.toLowerCase()}|${s.team}`;
-                            if(!scorerCounts[key]) scorerCounts[key] = { player: s.player, team: s.team, goals: 0 };
-                            scorerCounts[key].goals++;
-                        });
-                    });
-                });
-
-                // Ordenar de mayor a menor
-                const sortedScorers = Object.values(scorerCounts).sort((a, b) => b.goals - a.goals);
-
-                if (sortedScorers.length === 0) {
-                    list.innerHTML = `<li class="p-8 text-center text-gray-500 flex flex-col items-center"><span class="text-3xl mb-2">🤷‍♂️</span> No hay goles registrados aún.</li>`;
-                    return;
-                }
-
-                list.innerHTML = sortedScorers.map((s, idx) => {
-                    // Iconos especiales para el Top 3
-                    let badge = `<div class="w-8 h-8 rounded-full bg-gray-200 text-gray-600 flex items-center justify-center font-bold text-sm shadow-inner">${idx + 1}</div>`;
-                    if (idx === 0) badge = `<div class="w-8 h-8 rounded-full bg-yellow-400 text-yellow-900 flex items-center justify-center font-bold text-sm shadow-md ring-2 ring-yellow-200" title="Pichichi">👑</div>`;
-                    if (idx === 1) badge = `<div class="w-8 h-8 rounded-full bg-gray-300 text-gray-800 flex items-center justify-center font-bold text-sm shadow-md">🥈</div>`;
-                    if (idx === 2) badge = `<div class="w-8 h-8 rounded-full bg-orange-300 text-orange-900 flex items-center justify-center font-bold text-sm shadow-md">🥉</div>`;
-
-                    return `
-                        <li class="p-4 flex justify-between items-center hover:bg-gray-50 transition ${idx === 0 ? 'bg-yellow-50/30' : ''}">
-                            <div class="flex items-center gap-4">
-                                ${badge}
-                                <div>
-                                    <p class="font-bold text-institucional-azul leading-tight">${s.player}</p>
-                                    <p class="text-xs text-gray-500 font-medium">${s.team}</p>
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-1">
-                                <span class="font-black text-2xl text-institucional-azul">${s.goals}</span>
-                                <span class="text-sm">⚽</span>
-                            </div>
-                        </li>
-                    `;
-                }).join('');
-            }
         }
         
-        // Arrancar la app cuando el DOM esté listo
-        document.addEventListener('DOMContentLoaded', () => {
-            window.app = new TournamentApp();
-            window.app.init();
-        });
+        // Arrancar la app
+        window.app = new TournamentApp();
+        document.addEventListener('DOMContentLoaded', () => window.app.init());
 
     </script>
 </body>
