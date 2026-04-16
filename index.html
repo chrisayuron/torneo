@@ -187,13 +187,13 @@
             </div>
             
           <nav class="flex justify-center flex-wrap gap-3 mt-8">
-    <button class="nav-btn btn bg-institucional-azul text-white opacity-90 px-6 py-2 rounded-full transition-all" 
-            onclick="app.switchTab('vista-partidos', this)" 
-            data-target="vista-partidos">Partidos</button>
+  <button class="nav-btn btn bg-institucional-amarillo text-institucional-azul font-bold shadow-md scale-105 px-6 py-2 rounded-full transition-all" 
+        onclick="app.switchTab('vista-partidos', this)" 
+        data-target="vista-partidos">Partidos</button>
             
-    <button class="nav-btn btn bg-institucional-amarillo text-institucional-azul font-bold shadow-md scale-105 px-6 py-2 rounded-full transition-all" 
-            onclick="app.switchTab('vista-posiciones', this)" 
-            data-target="vista-posiciones">Posiciones</button>
+<button class="nav-btn btn bg-institucional-azul text-white opacity-90 px-6 py-2 rounded-full transition-all" 
+        onclick="app.switchTab('vista-posiciones', this)" 
+        data-target="vista-posiciones">Posiciones</button>
             
     <button class="nav-btn btn bg-institucional-azul text-white opacity-90 px-6 py-2 rounded-full transition-all" 
             onclick="app.switchTab('vista-goleadores', this)" 
@@ -206,7 +206,7 @@
         </header>
 
         <main id="main-content">
-            <section id="vista-posiciones" class="vista-activa">
+            <section id="vista-posiciones" class="vista-oculta">
                 <div class="card">
                     <h2 class="text-2xl font-bold mb-4 flex items-center text-institucional-azul">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 mr-3 text-institucional-amarillo" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
@@ -245,7 +245,7 @@
                 </div>
             </section>
 
-            <section id="vista-partidos" class="vista-oculta">
+            <section id="vista-partidos" class="vista-activa>
                 <div id="schedule-section">
                     <div class="card bg-gray-50 text-center text-gray-500">El calendario aún no ha sido generado.</div>
                 </div>
