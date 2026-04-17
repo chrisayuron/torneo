@@ -912,6 +912,88 @@
                 this.renderTopScorers();
             }
 
+            // ==========================================
+// RETIRO DE EQUIPOS (SIN ROMPER HISTORIAL)
+// ==========================================
+withdrawTeam(teamName) {
+    if (!teamName) return;
+
+    this.showConfirm(`¿Seguro que deseas retirar el equipo "${teamName}" del torneo?`, () => {
+        // 1. Eliminar de la lista de equipos
+        this.teams = this.teams.filter(t => t.name !== teamName);
+
+        // 2. Eliminar de partidos NO jugados
+        this.schedule.forEach(round => {
+            round.matches = round.matches.filter(match => {
+                // Mantener partidos jugados SIEMPRE
+                if (match.played) return true;
+
+                // Eliminar partidos donde participe el equipo retirado
+                return match.team1 !== teamName && match.team2 !== teamName;
+            });
+        });
+
+        // 3. Reorganizar calendario restante
+        this.reorganizePendingMatches();
+
+        this.saveStateToFirestore();
+        this.showNotification(`Equipo ${teamName} retirado correctamente.`);
+    });
+}
+
+// ==========================================
+// REORGANIZAR PARTIDOS PENDIENTES
+// ==========================================
+reorganizePendingMatches() {
+    // 1. Separar partidos jugados y pendientes
+    let playedMatches = [];
+    let pendingMatches = [];
+
+    this.schedule.forEach(round => {
+        round.matches.forEach(match => {
+            if (match.played) {
+                playedMatches.push({ ...match, date: round.date });
+            } else {
+                pendingMatches.push(match);
+            }
+        });
+    });
+
+    // 2. Obtener fechas válidas existentes
+    const fechasDisponibles = this.schedule
+        .map(r => r.date)
+        .filter(date => date);
+
+    // 3. Reasignar fechas SOLO a pendientes
+    let indexFecha = 0;
+
+    const newSchedule = [];
+
+    // Mantener jugados intactos
+    playedMatches.forEach((match, i) => {
+        newSchedule.push({
+            round: i + 1,
+            date: match.date,
+            matches: [match]
+        });
+    });
+
+    // Reorganizar pendientes
+    pendingMatches.forEach((match, i) => {
+        const fecha = fechasDisponibles[indexFecha % fechasDisponibles.length];
+
+        newSchedule.push({
+            round: newSchedule.length + 1,
+            date: fecha,
+            matches: [match]
+        });
+
+        indexFecha++;
+    });
+
+    this.schedule = newSchedule;
+}
+
             renderTeamsAdmin() {
                 document.getElementById('teams-list').innerHTML = this.teams.map((t, i) => `
                     <div class="flex justify-between items-center bg-gray-50 p-3 rounded shadow-sm border border-gray-200 mb-2">
@@ -919,6 +1001,10 @@
                         <div class="flex gap-2">
                             <button onclick="app.editTeam(${i})" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm font-bold shadow transition-colors">Editar</button>
                             <button onclick="app.removeTeam(${i})" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm font-bold shadow transition-colors ${this.schedule.length > 0 ? 'hidden' : ''}">Eliminar</button>
+                            <button onclick="app.withdrawTeam('${t.name}')" 
+class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-sm font-bold shadow transition-colors">
+Retirar
+</button>
                         </div>
                     </div>`).join('');
             }
