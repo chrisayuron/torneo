@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +8,7 @@
     <link rel="icon" href="./EscudoBS.png" type="png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
+
     <script>
         tailwind.config = {
             theme: {
@@ -27,25 +28,28 @@
             }
         }
     </script>
-    
+
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #F4F6F8; /* institucional.grisFondo */
-            color: #4A5568; /* institucional.grisTexto */
+            background-color: #F4F6F8;
+            /* institucional.grisFondo */
+            color: #4A5568;
+            /* institucional.grisTexto */
         }
-        
+
         .card {
             background-color: white;
             border-radius: 0.75rem;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             padding: 1.5rem;
-            border-top: 4px solid #0B3954; /* institucional.azul */
+            border-top: 4px solid #0B3954;
+            /* institucional.azul */
         }
-        
-       
+
+
         .btn {
-            border-radius: 0.75rem; 
+            border-radius: 0.75rem;
             font-weight: 700;
             transition: all 0.2s ease-in-out;
             cursor: pointer;
@@ -55,28 +59,63 @@
             gap: 0.5rem;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
-        .btn:active:not(:disabled) { transform: scale(0.96); } 
-        
-        .btn:disabled { 
-            background-color: #cbd5e1 !important; 
-            color: #475569 !important; 
-            cursor: not-allowed; 
-            box-shadow: none !important; 
-            transform: none !important; 
+
+        .btn:active:not(:disabled) {
+            transform: scale(0.96);
+        }
+
+        .btn:disabled {
+            background-color: #cbd5e1 !important;
+            color: #475569 !important;
+            cursor: not-allowed;
+            box-shadow: none !important;
+            transform: none !important;
             border: none !important;
         }
-        
-        .btn-primary { background-color: #0B3954; color: white; }
-        .btn-primary:hover:not(:disabled) { background-color: #135075; transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(11, 57, 84, 0.3); }
-        
-        .btn-secondary { background-color: #FFD166; color: #0B3954; }
-        .btn-secondary:hover:not(:disabled) { background-color: #FFC233; transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(255, 209, 102, 0.4); }
 
-        .btn-success { background-color: #16a34a; color: white; }
-        .btn-success:hover:not(:disabled) { background-color: #15803d; transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(22, 163, 74, 0.4); }
-        
-        .btn-danger { background-color: #dc2626; color: white; }
-        .btn-danger:hover:not(:disabled) { background-color: #b91c1c; transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(220, 38, 38, 0.4); }
+        .btn-primary {
+            background-color: #0B3954;
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background-color: #135075;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(11, 57, 84, 0.3);
+        }
+
+        .btn-secondary {
+            background-color: #FFD166;
+            color: #0B3954;
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background-color: #FFC233;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(255, 209, 102, 0.4);
+        }
+
+        .btn-success {
+            background-color: #16a34a;
+            color: white;
+        }
+
+        .btn-success:hover:not(:disabled) {
+            background-color: #15803d;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(22, 163, 74, 0.4);
+        }
+
+        .btn-danger {
+            background-color: #dc2626;
+            color: white;
+        }
+
+        .btn-danger:hover:not(:disabled) {
+            background-color: #b91c1c;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(220, 38, 38, 0.4);
+        }
 
         .input-field {
             width: 100%;
@@ -86,63 +125,100 @@
             transition: border-color 0.2s, box-shadow 0.2s;
             outline: none;
         }
-        .input-field:focus { border-color: #0B3954; box-shadow: 0 0 0 2px rgba(11, 57, 84, 0.2); }
 
-        .vista-oculta { display: none !important; }
-        .vista-activa { display: block; animation: fadeIn 0.3s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .input-field:focus {
+            border-color: #0B3954;
+            box-shadow: 0 0 0 2px rgba(11, 57, 84, 0.2);
+        }
 
-        #notification-toast { transition: opacity 0.3s, transform 0.3s; }
+        .vista-oculta {
+            display: none !important;
+        }
+
+        .vista-activa {
+            display: block;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        #notification-toast {
+            transition: opacity 0.3s, transform 0.3s;
+        }
 
         @keyframes shine {
-    0% { left: -100%; }
-    20% { left: 100%; }
-    100% { left: 100%; }
-}
+            0% {
+                left: -100%;
+            }
 
-.animate-shine {
-    position: relative;
-    overflow: hidden;
-}
+            20% {
+                left: 100%;
+            }
 
-.animate-shine::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 50%;
-    height: 100%;
-    background: linear-gradient(
-        to right,
-        rgba(255, 255, 255, 0) 0%,
-        rgba(255, 255, 255, 0.4) 50%,
-        rgba(255, 255, 255, 0) 100%
-    );
-    transform: skewX(-25deg);
-    animation: shine 4s infinite;
-}
+            100% {
+                left: 100%;
+            }
+        }
+
+        .animate-shine {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .animate-shine::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(to right,
+                    rgba(255, 255, 255, 0) 0%,
+                    rgba(255, 255, 255, 0.4) 50%,
+                    rgba(255, 255, 255, 0) 100%);
+            transform: skewX(-25deg);
+            animation: shine 4s infinite;
+        }
     </style>
 </head>
+
 <body class="p-4 sm:p-6 md:p-8">
 
-    <div id="notification-toast" class="fixed top-4 left-1/2 transform -translate-x-1/2 z-[100] bg-institucional-azul text-white px-6 py-3 rounded-full shadow-lg opacity-0 pointer-events-none translate-y-[-20px]">
+    <div id="notification-toast"
+        class="fixed top-4 left-1/2 transform -translate-x-1/2 z-[100] bg-institucional-azul text-white px-6 py-3 rounded-full shadow-lg opacity-0 pointer-events-none translate-y-[-20px]">
         <span id="notification-msg">Mensaje</span>
     </div>
 
-    <div id="modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-[60] p-4 hidden backdrop-blur-sm">
-        <div class="bg-white rounded-xl shadow-xl p-6 max-w-sm w-full text-center border-t-4 border-institucional-amarillo transform transition-all">
+    <div id="modal"
+        class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-[60] p-4 hidden backdrop-blur-sm">
+        <div
+            class="bg-white rounded-xl shadow-xl p-6 max-w-sm w-full text-center border-t-4 border-institucional-amarillo transform transition-all">
             <div id="modal-message" class="mb-6 text-institucional-azul font-medium"></div>
             <div id="modal-buttons" class="flex justify-center gap-4"></div>
         </div>
     </div>
 
-    <div id="login-screen" class="fixed inset-0 bg-gray-900 bg-opacity-80 flex items-center justify-center z-50 p-4 hidden backdrop-blur-sm">
+    <div id="login-screen"
+        class="fixed inset-0 bg-gray-900 bg-opacity-80 flex items-center justify-center z-50 p-4 hidden backdrop-blur-sm">
         <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden transform transition-all">
             <div class="bg-gradient-to-r from-institucional-azul to-institucional-azulHover p-6 text-center relative">
-                <button onclick="app.hideLoginModal()" class="absolute top-4 right-4 text-white hover:text-gray-200 font-bold text-2xl leading-none transition-colors">&times;</button>
+                <button onclick="app.hideLoginModal()"
+                    class="absolute top-4 right-4 text-white hover:text-gray-200 font-bold text-2xl leading-none transition-colors">&times;</button>
                 <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-3 shadow-lg">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-institucional-amarillo" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-institucional-amarillo" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                     </svg>
                 </div>
                 <h2 class="text-2xl font-bold text-white">Acceso Admin</h2>
@@ -152,76 +228,111 @@
                 <div class="space-y-5">
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1">Correo Electrónico</label>
-                        <input type="email" id="email-input" class="input-field bg-gray-50 border-gray-300 text-gray-900" placeholder="admin@ejemplo.com">
+                        <input type="email" id="email-input"
+                            class="input-field bg-gray-50 border-gray-300 text-gray-900"
+                            placeholder="admin@ejemplo.com">
                     </div>
                     <div class="relative">
                         <label class="block text-sm font-semibold text-gray-700 mb-1">Contraseña</label>
-                        <input type="password" id="password-input" class="input-field bg-gray-50 border-gray-300 text-gray-900 pr-10" placeholder="••••••••">
-                        <button id="toggle-password-btn" class="absolute bottom-2 right-1 px-3 py-1 flex items-center text-gray-400 hover:text-institucional-azul focus:outline-none">
-                            <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-                            <svg id="eye-slash-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7 1.274-4.057-5.064 7-9.542 7 .847 0 1.67 .111 2.457 .311M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2 2l20 20" /></svg>
+                        <input type="password" id="password-input"
+                            class="input-field bg-gray-50 border-gray-300 text-gray-900 pr-10" placeholder="••••••••">
+                        <button id="toggle-password-btn"
+                            class="absolute bottom-2 right-1 px-3 py-1 flex items-center text-gray-400 hover:text-institucional-azul focus:outline-none">
+                            <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                            <svg id="eye-slash-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden"
+                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7 1.274-4.057-5.064 7-9.542 7 .847 0 1.67 .111 2.457 .311M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2 2l20 20" />
+                            </svg>
                         </button>
                     </div>
                 </div>
-                <p id="login-error" class="text-red-500 text-sm mt-3 h-5 text-center font-medium transition-opacity"></p>
-                <button id="btn-ingresar" onclick="app.login()" class="btn btn-secondary w-full py-3 mt-4">Ingresar al Sistema</button>
+                <p id="login-error" class="text-red-500 text-sm mt-3 h-5 text-center font-medium transition-opacity">
+                </p>
+                <button id="btn-ingresar" onclick="app.login()" class="btn btn-secondary w-full py-3 mt-4">Ingresar al
+                    Sistema</button>
             </div>
         </div>
     </div>
 
     <div id="app-container" class="max-w-6xl mx-auto">
         <header class="text-center mb-8 relative">
-            <button id="btn-top-auth" onclick="app.toggleAuth()" class="absolute top-0 right-0 btn border-2 border-institucional-azul text-institucional-azul bg-transparent hover:bg-institucional-azul hover:text-white px-4 py-2 mt-2 mr-2 text-sm rounded-full z-10">
+            <button id="btn-top-auth" onclick="app.toggleAuth()"
+                class="absolute top-0 right-0 btn border-2 border-institucional-azul text-institucional-azul bg-transparent hover:bg-institucional-azul hover:text-white px-4 py-2 mt-2 mr-2 text-sm rounded-full z-10">
                 Ingresar Admin
             </button>
-            
-          
+
+
             <div class="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 pt-16 sm:pt-4">
-                <img src="./EscudoBS.png" alt="Escudo Beth Shalom" class="h-28 sm:h-36 md:h-44 w-auto object-contain drop-shadow-xl transition-transform hover:scale-105">
+                <img src="./EscudoBS.png" alt="Escudo Beth Shalom"
+                    class="h-28 sm:h-36 md:h-44 w-auto object-contain drop-shadow-xl transition-transform hover:scale-105">
                 <div class="text-center sm:text-left">
-                    <h1 class="text-4xl sm:text-5xl font-extrabold text-institucional-azul uppercase tracking-wide leading-tight">
+                    <h1
+                        class="text-4xl sm:text-5xl font-extrabold text-institucional-azul uppercase tracking-wide leading-tight">
                         Mundialito<br class="hidden sm:block"> BethShalom
                     </h1>
                     <p class="text-lg sm:text-xl text-gray-600 mt-2 font-medium">Torneo Oficial - Resultados en vivo</p>
                 </div>
             </div>
-            
-          <nav class="flex justify-center flex-wrap gap-3 mt-8">
-  <button class="nav-btn btn bg-institucional-amarillo text-institucional-azul font-bold shadow-md scale-105 px-6 py-2 rounded-full transition-all" 
-        onclick="app.switchTab('vista-partidos', this)" 
-        data-target="vista-partidos">Partidos</button>
-            
-<button class="nav-btn btn bg-institucional-azul text-white opacity-90 px-6 py-2 rounded-full transition-all" 
-        onclick="app.switchTab('vista-posiciones', this)" 
-        data-target="vista-posiciones">Posiciones</button>
-            
-    <button class="nav-btn btn bg-institucional-azul text-white opacity-90 px-6 py-2 rounded-full transition-all" 
-            onclick="app.switchTab('vista-goleadores', this)" 
-            data-target="vista-goleadores">Goleadores</button>
-            
-    <button id="nav-btn-admin" class="nav-btn btn bg-institucional-azul text-white opacity-90 px-6 py-2 rounded-full transition-all hidden" 
-            onclick="app.switchTab('vista-admin', this)" 
-            data-target="vista-admin">Panel Admin</button>
-</nav>
+
+            <nav class="flex justify-center flex-wrap gap-3 mt-8">
+                <button
+                    class="nav-btn btn bg-institucional-amarillo text-institucional-azul font-bold shadow-md scale-105 px-6 py-2 rounded-full transition-all"
+                    onclick="app.switchTab('vista-partidos', this)" data-target="vista-partidos">Partidos</button>
+
+                <button
+                    class="nav-btn btn bg-institucional-azul text-white opacity-90 px-6 py-2 rounded-full transition-all"
+                    onclick="app.switchTab('vista-posiciones', this)" data-target="vista-posiciones">Posiciones</button>
+
+                <button
+                    class="nav-btn btn bg-institucional-azul text-white opacity-90 px-6 py-2 rounded-full transition-all"
+                    onclick="app.switchTab('vista-goleadores', this)" data-target="vista-goleadores">Goleadores</button>
+
+                <button id="nav-btn-admin"
+                    class="nav-btn btn bg-institucional-azul text-white opacity-90 px-6 py-2 rounded-full transition-all hidden"
+                    onclick="app.switchTab('vista-admin', this)" data-target="vista-admin">Panel Admin</button>
+            </nav>
         </header>
 
         <main id="main-content">
             <section id="vista-posiciones" class="vista-oculta">
                 <div class="card">
                     <h2 class="text-2xl font-bold mb-4 flex items-center text-institucional-azul">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 mr-3 text-institucional-amarillo" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 mr-3 text-institucional-amarillo"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
                         Tabla de Posiciones
                     </h2>
                     <div class="overflow-x-auto">
                         <table class="min-w-full text-sm text-left">
                             <thead class="bg-gray-100 font-semibold border-b-2 border-institucional-azul">
                                 <tr>
-                                    <th class="p-3">Pos</th><th class="p-3">Equipo</th>
-                                    <th class="p-3 text-center">PJ</th><th class="p-3 text-center">G</th><th class="p-3 text-center">E</th><th class="p-3 text-center">P</th><th class="p-3 text-center">GF</th><th class="p-3 text-center">GC</th><th class="p-3 text-center">DG</th><th class="p-3 text-center">Pts</th>
+                                    <th class="p-3">Pos</th>
+                                    <th class="p-3">Equipo</th>
+                                    <th class="p-3 text-center">PJ</th>
+                                    <th class="p-3 text-center">G</th>
+                                    <th class="p-3 text-center">E</th>
+                                    <th class="p-3 text-center">P</th>
+                                    <th class="p-3 text-center">GF</th>
+                                    <th class="p-3 text-center">GC</th>
+                                    <th class="p-3 text-center">DG</th>
+                                    <th class="p-3 text-center">Pts</th>
                                 </tr>
                             </thead>
                             <tbody id="standings-body" class="divide-y divide-gray-200">
-                                <tr><td colspan="10" class="p-4 text-center text-gray-500">Aún no hay equipos registrados.</td></tr>
+                                <tr>
+                                    <td colspan="10" class="p-4 text-center text-gray-500">Aún no hay equipos
+                                        registrados.</td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -231,15 +342,27 @@
             <section id="vista-goleadores" class="vista-oculta">
                 <div class="card">
                     <h2 class="text-2xl font-bold mb-4 flex items-center text-institucional-azul">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 mr-3 text-institucional-amarillo" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 14l9-5-9-5-9 5 9 5z" /><path stroke-linecap="round" stroke-linejoin="round" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-9.998 12.078 12.078 0 01.665-6.479L12 14z" /></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 mr-3 text-institucional-amarillo"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path d="M12 14l9-5-9-5-9 5 9 5z" />
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-9.998 12.078 12.078 0 01.665-6.479L12 14z" />
+                        </svg>
                         Goleadores del Torneo
                     </h2>
                     <table class="min-w-full text-sm text-left">
                         <thead class="bg-gray-100 font-semibold border-b-2 border-institucional-azul">
-                            <tr><th class="p-3">Pos</th><th class="p-3">Jugador</th><th class="p-3">Equipo</th><th class="p-3 text-center">Goles</th></tr>
+                            <tr>
+                                <th class="p-3">Pos</th>
+                                <th class="p-3">Jugador</th>
+                                <th class="p-3">Equipo</th>
+                                <th class="p-3 text-center">Goles</th>
+                            </tr>
                         </thead>
                         <tbody id="top-scorers-body" class="divide-y divide-gray-200">
-                             <tr><td colspan="4" class="p-4 text-center text-gray-500">No hay goles registrados aún.</td></tr>
+                            <tr>
+                                <td colspan="4" class="p-4 text-center text-gray-500">No hay goles registrados aún.</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -255,15 +378,25 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     <div class="card" id="add-team-wrapper">
                         <h2 class="text-xl font-bold mb-4 flex items-center text-institucional-azul">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-institucional-amarillo" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.653-.124-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.653.124-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-institucional-amarillo"
+                                fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.653-.124-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.653.124-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
                             1. Añadir/Editar Equipo
                         </h2>
-                        
+
                         <div class="flex flex-col sm:flex-row gap-3 mb-6">
-                            <input type="text" id="team-name" class="input-field flex-grow border-2" placeholder="Nombre del equipo (Ej: 11-A)" onkeypress="if(event.key === 'Enter') app.addTeam()">
-                            <button id="add-team-btn" onclick="app.addTeam()" class="btn btn-success py-3 px-6 whitespace-nowrap">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                                  <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                            <input type="text" id="team-name" class="input-field flex-grow border-2"
+                                placeholder="Nombre del equipo (Ej: 11-A)"
+                                onkeypress="if(event.key === 'Enter') app.addTeam()">
+                            <button id="add-team-btn" onclick="app.addTeam()"
+                                class="btn btn-success py-3 px-6 whitespace-nowrap">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20"
+                                    fill="currentColor">
+                                    <path fill-rule="evenodd"
+                                        d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                                        clip-rule="evenodd" />
                                 </svg>
                                 Añadir Equipo
                             </button>
@@ -274,76 +407,104 @@
                     <div class="card flex flex-col justify-between">
                         <div>
                             <h2 class="text-xl font-bold mb-4 flex items-center text-institucional-azul">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-institucional-amarillo" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-institucional-amarillo"
+                                    fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
                                 2. Generar Partidos
                             </h2>
-                            <p class="text-sm text-gray-600 mb-4">El sistema asignará una jornada cada Lunes, Martes y Jueves. (El 10 de Abril se fuerza como el primer partido).</p>
-                            
-                            <div class="flex flex-col sm:flex-row gap-3 mb-4 border-l-4 border-institucional-amarillo pl-3">
+                            <p class="text-sm text-gray-600 mb-4">El sistema asignará una jornada cada Lunes, Martes y
+                                Jueves. (El 10 de Abril se fuerza como el primer partido).</p>
+
+                            <div
+                                class="flex flex-col sm:flex-row gap-3 mb-4 border-l-4 border-institucional-amarillo pl-3">
                                 <div class="w-full sm:w-1/2">
-                                    <label class="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wide">Inicio de Temporada</label>
+                                    <label
+                                        class="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wide">Inicio
+                                        de Temporada</label>
                                     <input type="date" id="tournament-start" class="input-field border-gray-300">
                                 </div>
                                 <div class="w-full sm:w-1/2">
-                                    <label class="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wide">Fin de Temporada</label>
+                                    <label
+                                        class="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wide">Fin
+                                        de Temporada</label>
                                     <input type="date" id="tournament-end" class="input-field border-gray-300">
                                 </div>
                             </div>
-                            <button id="generate-schedule-btn" onclick="app.generateSchedule()" class="btn btn-secondary w-full py-3 mb-4" disabled>Generar Calendario</button>
+                            <button id="generate-schedule-btn" onclick="app.generateSchedule()"
+                                class="btn btn-secondary w-full py-3 mb-4" disabled>Generar Calendario</button>
                         </div>
-                        
+
                         <div class="pt-4 border-t border-gray-200">
-                            <button id="reset-tournament-btn" onclick="app.resetTournament()" class="btn btn-danger w-full py-3 hidden">Reiniciar Todo el Torneo</button>
+                            <button id="reset-tournament-btn" onclick="app.resetTournament()"
+                                class="btn btn-danger w-full py-3 hidden">Reiniciar Todo el Torneo</button>
                         </div>
                     </div>
                 </div>
 
                 <div class="card mt-6 hidden" id="fase-final-admin">
                     <h2 class="text-xl font-bold mb-4 flex items-center text-institucional-azul">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-institucional-amarillo" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-institucional-amarillo"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                        </svg>
                         3. Gestión de Fase Final (Knockout)
                     </h2>
-                    <p class="text-sm text-gray-600 mb-6">Genera las llaves finales una vez termine el 'Todos contra Todos'. Las fechas se deben asignar manualmente.</p>
+                    <p class="text-sm text-gray-600 mb-6">Genera las llaves finales una vez termine el 'Todos contra
+                        Todos'. Las fechas se deben asignar manualmente.</p>
                     <div class="flex flex-col sm:flex-row gap-4">
-                        <button onclick="app.generateSemifinals()" class="btn btn-primary flex-1 py-3" id="btn-gen-semi">Generar Semifinales (Top 4)</button>
-                        <button onclick="app.generateFinal()" class="btn btn-secondary flex-1 py-3" id="btn-gen-final">Generar Gran Final</button>
+                        <button onclick="app.generateSemifinals()" class="btn btn-primary flex-1 py-3"
+                            id="btn-gen-semi">Generar Semifinales (Top 4)</button>
+                        <button onclick="app.generateFinal()" class="btn btn-secondary flex-1 py-3"
+                            id="btn-gen-final">Generar Gran Final</button>
                     </div>
                 </div>
             </section>
         </main>
     </div>
-    <footer class="bg-institucional-azul text-white py-8 mt-12 border-t-4 border-institucional-amarillo shadow-[0_-10px_20px_rgba(0,0,0,0.1)]">
-    <div class="max-w-6xl mx-auto px-6">
-        <div class="flex flex-col md:flex-row justify-between items-center gap-8 text-center md:text-left">
-            
-            <div class="flex flex-col group">
-                <span class="text-[10px] uppercase tracking-[0.2em] text-institucional-amarillo font-bold mb-1">Desarrollado por</span>
-                <span class="text-lg font-bold">Chrisayuron <span class="text-gray-400 font-light mx-1">|</span> <span class="font-medium opacity-90">Ronald Rojas Newball</span></span>
-                <p class="text-[11px] text-blue-300/60 mt-1">&copy; 2026 • Todos los derechos reservados</p>
-            </div>
+    <footer
+        class="bg-institucional-azul text-white py-8 mt-12 border-t-4 border-institucional-amarillo shadow-[0_-10px_20px_rgba(0,0,0,0.1)]">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-8 text-center md:text-left">
 
-            <div class="flex flex-col items-center">
-                <p class="text-sm italic text-gray-300">
-                    Una idea de: <span class="text-white font-semibold not-italic">Juan Pablo Mendoza Villamizar</span>
-                </p>
-                <div class="mt-3 bg-white/5 px-5 py-1.5 rounded-full border border-white/10 backdrop-blur-sm">
-                    <span class="text-sm font-black text-institucional-amarillo italic tracking-wide">Promoción 2026 INVICTUS</span>
+                <div class="flex flex-col group">
+                    <span
+                        class="text-[10px] uppercase tracking-[0.2em] text-institucional-amarillo font-bold mb-1">Desarrollado
+                        por</span>
+                    <span class="text-lg font-bold">Chrisayuron <span class="text-gray-400 font-light mx-1">|</span>
+                        <span class="font-medium opacity-90">Ronald Rojas Newball</span></span>
+                    <p class="text-[11px] text-blue-300/60 mt-1">&copy; 2026 • Todos los derechos reservados</p>
                 </div>
-            </div>
 
-            <div class="flex flex-col items-center">
-                <a href="https://www.bethshalom.edu.co/" target="_blank" rel="noopener noreferrer" 
-                   class="animate-shine group flex items-center justify-center gap-3 bg-institucional-amarillo text-institucional-azul px-8 py-3 rounded-xl font-black uppercase text-sm tracking-tight hover:bg-white hover:scale-105 transition-all duration-300 shadow-[0_4px_15px_rgba(255,209,102,0.3)]">
-                    <span class="text-center">Visitar Colegio</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                    </svg>
-                </a>
-            </div>
+                <div class="flex flex-col items-center">
+                    <p class="text-sm italic text-gray-300">
+                        Una idea de: <span class="text-white font-semibold not-italic">Juan Pablo Mendoza
+                            Villamizar</span>
+                    </p>
+                    <div class="mt-3 bg-white/5 px-5 py-1.5 rounded-full border border-white/10 backdrop-blur-sm">
+                        <span class="text-sm font-black text-institucional-amarillo italic tracking-wide">Promoción 2026
+                            INVICTUS</span>
+                    </div>
+                </div>
 
+                <div class="flex flex-col items-center">
+                    <a href="https://www.bethshalom.edu.co/" target="_blank" rel="noopener noreferrer"
+                        class="animate-shine group flex items-center justify-center gap-3 bg-institucional-amarillo text-institucional-azul px-8 py-3 rounded-xl font-black uppercase text-sm tracking-tight hover:bg-white hover:scale-105 transition-all duration-300 shadow-[0_4px_15px_rgba(255,209,102,0.3)]">
+                        <span class="text-center">Visitar Colegio</span>
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                            class="h-5 w-5 group-hover:translate-x-1 transition-transform" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        </svg>
+                    </a>
+                </div>
+
+            </div>
         </div>
-    </div>
-</footer>
+    </footer>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -358,7 +519,7 @@
             const g = Math.floor((b - f + 1) / 3); const h = (19 * a + b - d - g + 15) % 30;
             const i = Math.floor(c / 4); const k = c % 4; const l = (32 + 2 * e + 2 * i - h - k) % 7;
             const m = Math.floor((a + 11 * h + 22 * l) / 451);
-            const month = Math.floor((h + l - 7 * m + 114) / 31) - 1; 
+            const month = Math.floor((h + l - 7 * m + 114) / 31) - 1;
             const day = ((h + l - 7 * m + 114) % 31) + 1;
             return new Date(year, month, day);
         }
@@ -436,8 +597,8 @@
             constructor() {
                 this.teams = [];
                 this.schedule = [];
-                this.knockout = null; 
-                this.isAuthenticated = false; 
+                this.knockout = null;
+                this.isAuthenticated = false;
                 this.db = null;
                 this.auth = null;
                 this.appId = typeof __app_id !== 'undefined' ? __app_id : 'mundialito-app';
@@ -549,7 +710,7 @@
                 try {
                     await signInWithEmailAndPassword(this.auth, email, password);
                     document.getElementById('email-input').value = ''; document.getElementById('password-input').value = '';
-                    this.hideLoginModal(); document.getElementById('nav-btn-admin').click(); 
+                    this.hideLoginModal(); document.getElementById('nav-btn-admin').click();
                     this.showNotification("Bienvenido al panel de administración.");
                 } catch (error) {
                     errorMsg.textContent = error.code === 'auth/invalid-credential' ? "Correo o contraseña incorrectos." : "Error al conectar.";
@@ -561,7 +722,7 @@
             updateUIForRole() {
                 const btnTopAuth = document.getElementById('btn-top-auth');
                 const navBtnAdmin = document.getElementById('nav-btn-admin');
-                
+
                 if (this.isAuthenticated) {
                     btnTopAuth.textContent = "Cerrar Sesión";
                     btnTopAuth.classList.remove('border-institucional-azul', 'text-institucional-azul');
@@ -572,26 +733,26 @@
                     btnTopAuth.classList.remove('bg-red-600', 'text-white', 'border-red-600');
                     btnTopAuth.classList.add('border-institucional-azul', 'text-institucional-azul');
                     navBtnAdmin.classList.add('hidden');
-                    
+
                     if (!document.getElementById('vista-admin').classList.contains('vista-oculta')) {
                         document.querySelector('[data-target="vista-posiciones"]')?.click();
                     }
                 }
-                this.renderAll(); 
+                this.renderAll();
             }
 
             // ---------------- Datos & Lógica del Torneo ----------------
             setupFirestoreListener() {
                 if (this.unsubscribe) this.unsubscribe();
-                
+
                 const mainStateRef = doc(this.db, 'artifacts', this.appId, 'public', 'data', 'torneo', 'mainState');
-                
+
                 this.unsubscribe = onSnapshot(mainStateRef, (docSnap) => {
                     if (docSnap.exists()) {
                         const state = docSnap.data();
                         this.teams = state.teams || [];
                         this.schedule = state.schedule || [];
-                        this.knockout = state.knockout || null; 
+                        this.knockout = state.knockout || null;
                     } else {
                         this.teams = []; this.schedule = []; this.knockout = null;
                     }
@@ -603,7 +764,7 @@
                 if (!this.isAuthenticated) return;
                 const mainStateRef = doc(this.db, 'artifacts', this.appId, 'public', 'data', 'torneo', 'mainState');
                 await setDoc(mainStateRef, {
-                    teams: JSON.parse(JSON.stringify(this.teams)), 
+                    teams: JSON.parse(JSON.stringify(this.teams)),
                     schedule: JSON.parse(JSON.stringify(this.schedule)),
                     knockout: this.knockout ? JSON.parse(JSON.stringify(this.knockout)) : null
                 });
@@ -613,7 +774,7 @@
                 if (this.schedule.length > 0) return this.showNotification("No puedes añadir equipos si el torneo ya empezó.", true);
                 const input = document.getElementById('team-name');
                 const name = input.value.trim();
-                
+
                 if (name && !this.teams.some(t => t.name === name)) {
                     this.teams.push({ name, pj: 0, g: 0, e: 0, p: 0, gf: 0, gc: 0, dg: 0, pts: 0 });
                     input.value = '';
@@ -633,11 +794,11 @@
             editTeam(index) {
                 const oldName = this.teams[index].name;
                 const newName = prompt(`Editar nombre del equipo "${oldName}":\n\nSi el torneo ya empezó, el sistema actualizará este nombre en el calendario, fase final y tabla de goleadores.`, oldName);
-                
+
                 if (!newName || newName.trim() === "" || newName.trim() === oldName) return;
 
                 const finalName = newName.trim();
-                
+
                 // Verificar que no se duplique
                 if (this.teams.some((t, i) => i !== index && t.name === finalName)) {
                     return this.showNotification("Ya existe otro equipo con ese nombre.", true);
@@ -700,9 +861,9 @@
 
                 let teams = [...this.teams.map(t => t.name)];
                 if (teams.length % 2 !== 0) teams.push("descanso");
-                
+
                 const numTeams = teams.length;
-                const numRounds = numTeams - 1; 
+                const numRounds = numTeams - 1;
 
                 const allMatches = [];
                 for (let round = 0; round < numRounds; round++) {
@@ -724,10 +885,10 @@
                 }
 
                 this.showConfirm(`Se programarán <strong>${allMatches.length} Partidos individuales</strong>.<br>El 10 de Abril se ha reservado como el primer encuentro.<br><br>A partir de aquí, usa el botón "Editar" de los equipos en caso de correcciones. ¿Confirmas la generación?`, () => {
-                    this.schedule = allMatches.map((match, index) => ({ 
-                        round: index + 1, 
-                        date: fechasValidas[index], 
-                        matches: [match] 
+                    this.schedule = allMatches.map((match, index) => ({
+                        round: index + 1,
+                        date: fechasValidas[index],
+                        matches: [match]
                     }));
                     this.saveStateToFirestore();
                     this.showNotification("¡Calendario oficial generado!");
@@ -739,7 +900,7 @@
             generateSemifinals() {
                 if (this.teams.length < 4) return this.showAlert("Se necesitan al menos 4 equipos para hacer semifinales.");
                 this.calculateTeamStats(); // Asegurar tabla actualizada
-                
+
                 this.showConfirm("Se generarán las Semifinales con los 4 mejores equipos de la tabla actual. Las fechas deberás asignarlas manualmente. ¿Continuar?", () => {
                     const top4 = this.teams.slice(0, 4);
                     this.knockout = {
@@ -765,7 +926,7 @@
                 this.showConfirm("Se generará la Gran Final con los ganadores. ¿Continuar?", () => {
                     const winner1 = sf1.score1 > sf1.score2 ? sf1.team1 : sf1.team2;
                     const winner2 = sf2.score1 > sf2.score2 ? sf2.team1 : sf2.team2;
-                    
+
                     this.knockout.final = [
                         { team1: winner1, team2: winner2, score1: null, score2: null, played: false, scorers: [], date: '' }
                     ];
@@ -794,7 +955,7 @@
                     if (rIdx === 'semi') this.knockout.semifinals[mIdx].date = newDate;
                     else if (rIdx === 'final') this.knockout.final[mIdx].date = newDate;
                     else this.schedule[rIdx].date = newDate;
-                    
+
                     this.saveStateToFirestore();
                     this.showNotification("Fecha actualizada correctamente.");
                     this.toggleEditDate(rIdx, mIdx);
@@ -849,8 +1010,8 @@
             }
 
             calculateTeamStats() {
-                this.teams.forEach(t => { t.pj=0; t.g=0; t.e=0; t.p=0; t.gf=0; t.gc=0; t.dg=0; t.pts=0; });
-                
+                this.teams.forEach(t => { t.pj = 0; t.g = 0; t.e = 0; t.p = 0; t.gf = 0; t.gc = 0; t.dg = 0; t.pts = 0; });
+
                 // Las estadísticas SOLO se calculan con el Round Robin (Fase Regular)
                 this.schedule.forEach(round => {
                     round.matches.forEach(match => {
@@ -858,11 +1019,11 @@
                             const t1 = this.teams.find(t => t.name === match.team1);
                             const t2 = this.teams.find(t => t.name === match.team2);
                             if (!t1 || !t2) return;
-                            
+
                             t1.pj++; t2.pj++;
                             t1.gf += match.score1; t1.gc += match.score2;
                             t2.gf += match.score2; t2.gc += match.score1;
-                            
+
                             if (match.score1 > match.score2) { t1.g++; t2.p++; t1.pts += 3; }
                             else if (match.score2 > match.score1) { t2.g++; t1.p++; t2.pts += 3; }
                             else { t1.e++; t2.e++; t1.pts += 1; t2.pts += 1; }
@@ -876,7 +1037,7 @@
 
             resetTournament() {
                 this.showConfirm("¿Estás 100% seguro? Se borrarán todos los equipos, partidos y fases finales.", async () => {
-                    if(this.isAuthenticated) {
+                    if (this.isAuthenticated) {
                         const mainStateRef = doc(this.db, 'artifacts', this.appId, 'public', 'data', 'torneo', 'mainState');
                         await deleteDoc(mainStateRef);
                         this.showNotification("Torneo reiniciado exitosamente.");
@@ -886,10 +1047,10 @@
 
             // ---------------- Renderizado ----------------
             renderAll() {
-                this.calculateTeamStats(); 
-                
+                this.calculateTeamStats();
+
                 const started = this.schedule.length > 0;
-                
+
                 // Panel Admin UI
                 document.getElementById('add-team-wrapper').classList.toggle('opacity-50', started);
                 // NOTA: Se habilitó el input y el botón de añadir equipo aunque el torneo haya empezado
@@ -900,7 +1061,7 @@
                 document.getElementById('tournament-end').disabled = started;
                 document.getElementById('generate-schedule-btn').disabled = this.teams.length < 2 || started;
                 document.getElementById('reset-tournament-btn').classList.toggle('hidden', !started && this.teams.length === 0);
-                
+
                 // Panel Fase Final UI
                 const faseFinalPanel = document.getElementById('fase-final-admin');
                 if (started) faseFinalPanel.classList.remove('hidden');
@@ -913,37 +1074,37 @@
             }
 
             // ==========================================
-// RETIRO DE EQUIPOS (SIN ROMPER HISTORIAL)
-// ==========================================
-withdrawTeam(teamName) {
-    if (!teamName) return;
+            // RETIRO DE EQUIPOS (SIN ROMPER HISTORIAL)
+            // ==========================================
+            withdrawTeam(teamName) {
+                if (!teamName) return;
 
-    this.showConfirm(`¿Seguro que deseas retirar el equipo "${teamName}" del torneo?`, () => {
-        // 1. Eliminar de la lista de equipos
-        this.teams = this.teams.filter(t => t.name !== teamName);
+                this.showConfirm(`¿Seguro que deseas retirar el equipo "${teamName}" del torneo?`, () => {
+                    // 1. Eliminar de la lista de equipos
+                    this.teams = this.teams.filter(t => t.name !== teamName);
 
-        // 2. Eliminar de partidos NO jugados
-        this.schedule.forEach(round => {
-            round.matches = round.matches.filter(match => {
-                // Mantener partidos jugados SIEMPRE
-                if (match.played) return true;
+                    // 2. Eliminar de partidos NO jugados
+                    this.schedule.forEach(round => {
+                        round.matches = round.matches.filter(match => {
+                            // Mantener partidos jugados SIEMPRE
+                            if (match.played) return true;
 
-                // Eliminar partidos donde participe el equipo retirado
-                return match.team1 !== teamName && match.team2 !== teamName;
-            });
-        });
+                            // Eliminar partidos donde participe el equipo retirado
+                            return match.team1 !== teamName && match.team2 !== teamName;
+                        });
+                    });
 
-        // 3. Reorganizar calendario restante
-        this.reorganizePendingMatches();
+                    // 3. Reorganizar calendario restante
+                    this.reorganizePendingMatches();
 
-        this.saveStateToFirestore();
-        this.showNotification(`Equipo ${teamName} retirado correctamente.`);
-    });
-}
+                    this.saveStateToFirestore();
+                    this.showNotification(`Equipo ${teamName} retirado correctamente.`);
+                });
+            }
 
-// ==========================================
-// REORGANIZAR PARTIDOS PENDIENTES
-// ==========================================
+            // ==========================================
+            // REORGANIZAR PARTIDOS PENDIENTES
+            // ==========================================
 reorganizePendingMatches() {
     // 1. Separar partidos jugados y pendientes
     let playedMatches = [];
@@ -959,17 +1120,24 @@ reorganizePendingMatches() {
         });
     });
 
-    // 2. Obtener fechas válidas existentes
-    const fechasDisponibles = this.schedule
-        .map(r => r.date)
-        .filter(date => date);
+    // 2. Obtener TODAS las fechas originales
+    const allDates = this.schedule.map(r => r.date).filter(Boolean);
 
-    // 3. Reasignar fechas SOLO a pendientes
-    let indexFecha = 0;
+    // 3. Obtener fechas OCUPADAS (jugadas)
+    const usedDates = new Set(playedMatches.map(m => m.date));
+
+    // 4. Filtrar fechas DISPONIBLES reales
+    const availableDates = allDates.filter(date => !usedDates.has(date));
+
+    // ⚠️ Validación importante
+    if (availableDates.length < pendingMatches.length) {
+        this.showNotification("No hay suficientes fechas disponibles para reorganizar todos los partidos.", true);
+        return;
+    }
 
     const newSchedule = [];
 
-    // Mantener jugados intactos
+    // 5. Mantener jugados EXACTAMENTE igual
     playedMatches.forEach((match, i) => {
         newSchedule.push({
             round: i + 1,
@@ -978,21 +1146,65 @@ reorganizePendingMatches() {
         });
     });
 
-    // Reorganizar pendientes
+    // 6. Asignar SOLO fechas libres a pendientes
     pendingMatches.forEach((match, i) => {
-        const fecha = fechasDisponibles[indexFecha % fechasDisponibles.length];
-
         newSchedule.push({
             round: newSchedule.length + 1,
-            date: fecha,
+            date: availableDates[i],
             matches: [match]
         });
-
-        indexFecha++;
     });
 
     this.schedule = newSchedule;
 }
+                // 1. Separar partidos jugados y pendientes
+                let playedMatches = [];
+                let pendingMatches = [];
+
+                this.schedule.forEach(round => {
+                    round.matches.forEach(match => {
+                        if (match.played) {
+                            playedMatches.push({ ...match, date: round.date });
+                        } else {
+                            pendingMatches.push(match);
+                        }
+                    });
+                });
+
+                // 2. Obtener fechas válidas existentes
+                const fechasDisponibles = this.schedule
+                    .map(r => r.date)
+                    .filter(date => date);
+
+                // 3. Reasignar fechas SOLO a pendientes
+                let indexFecha = 0;
+
+                const newSchedule = [];
+
+                // Mantener jugados intactos
+                playedMatches.forEach((match, i) => {
+                    newSchedule.push({
+                        round: i + 1,
+                        date: match.date,
+                        matches: [match]
+                    });
+                });
+
+                // Reorganizar pendientes
+                pendingMatches.forEach((match, i) => {
+                    const fecha = fechasDisponibles[indexFecha % fechasDisponibles.length];
+
+                    newSchedule.push({
+                        round: newSchedule.length + 1,
+                        date: fecha,
+                        matches: [match]
+                    });
+
+                    indexFecha++;
+                });
+
+                this.schedule = newSchedule;
+            }
 
             renderTeamsAdmin() {
                 document.getElementById('teams-list').innerHTML = this.teams.map((t, i) => `
@@ -1011,8 +1223,8 @@ Retirar
 
             renderStandings() {
                 const body = document.getElementById('standings-body');
-                if(this.teams.length === 0) return body.innerHTML = '<tr><td colspan="10" class="p-4 text-center text-gray-500">Aún no hay equipos registrados.</td></tr>';
-                
+                if (this.teams.length === 0) return body.innerHTML = '<tr><td colspan="10" class="p-4 text-center text-gray-500">Aún no hay equipos registrados.</td></tr>';
+
                 body.innerHTML = this.teams.map((t, i) => `
                     <tr class="${i < 4 ? 'bg-green-50' : 'hover:bg-gray-50'} border-b border-gray-100 transition">
                         <td class="p-3 font-bold text-institucional-azul">${i + 1}</td>
@@ -1030,26 +1242,26 @@ Retirar
                 // Combinar goles de fase regular y knockout
                 const processScorers = (matches) => {
                     matches.forEach(m => {
-                        if(m.scorers) m.scorers.forEach(s => {
+                        if (m.scorers) m.scorers.forEach(s => {
                             const key = `${s.player}-${s.team}`;
                             if (!map.has(key)) map.set(key, { player: s.player, team: s.team, goals: 0 });
                             map.get(key).goals++;
                         });
                     });
                 };
-                
+
                 this.schedule.forEach(r => processScorers(r.matches));
                 if (this.knockout && this.knockout.semifinals) processScorers(this.knockout.semifinals);
                 if (this.knockout && this.knockout.final) processScorers(this.knockout.final);
 
                 const sorted = Array.from(map.values()).sort((a, b) => b.goals - a.goals);
                 const body = document.getElementById('top-scorers-body');
-                
-                if(sorted.length === 0) return body.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-gray-500">No hay goles registrados aún.</td></tr>';
-                
+
+                if (sorted.length === 0) return body.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-gray-500">No hay goles registrados aún.</td></tr>';
+
                 body.innerHTML = sorted.map((s, i) => `
                     <tr class="border-b border-gray-100">
-                        <td class="p-3 font-bold text-institucional-azul">${i+1}</td>
+                        <td class="p-3 font-bold text-institucional-azul">${i + 1}</td>
                         <td class="p-3 font-semibold">${s.player}</td>
                         <td class="p-3 text-gray-500">${s.team}</td>
                         <td class="p-3 text-center font-bold text-lg">${s.goals}</td>
@@ -1059,19 +1271,19 @@ Retirar
             renderSchedule() {
                 const section = document.getElementById('schedule-section');
                 if (this.schedule.length === 0) return section.innerHTML = '<div class="card bg-gray-50 text-center text-gray-500">El calendario aún no ha sido generado.</div>';
-                
+
                 const formatter = new Intl.DateTimeFormat('es-CO', { weekday: 'long', month: 'long', day: 'numeric' });
 
                 const getMondayTimestamp = (dateString) => {
                     if (!dateString) return 0;
                     const d = new Date(dateString + "T12:00:00");
-                    const day = d.getDay(); 
+                    const day = d.getDay();
                     const diff = d.getDate() - day + (day === 0 ? -6 : 1);
                     return new Date(d.getFullYear(), d.getMonth(), diff).getTime();
                 };
 
                 const weeksMap = new Map();
-                
+
                 this.schedule.forEach((r, rIdx) => {
                     const ts = getMondayTimestamp(r.date);
                     if (!weeksMap.has(ts)) weeksMap.set(ts, []);
@@ -1079,7 +1291,7 @@ Retirar
                 });
 
                 const sortedWeekTimestamps = Array.from(weeksMap.keys()).sort((a, b) => a - b);
-                
+
                 let html = '';
                 let weekNumber = 1;
 
@@ -1094,7 +1306,7 @@ Retirar
                         </div>
                         <div class="grid grid-cols-1 gap-6">
                     `;
-                    
+
                     matchesInWeek.forEach(item => {
                         const r = item.r;
                         const rIdx = item.rIdx;
@@ -1205,13 +1417,13 @@ Retirar
 
             // Tarjeta Base (Reutilizada)
             renderMatchCard(match, rIdx, mIdx) {
-                 const id = `${rIdx}-${mIdx}`;
-                 const ro = (match.played || !this.isAuthenticated) ? 'readonly' : '';
-                 
-                 // Para que los inputs en Fase Final se diferencien de Fase Regular string params
-                 const rIdxParam = typeof rIdx === 'string' ? `'${rIdx}'` : rIdx; 
+                const id = `${rIdx}-${mIdx}`;
+                const ro = (match.played || !this.isAuthenticated) ? 'readonly' : '';
 
-                 return `
+                // Para que los inputs en Fase Final se diferencien de Fase Regular string params
+                const rIdxParam = typeof rIdx === 'string' ? `'${rIdx}'` : rIdx;
+
+                return `
                     <div class="bg-gray-50 border p-4 rounded-lg shadow-sm ${match.played ? 'border-l-4 border-l-institucional-amarillo' : ''}">
                         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                             <div class="sm:w-1/3 text-center sm:text-right font-bold text-xl text-institucional-azul">${match.team1}</div>
@@ -1248,7 +1460,7 @@ Retirar
                                 ` : ''}
 
                                 <ul class="space-y-1 text-sm max-w-sm mx-auto">
-                                    ${ (match.scorers || []).map((scorer, s_index) => `
+                                    ${(match.scorers || []).map((scorer, s_index) => `
                                         <li class="flex justify-between items-center bg-white p-2 rounded border border-gray-200 shadow-sm">
                                             <span>⚽ <span class="font-semibold text-institucional-azul">${scorer.player}</span> <span class="text-xs text-gray-500">(${scorer.team})</span></span>
                                             ${this.isAuthenticated ? `<button onclick="app.removeScorer(${rIdxParam}, ${mIdx}, ${s_index})" class="text-red-500 font-bold text-lg leading-none hover:text-red-700 p-1">&times;</button>` : ''}
@@ -1262,11 +1474,12 @@ Retirar
                 `;
             }
         }
-        
+
         // Arrancar la app
         window.app = new TournamentApp();
         document.addEventListener('DOMContentLoaded', () => window.app.init());
 
     </script>
 </body>
+
 </html>
