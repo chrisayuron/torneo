@@ -1157,55 +1157,6 @@ reorganizePendingMatches() {
 
     this.schedule = newSchedule;
 }
-                // 1. Separar partidos jugados y pendientes
-                let playedMatches = [];
-                let pendingMatches = [];
-
-                this.schedule.forEach(round => {
-                    round.matches.forEach(match => {
-                        if (match.played) {
-                            playedMatches.push({ ...match, date: round.date });
-                        } else {
-                            pendingMatches.push(match);
-                        }
-                    });
-                });
-
-                // 2. Obtener fechas válidas existentes
-                const fechasDisponibles = this.schedule
-                    .map(r => r.date)
-                    .filter(date => date);
-
-                // 3. Reasignar fechas SOLO a pendientes
-                let indexFecha = 0;
-
-                const newSchedule = [];
-
-                // Mantener jugados intactos
-                playedMatches.forEach((match, i) => {
-                    newSchedule.push({
-                        round: i + 1,
-                        date: match.date,
-                        matches: [match]
-                    });
-                });
-
-                // Reorganizar pendientes
-                pendingMatches.forEach((match, i) => {
-                    const fecha = fechasDisponibles[indexFecha % fechasDisponibles.length];
-
-                    newSchedule.push({
-                        round: newSchedule.length + 1,
-                        date: fecha,
-                        matches: [match]
-                    });
-
-                    indexFecha++;
-                });
-
-                this.schedule = newSchedule;
-            }
-
             renderTeamsAdmin() {
                 document.getElementById('teams-list').innerHTML = this.teams.map((t, i) => `
                     <div class="flex justify-between items-center bg-gray-50 p-3 rounded shadow-sm border border-gray-200 mb-2">
