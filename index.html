@@ -1130,10 +1130,19 @@ reorganizePendingMatches() {
     const availableDates = allDates.filter(date => !usedDates.has(date));
 
     // ⚠️ Validación importante
-    if (availableDates.length < pendingMatches.length) {
-        this.showNotification("No hay suficientes fechas disponibles para reorganizar todos los partidos.", true);
-        return;
+   // Si no hay suficientes fechas, crear nuevas automáticamente
+let finalDates = [...availableDates];
+
+if (finalDates.length < pendingMatches.length) {
+    let lastDate = new Date(allDates[allDates.length - 1] || new Date());
+
+    while (finalDates.length < pendingMatches.length) {
+        lastDate.setDate(lastDate.getDate() + 1);
+
+        const newDate = lastDate.toISOString().split('T')[0];
+        finalDates.push(newDate);
     }
+}
 
     const newSchedule = [];
 
@@ -1158,6 +1167,17 @@ reorganizePendingMatches() {
     this.schedule = newSchedule;
 }
             renderTeamsAdmin() {
+                const existingBtn = document.getElementById('btn-reorganize');
+if (existingBtn) existingBtn.remove();
+
+document.getElementById('teams-list').insertAdjacentHTML('beforebegin', `
+    <div id="btn-reorganize" class="mb-4">
+        <button onclick="app.reorganizePendingMatches(); app.saveStateToFirestore(); app.renderAll();" 
+        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-bold shadow">
+            Reorganizar calendario
+        </button>
+    </div>
+`);
                 document.getElementById('teams-list').innerHTML = this.teams.map((t, i) => `
                     <div class="flex justify-between items-center bg-gray-50 p-3 rounded shadow-sm border border-gray-200 mb-2">
                         <span class="font-semibold text-institucional-azul text-lg">${t.name}</span>
