@@ -1106,7 +1106,7 @@
             // REORGANIZAR PARTIDOS PENDIENTES
             // ==========================================
 reorganizePendingMatches() {
-    // 1. Separar partidos jugados y pendientes
+    // Separar partidos jugados y pendientes
     let playedMatches = [];
     let pendingMatches = [];
 
@@ -1120,13 +1120,13 @@ reorganizePendingMatches() {
         });
     });
 
-    // 2. Obtener TODAS las fechas originales
+    // Obtener TODAS las fechas originales
     const allDates = this.schedule.map(r => r.date).filter(Boolean);
 
-    // 3. Obtener fechas OCUPADAS (jugadas)
+    // Obtener fechas OCUPADAS (jugadas)
     const usedDates = new Set(playedMatches.map(m => m.date));
 
-    // 4. Filtrar fechas DISPONIBLES reales
+    // Filtrar fechas DISPONIBLES reales
     const availableDates = allDates.filter(date => !usedDates.has(date));
 
     // ⚠️ Validación importante
@@ -1146,7 +1146,7 @@ if (finalDates.length < pendingMatches.length) {
 
     const newSchedule = [];
 
-    // 5. Mantener jugados EXACTAMENTE igual
+    // Evitar borrar partidos ya jugados
     playedMatches.forEach((match, i) => {
         newSchedule.push({
             round: i + 1,
@@ -1155,7 +1155,7 @@ if (finalDates.length < pendingMatches.length) {
         });
     });
 
-    // 6. Asignar SOLO fechas libres a pendientes
+    // Corrección de fechas pendientes por partidos
     pendingMatches.forEach((match, i) => {
         newSchedule.push({
             round: newSchedule.length + 1,
